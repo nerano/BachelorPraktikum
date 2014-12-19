@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="/home/john/Downloads/jaxrs-ri/jars/osgi-resource-locator-1.0.1.jar"/>
 	<classpathentry kind="lib" path="/home/john/Downloads/jaxrs-ri/jars/persistence-api-1.0.jar"/>
 	<classpathentry kind="lib" path="/home/john/Downloads/jaxrs-ri/jars/validation-api-1.1.0.Final.jar"/>
+	<classpathentry kind="lib" path="/home/john/Downloads/jaxrs-ri/jars"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
