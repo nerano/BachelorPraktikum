@@ -9,17 +9,9 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/powermain")
 public class PowerMain {
-
-
-	
-	
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String sayTest() {
-		return "POWERtest";
-	}
-
-
-	
-
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
+  public String sayTest() {
+    return "POWERtest";
+  }
 }

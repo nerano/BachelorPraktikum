@@ -23,29 +23,31 @@ import javax.ws.rs.core.MediaType;
 public class AuthMain {
 
   MediaType mediatype = new MediaType(MediaType.TEXT_PLAIN, "subAuth");
-	
-	HashMap<String, String> users = new HashMap<String, String>();
-	
-	// This method is called if TEXT_PLAIN is request
- 
+
+  HashMap<String, String> users = new HashMap<String, String>();
+
+  // This method is called if TEXT_PLAIN is request
+ /**
+  * ???.
+  */
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   @Consumes("text/plain")
+  /**
+   * This method authorized any user.
+   * @param user is the authorized user
+   * @param pw is password of this active user
+   * @return true if authorization was succesful otherwise false
+   */
   public String sayAuth(@QueryParam("user") String user, @QueryParam("pw") String pw) {
     
-	  users.put("testUser", "testPassword");
-	  users.put("admin", "pw");
-	  
-	  
-	  
-	  if(user != null && users.get(user).equals(pw)){
-		  return "true";
-	  } else {
-		  return "false";
-	  }
-	  
+    users.put("testUser", "testPassword");
+    users.put("admin", "pw");
+
+    if (user != null && users.get(user).equals(pw)) {
+      return "true";
+    } else {
+      return "false";
+    }
   }
-  
-
-
 } 

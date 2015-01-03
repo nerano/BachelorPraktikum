@@ -15,99 +15,79 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 
 public class ControllerMain {
+  /**
+   * The main of the Controller.
+   * @param args argument of main
+   */
+  public static void main(String[] args) {
 
-	public static void main(String[] args) {
+    ClientConfig config = new ClientConfig();
+    Client client = ClientBuilder.newClient(config);
+    WebTarget target = client.target(getBaseURI());
+    MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<String, String>();
+    queryParams.add("user", "testUser");
 
-		ClientConfig config = new ClientConfig();
+    String[] acceptString = { MediaType.TEXT_PLAIN };
+    String[] acceptStringX = { MediaType.TEXT_XML };
+    String[] acceptStringH = { MediaType.TEXT_HTML };
+    String[] testUser = { "admin" };
+    String[] testPassword = { "pw" };
 
-		Client client = ClientBuilder.newClient(config);
+    /** System.out.println(target.path("mm.auth").path("rest").path("authmain")
+      .request()
+      .accept(acceptString).get(Response.class)
+      .toString());
 
-		WebTarget target = client.target(getBaseURI());
+    System.out.println(target.path("mm.auth").path("rest").path("authmain")
+      .queryParam("user", "admin")
+      .queryParam("pw", "pw").request()
+      .accept(acceptString).get(String.class));**/
 
-		MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<String, String>();
+    WebTarget authTarget = client.target(getAuthBaseURI());
 
-		queryParams.add("user", "testUser");
+    System.out.println(authTarget.request().accept(acceptString).get(Response.class).toString());
 
-		String[] acceptString = { MediaType.TEXT_PLAIN };
-		String[] acceptStringX = { MediaType.TEXT_XML };
-		String[] acceptStringH = { MediaType.TEXT_HTML };
-		String[] testUser = { "admin" };
-		String[] testPassword = { "pw" };
+    System.out.println(authTarget.queryParam("user", "admin").queryParam("pw", "pw").request()
+        .accept(acceptString).get(String.class));
 
-	/** 	System.out.println(target.path("mm.auth").path("rest").path("authmain")
-				.request()
+    System.out.println(target.path("mm.power").path("rest")
+        .path("powermain").request()
+        .accept(acceptString).get(Response.class)
+        .toString());
 
-				.accept(acceptString).get(Response.class)
+    System.out.println(target.path("mm.power").path("rest")
+        .path("powermain").request()
+        .accept(acceptString).get(String.class));
 
-				.toString());
+    System.out.println(target.path("mm.net").path("rest").path("netmain")
+        .request()
+        .accept(acceptString).get(Response.class)
+        .toString());
 
-		System.out.println(target.path("mm.auth").path("rest").path("authmain")
-				.queryParam("user", "admin")
+    System.out.println(target.path("mm.net").path("rest").path("netmain")
+        .request()
+        .accept(acceptString).get(String.class));
+  }
 
-				.queryParam("pw", "pw").request()
+  private static URI getBaseURI() {
+    // Specify the BaseURI. For Testing Purposes "http://localhost:8080/"
+    // URI for the Power "http://localhost:8080/mm.power/rest/powermain"
+    // URI for the Auth "http://localhost:8080/mm.auth/rest/authmain"
+    // URI for the Net "httP://localhost:8080/mm.net/rest/netmain"
+    return UriBuilder.fromUri("http://localhost:8080/").build();
+  }
 
-				.accept(acceptString).get(String.class));**/
-		
-		
-		WebTarget authTarget = client.target(getAuthBaseURI());
-		
-		System.out.println(authTarget.request().accept(acceptString).get(Response.class).toString());
-	
-		System.out.println(authTarget.queryParam("user", "admin").queryParam("pw", "pw").request()
-				.accept(acceptString).get(String.class));
+  private static URI getAuthBaseURI() {
+    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/authmain").build();
+  }
 
-		System.out.println(target.path("mm.power").path("rest")
-				.path("powermain").request()
+  private static URI getPowerBaseURI() {
+    return UriBuilder.fromUri("http://localhost:8080/mm.power/rest/powermain").build();
+  }
 
-				.accept(acceptString).get(Response.class)
+  private static URI getNetBaseURI() {
 
-				.toString());
-
-		System.out.println(target.path("mm.power").path("rest")
-				.path("powermain").request()
-
-				.accept(acceptString).get(String.class));
-
-		System.out.println(target.path("mm.net").path("rest").path("netmain")
-				.request()
-
-				.accept(acceptString).get(Response.class)
-
-				.toString());
-
-		System.out.println(target.path("mm.net").path("rest").path("netmain")
-				.request()
-
-				.accept(acceptString).get(String.class));
-
-	}
-
-	private static URI getBaseURI() {
-
-		// Specify the BaseURI. For Testing Purposes "http://localhost:8080/"
-		// URI for the Power "http://localhost:8080/mm.power/rest/powermain"
-		// URI for the Auth "http://localhost:8080/mm.auth/rest/authmain"
-		// URI for the Net "httP://localhost:8080/mm.net/rest/netmain"
-
-		return UriBuilder.fromUri("http://localhost:8080/").build();
-
-	}
-
-	private static URI getAuthBaseURI() {
-
-		return UriBuilder.fromUri(
-				"http://localhost:8080/mm.auth/rest/authmain").build();
-	}
-	
-	private static URI getPowerBaseURI() {
-
-		return UriBuilder.fromUri(
-				"http://localhost:8080/mm.power/rest/powermain").build();
-	}
-	
-	private static URI getNetBaseURI() {
-
-		return UriBuilder.fromUri(
-				"http://localhost:8080/mm.net/rest/netmain").build();
-	}
+    return UriBuilder.fromUri(
+        "http://localhost:8080/mm.net/rest/netmain").build();
+  }
 }

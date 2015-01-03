@@ -10,13 +10,9 @@ import javax.ws.rs.core.MediaType;
 @Path("/netmain")
 public class NetMain {
 
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String sayTest(){
-		
-		return "NETtest";
-		
-	}
-	
-	
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
+  public String sayTest(){
+      return "NETtest";
+  }
 }
