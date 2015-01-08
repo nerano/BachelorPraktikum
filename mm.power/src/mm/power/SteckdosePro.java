@@ -4,7 +4,7 @@ public class SteckdosePro implements PowerSupply {
 
   int dosen;
 
-  SteckdosePRO(int dosen) {
+  SteckdosePro(int dosen) {
     this.dosen = dosen;
   }
 
