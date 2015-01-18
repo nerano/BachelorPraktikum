@@ -17,12 +17,13 @@ public class AuthMain {
 
   
   private static final HashMap<String, String> users;
-      static
-  	{
-  	    users = new HashMap<String, String>();
-  	    users.put("testUser", "testPassword");
-  	    users.put("admin", "pw");
-  	}
+
+  static
+  {
+    users = new HashMap<String, String>();
+    users.put("testUser", "testPassword");
+    users.put("admin", "pw");
+  }
 
   // This method is called if TEXT_PLAIN is request
  /**

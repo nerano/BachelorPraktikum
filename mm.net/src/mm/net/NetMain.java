@@ -32,72 +32,71 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 @Path("/netmain")
 public class NetMain {
 
+  /**
+   * test.
+   * @return test string
+   * @throws IOException if fail. 
+   */
   @GET
   @Produces(MediaType.TEXT_PLAIN)
-  public String sayTest() throws IOException{
+  public String sayTest() throws IOException {
    
-	  Address targetAddress = GenericAddress.parse("udp:192.168.178.94/161");
-		
-		
-		TransportMapping transportUDP = new DefaultUdpTransportMapping();
-		//TransportMapping transportTCP = new DefaultTcpTransportMapping();
-		
-		Snmp snmp = new Snmp(transportUDP);
-		
-		USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+    Address targetAddress = GenericAddress.parse("udp:192.168.178.94/161");
 
-		SecurityModels.getInstance().addSecurityModel(usm);
-		transportUDP.listen();
+    TransportMapping transportUdp = new DefaultUdpTransportMapping();
+    //TransportMapping transportTCP = new DefaultTcpTransportMapping();
+
+    Snmp snmp = new Snmp(transportUdp);
+
+    USM usm = new USM(SecurityProtocols.getInstance(),
+        new OctetString(MPv3.createLocalEngineID()), 0);
+
+    SecurityModels.getInstance().addSecurityModel(usm);
+    transportUdp.listen();
 
 
-		// Adding new User to USM
-		snmp.getUSM().addUser(new OctetString("admin"),
-							  new UsmUser(new OctetString("admin"),
-									AuthMD5.ID,
-									new OctetString("password"),
-									PrivDES.ID,
-									new OctetString("password")));
-									
-		//UsmUser admin = new UsmUser(new OctetString("admin"), AuthMD5.ID, new OctetString("password"), PrivDES.ID, new OctetString("password"));		
-		
-		// snmp.getUSM().addUser(admin);
-		
-		// Creating Target (Switch)
-		
-		UserTarget target = new UserTarget();
-		target.setAddress(targetAddress);
-		target.setRetries(1);
-		target.setTimeout(5000);
-		target.setVersion(SnmpConstants.version3);
-		target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
-		target.setSecurityName(new OctetString("admin"));
-		
-		// Creating PDU
-		
-		PDU pdu = new ScopedPDU();
-		pdu.add(new VariableBinding(new OID(".1.3.6.1.4.1.4526.10.1.1.1.3")));
-		pdu.setType(pdu.GET);
-		
-		// send PDU to router
-		ResponseEvent response = snmp.get(pdu, target);
-		//extract the response
-		
-		PDU responsePDU = response.getResponse();
-		PDU requestPDU = response.getRequest();
-		
-		// extract the address used by the agent used to send the response 
-		Address peerAddress = response.getPeerAddress();
-		
-		
-		
-		
-		System.out.println(peerAddress);
-		
-		System.out.println(responsePDU.toString());
-		
-		System.out.println(requestPDU.toString());
-		
-	  
-	  return "NETtest";
+    // Adding new User to USM
+    snmp.getUSM().addUser(new OctetString("admin"),
+        new UsmUser(new OctetString("admin"),
+            AuthMD5.ID,
+            new OctetString("password"),
+            PrivDES.ID,
+            new OctetString("password")));
+
+    //UsmUser admin = new UsmUser(new OctetString("admin"), AuthMD5.ID,
+      //new OctetString("password"), PrivDES.ID, new OctetString("password"));
+
+    // snmp.getUSM().addUser(admin);
+
+    // Creating Target (Switch)
+
+    UserTarget target = new UserTarget();
+    target.setAddress(targetAddress);
+    target.setRetries(1);
+    target.setTimeout(5000);
+    target.setVersion(SnmpConstants.version3);
+    target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
+    target.setSecurityName(new OctetString("admin"));
+
+    // Creating PDU
+
+    PDU pdu = new ScopedPDU();
+    pdu.add(new VariableBinding(new OID(".1.3.6.1.4.1.4526.10.1.1.1.3")));
+    pdu.setType(pdu.GET);
+
+    // send PDU to router
+    ResponseEvent response = snmp.get(pdu, target);
+    //extract the response
+
+    PDU responsePdu = response.getResponse();
+    PDU requestPdu = response.getRequest();
+
+    // extract the address used by the agent used to send the response 
+    Address peerAddress = response.getPeerAddress();
+
+    System.out.println(peerAddress);
+    System.out.println(responsePdu.toString());
+    System.out.println(requestPdu.toString());
+    return "NETtest";
   }
 }

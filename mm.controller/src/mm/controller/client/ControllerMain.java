@@ -23,7 +23,7 @@ public class ControllerMain {
 
     ClientConfig config = new ClientConfig();
     Client client = ClientBuilder.newClient(config);
-    WebTarget target = client.target(getBaseURI());
+    WebTarget target = client.target(getBaseUri());
     MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<String, String>();
     queryParams.add("user", "testUser");
 
@@ -43,7 +43,7 @@ public class ControllerMain {
       .queryParam("pw", "pw").request()
       .accept(acceptString).get(String.class));**/
 
-    WebTarget authTarget = client.target(getAuthBaseURI());
+    WebTarget authTarget = client.target(getAuthBaseUri());
 
     System.out.println(authTarget.request().accept(acceptString).get(Response.class).toString());
 
@@ -69,7 +69,7 @@ public class ControllerMain {
         .accept(acceptString).get(String.class));
   }
 
-  private static URI getBaseURI() {
+  private static URI getBaseUri() {
     // Specify the BaseURI. For Testing Purposes "http://localhost:8080/"
     // URI for the Power "http://localhost:8080/mm.power/rest/powermain"
     // URI for the Auth "http://localhost:8080/mm.auth/rest/authmain"
@@ -77,15 +77,15 @@ public class ControllerMain {
     return UriBuilder.fromUri("http://localhost:8080/").build();
   }
 
-  private static URI getAuthBaseURI() {
+  private static URI getAuthBaseUri() {
     return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/authmain").build();
   }
 
-  private static URI getPowerBaseURI() {
+  private static URI getPowerBaseUri() {
     return UriBuilder.fromUri("http://localhost:8080/mm.power/rest/powermain").build();
   }
 
-  private static URI getNetBaseURI() {
+  private static URI getNetBaseUri() {
 
     return UriBuilder.fromUri(
         "http://localhost:8080/mm.net/rest/netmain").build();
