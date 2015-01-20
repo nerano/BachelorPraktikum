@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import org.json.simple.JSONObject;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -34,7 +36,8 @@ public class Ganeti {
       WebTarget target = client.target(url);
       target.path("instances");
       
-      System.out.println(target.request().accept(MediaType.TEXT_PLAIN).get().toString());
+     // System.out.println(target.request().accept(MediaType.TEXT_PLAIN).get().getEntity().toString());
+      System.out.println(target.request(MediaType.TEXT_PLAIN).get().readEntity(String.class));
       
       /*String quest = url + "info";
       Runtime rt = Runtime.getRuntime();
@@ -56,14 +59,27 @@ public class Ganeti {
    * @return true if creating a VM was successful otherwise false.
    */
   public boolean createVm() {
+    ClientConfig config = new ClientConfig();
+    Client client = ClientBuilder.newClient(config);
+    WebTarget target = client.target(url);
+    JSONObject json = new JSONObject();
+    json.put("name", "hans");
+    
+    target.path("instances").request().post(Entity.json(json));
+    
     return false;
   }
   
   /**
-   * 
+   * @param instance name of the instance that will be started.
    * @return true if starting the VM was successful otherwise false.
    */
-  public boolean startVm() {
+  public boolean startVm(String instance) {
+    ClientConfig config = new ClientConfig();
+    Client client = ClientBuilder.newClient(config);
+    WebTarget target = client.target(url);
+    target.path("instances").path(instance).path("startup").request().put(Entity.text("..."));
+    
     return false;
   }
   
@@ -71,7 +87,12 @@ public class Ganeti {
    * 
    * @return true if stopping the VM was successful otherwise false.
    */
-  public boolean stopVm() {
+  public boolean stopVm(String instance) {
+    ClientConfig config = new ClientConfig();
+    Client client = ClientBuilder.newClient(config);
+    WebTarget target = client.target(url);
+    target.path("instances").path(instance).path("shutdown").request().put(Entity.text("..."));
+    
     return false;
   }
   
