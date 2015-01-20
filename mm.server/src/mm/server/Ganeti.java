@@ -36,7 +36,6 @@ public class Ganeti {
       
       System.out.println(target.request().accept(MediaType.TEXT_PLAIN).get().toString());
       
-      
       /*String quest = url + "info";
       Runtime rt = Runtime.getRuntime();
       Process proc = rt.exec(quest);
