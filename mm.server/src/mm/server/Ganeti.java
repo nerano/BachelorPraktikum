@@ -63,7 +63,7 @@ public class Ganeti {
     Client client = ClientBuilder.newClient(config);
     WebTarget target = client.target(url);
     JSONObject json = new JSONObject();
-    json.put("name", "hans");
+    json.put("...", "...");
     
     target.path("instances").request().post(Entity.json(json));
     
@@ -78,7 +78,10 @@ public class Ganeti {
     ClientConfig config = new ClientConfig();
     Client client = ClientBuilder.newClient(config);
     WebTarget target = client.target(url);
-    target.path("instances").path(instance).path("startup").request().put(Entity.text("..."));
+    JSONObject json = new JSONObject();
+    json.put("...", "...");
+    
+    target.path("instances").path(instance).path("startup").request().put(Entity.json(json));
     
     return false;
   }
@@ -91,7 +94,10 @@ public class Ganeti {
     ClientConfig config = new ClientConfig();
     Client client = ClientBuilder.newClient(config);
     WebTarget target = client.target(url);
-    target.path("instances").path(instance).path("shutdown").request().put(Entity.text("..."));
+    JSONObject json = new JSONObject();
+    json.put("...", "...");
+    
+    target.path("instances").path(instance).path("shutdown").request().put(Entity.json(json));
     
     return false;
   }
