@@ -14,5 +14,7 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="lib" path="/home/benedikt/Dokumente/eclipse/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/home/benedikt/Downloads/jersey-client-1.14.jar"/>
+	<classpathentry kind="lib" path="/home/benedikt/Dokumente/eclipse/org.json-20120521.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

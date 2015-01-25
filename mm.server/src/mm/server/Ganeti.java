@@ -1,8 +1,18 @@
 package mm.server;
 
-import org.glassfish.jersey.client.ClientConfig;
-import org.json.simple.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
+import org.glassfish.jersey.client.ClientConfig;
+//import org.json.simple.JSONObject;
+import org.json.JSONObject;
+
+
+
+/*import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;*/
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -12,11 +22,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
 
 @Path("/ganeti")
 public class Ganeti {
   
-  private final String url = "https://localhost:5080/2/";
+  private final String url = "https://localhost:5080/2";
   
   /**
    * 
@@ -24,24 +35,27 @@ public class Ganeti {
    */
   @GET
   public String getInstances() {
+    //String str = "";
+    //ClientConfig config = new DefaultClientConfig();
     ClientConfig config = new ClientConfig();
     Client client = ClientBuilder.newClient(config);
+    JSONObject json = new JSONObject();
     String list = "";
     try { 
-      WebTarget target = client.target(url);
-      target.path("instances");
-      list = target.request(MediaType.TEXT_PLAIN).get().readEntity(String.class);
-      
+      WebTarget target = client.target(UriBuilder.fromPath(url).build());
+      //WebResource target = client.resource(UriBuilder.fromPath(url).build());
+      json = target.path("instances").request().accept(MediaType.APPLICATION_JSON).get(JSONObject.class);
+      //list = json.toString();
      // System.out.println(target.request().accept(MediaType.TEXT_PLAIN).get().getEntity().
       //toString());
       
       System.out.println(list);
-      
-      /*String quest = url + "info";
+      /*
+    try {
+      String quest = url + "innstances";
       Runtime rt = Runtime.getRuntime();
       Process proc = rt.exec(quest);
       BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-      String str;
       while ((str = br.readLine()) != null) {
         System.out.println(str);
       }*/
