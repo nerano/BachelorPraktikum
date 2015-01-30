@@ -7,15 +7,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 
+import org.json.JSONObject;
+
 @Path("/ganeti")
 public class RestInterface {
 
   Ganeti ga = new Ganeti();
   
   @GET
-  public String getInstances() {
-    String ret = ga.getInstances();
-    return ret;
+  public JSONObject getInstances() {
+    JSONObject json = ga.getInstances();
+    return json;
   }
   
   @Path("/create")
