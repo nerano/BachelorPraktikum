@@ -1,69 +1,71 @@
 package mm.server;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import org.glassfish.jersey.client.ClientConfig;
-//import org.json.simple.JSONObject;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.json.JSONObject;
-
-
 
 /*import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;*/
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 
-@Path("/ganeti")
+import javax.ws.rs.core.Response;
+
 public class Ganeti {
+  //benedikt:ben2305@
+  private static final String url = "http://localhost:5080/2";
+  private ClientConfig config;
+  private Client client;
+  WebTarget target;
   
-  private final String url = "https://localhost:5080/2";
+  /**
+   * Creating instances of Client and authenticate with username and password.
+   */
+  public Ganeti() {
+    this.config = new ClientConfig();    
+    //this.client = Client.create(config);
+    this.client = ClientBuilder.newClient(config);
+    HttpAuthenticationFeature feat = HttpAuthenticationFeature.basic("benedikt", "ben2305");
+    this.client.register(feat);
+  }
+  
+  /*static {
+    //for localhost testing only
+    HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
+      public boolean verify(String hostname, SSLSession sslSession) {
+        if (hostname.equals("localhost")) {
+          return true;
+        }
+        return false;
+      }
+    });
+  }*/
   
   /**
    * 
    * @return list of all instances of the server.
    */
-  @GET
-  public String getInstances() {
-    //String str = "";
-    //ClientConfig config = new DefaultClientConfig();
-    ClientConfig config = new ClientConfig();
-    Client client = ClientBuilder.newClient(config);
-    JSONObject json = new JSONObject();
+  public JSONObject getInstances() {
+    target = client.target(url);
+    //target = client.resource(url);
     String list = "";
     try { 
-      WebTarget target = client.target(UriBuilder.fromPath(url).build());
-      //WebResource target = client.resource(UriBuilder.fromPath(url).build());
-      json = target.path("instances").request().accept(MediaType.APPLICATION_JSON).get(JSONObject.class);
-      //list = json.toString();
-     // System.out.println(target.request().accept(MediaType.TEXT_PLAIN).get().getEntity().
-      //toString());
-      
+      list = target.path("instances").request().get(String.class);
       System.out.println(list);
-      /*
-    try {
-      String quest = url + "innstances";
-      Runtime rt = Runtime.getRuntime();
-      Process proc = rt.exec(quest);
-      BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-      while ((str = br.readLine()) != null) {
-        System.out.println(str);
-      }*/
-      
+      list = list.substring(1);
+      System.out.println(list);
+      JSONObject json = new JSONObject(list);
+      System.out.println(json.toString());
+      return json;      
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return list;
+    return null;
   }
   
   /**
@@ -75,25 +77,26 @@ public class Ganeti {
    * @return true if creating a VM was successful otherwise false.
    */
   public boolean create(String instance, String diskTemplate, String mode) {
-    ClientConfig config = new ClientConfig();
-    Client client = ClientBuilder.newClient(config);
+    target = client.target(url);
     JSONObject json = new JSONObject();
     try {
-      WebTarget target = client.target(url);
-      
       json.put("instance_name", instance);
-      json.put("__version__", new Integer(1));
+      json.put("__version__", Integer.valueOf(1));
       json.put("conflicts_check", true);
       json.put("disk_template", diskTemplate);
       json.put("mode", mode);
-      
-      target.path("instances").request().post(Entity.json(json));
+      //StringEntity quest = new StringEntity(json.toString());
+      String quest = "[" + json.toString() + "]";
+      System.out.println(quest);
+      Response rep = target.path("instances").request().post(Entity.text(quest));
+      System.out.println(rep);
     } catch (Exception e) {
       e.printStackTrace();
       return false;
     }
     return true;
   }
+ 
   
   /**
    * Starts a given instance.
@@ -101,6 +104,7 @@ public class Ganeti {
    * @return true if starting the VM was successful otherwise false.
    */
   public boolean startup(String instance) {
+    target = client.target(url);
     ClientConfig config = new ClientConfig();
     Client client = ClientBuilder.newClient(config);
     JSONObject json = new JSONObject();
@@ -120,10 +124,13 @@ public class Ganeti {
    * @return true if stopping the VM was successful otherwise false.
    */
   public boolean shutdown(String instance) {
+    target = client.target(url);
     ClientConfig config = new ClientConfig();
     Client client = ClientBuilder.newClient(config);
     JSONObject json = new JSONObject();
     try {
+      json.put("...", "...");
+      target.path("instances").path(instance).path("shutdown").request().put(Entity.json(json));
       WebTarget target = client.target(url);
       json.put("...", "...");
       target.path("instances").path(instance).path("shutdown").request().put(Entity.json(json));
@@ -140,10 +147,8 @@ public class Ganeti {
    * @return true if deleting was successful otherwise false.
    */
   public boolean delete(String instance) {
-    ClientConfig config = new ClientConfig();
-    Client client = ClientBuilder.newClient(config);
+    target = client.target(url);
     try {
-      WebTarget target = client.target(this.url);
       target.path("instances").path(instance).request().delete();
     } catch (Exception e) {
       e.printStackTrace();
@@ -159,11 +164,9 @@ public class Ganeti {
    * @return true if rebooting was successful otherwise false.
    */
   public boolean reboot(String instance, String type) {
-    ClientConfig config = new ClientConfig();
-    Client client = ClientBuilder.newClient(config);
+    target = client.target(url);
     JSONObject json = new JSONObject();
     try {
-      WebTarget target = client.target(this.url);
       json.put("type", type);
       target.path("instances").path(instance).path("reboot").request().post(Entity.json(json));
     } catch (Exception e) {
@@ -177,14 +180,12 @@ public class Ganeti {
    * Renames a given instance with a new name.
    * @param instance name of the VM which should be renamed.
    * @param newName of the given VM.
-   * @return
+   * @return true if renaming was successful otherwise false.
    */
   public boolean rename(String instance, String newName) {
-    ClientConfig config = new ClientConfig();
-    Client client = ClientBuilder.newClient(config);
+    target = client.target(url);
     JSONObject json = new JSONObject();
     try {
-      WebTarget target = client.target(this.url);
       json.put("new_name", newName);
       target.path("instances").path(instance).path("rename").request().put(Entity.json(json));
     } catch (Exception e) {
@@ -194,8 +195,9 @@ public class Ganeti {
     return true;
   }
   
-  public static void main(String[] args) {
-    Ganeti ga = new Ganeti();
-    ga.getInstances();
+  public static void main(String[] args) throws Exception {
+    Ganeti ga = new Ganeti();  
+    //ga.getInstances();
+    System.out.println(ga.create("test123", null, "create"));
   }
 } 
