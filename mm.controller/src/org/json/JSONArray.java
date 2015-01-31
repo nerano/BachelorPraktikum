@@ -75,20 +75,20 @@ import java.util.Map;
  * </ul>
  *
  * @author JSON.org
- * @version 2014-05-03
+ * @version 2013-04-18
  */
 public class JSONArray {
 
     /**
      * The arrayList where the JSONArray's properties are kept.
      */
-    private final ArrayList<Object> myArrayList;
+    private final ArrayList myArrayList;
 
     /**
      * Construct an empty JSONArray.
      */
     public JSONArray() {
-        this.myArrayList = new ArrayList<Object>();
+        this.myArrayList = new ArrayList();
     }
 
     /**
@@ -150,10 +150,10 @@ public class JSONArray {
      * @param collection
      *            A Collection.
      */
-    public JSONArray(Collection<Object> collection) {
-        this.myArrayList = new ArrayList<Object>();
+    public JSONArray(Collection collection) {
+        this.myArrayList = new ArrayList();
         if (collection != null) {
-            Iterator<Object> iter = collection.iterator();
+            Iterator iter = collection.iterator();
             while (iter.hasNext()) {
                 this.myArrayList.add(JSONObject.wrap(iter.next()));
             }
@@ -357,7 +357,7 @@ public class JSONArray {
      */
     public String join(String separator) throws JSONException {
         int len = this.length();
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < len; i += 1) {
             if (i > 0) {
@@ -593,7 +593,7 @@ public class JSONArray {
      *            A Collection value.
      * @return this.
      */
-    public JSONArray put(Collection<Object> value) {
+    public JSONArray put(Collection value) {
         this.put(new JSONArray(value));
         return this;
     }
@@ -646,7 +646,7 @@ public class JSONArray {
      *            A Map value.
      * @return this.
      */
-    public JSONArray put(Map<String, Object> value) {
+    public JSONArray put(Map value) {
         this.put(new JSONObject(value));
         return this;
     }
@@ -695,7 +695,7 @@ public class JSONArray {
      * @throws JSONException
      *             If the index is negative or if the value is not finite.
      */
-    public JSONArray put(int index, Collection<Object> value) throws JSONException {
+    public JSONArray put(int index, Collection value) throws JSONException {
         this.put(index, new JSONArray(value));
         return this;
     }
@@ -767,7 +767,7 @@ public class JSONArray {
      *             If the index is negative or if the the value is an invalid
      *             number.
      */
-    public JSONArray put(int index, Map<String, Object> value) throws JSONException {
+    public JSONArray put(int index, Map value) throws JSONException {
         this.put(index, new JSONObject(value));
         return this;
     }
@@ -813,42 +813,9 @@ public class JSONArray {
      *         was no value.
      */
     public Object remove(int index) {
-        return index >= 0 && index < this.length()
-            ? this.myArrayList.remove(index)
-            : null;
-    }
-
-    /**
-     * Determine if two JSONArrays are similar.
-     * They must contain similar sequences.
-     *
-     * @param other The other JSONArray
-     * @return true if they are equal
-     */
-    public boolean similar(Object other) {
-        if (!(other instanceof JSONArray)) {
-            return false;
-        }
-        int len = this.length();
-        if (len != ((JSONArray)other).length()) {
-            return false;
-        }
-        for (int i = 0; i < len; i += 1) {
-            Object valueThis = this.get(i);
-            Object valueOther = ((JSONArray)other).get(i);
-            if (valueThis instanceof JSONObject) {
-                if (!((JSONObject)valueThis).similar(valueOther)) {
-                    return false;
-                }
-            } else if (valueThis instanceof JSONArray) {
-                if (!((JSONArray)valueThis).similar(valueOther)) {
-                    return false;
-                }
-            } else if (!valueThis.equals(valueOther)) {
-                return false;
-            }
-        }
-        return true;
+        Object o = this.opt(index);
+        this.myArrayList.remove(index);
+        return o;
     }
 
     /**

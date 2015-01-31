@@ -36,7 +36,7 @@ SOFTWARE.
  * it. It is used by the JSONObject and JSONArray constructors to parse
  * JSON source strings.
  * @author JSON.org
- * @version 2014-05-03
+ * @version 2012-02-16
  */
 public class JSONTokener {
 
@@ -69,7 +69,6 @@ public class JSONTokener {
 
     /**
      * Construct a JSONTokener from an InputStream.
-     * @param inputStream The source.
      */
     public JSONTokener(InputStream inputStream) throws JSONException {
         this(new InputStreamReader(inputStream));
@@ -251,7 +250,7 @@ public class JSONTokener {
      */
     public String nextString(char quote) throws JSONException {
         char c;
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         for (;;) {
             c = this.next();
             switch (c) {
@@ -307,7 +306,7 @@ public class JSONTokener {
      * @return   A string.
      */
     public String nextTo(char delimiter) throws JSONException {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         for (;;) {
             char c = this.next();
             if (c == delimiter || c == 0 || c == '\n' || c == '\r') {
@@ -329,7 +328,7 @@ public class JSONTokener {
      */
     public String nextTo(String delimiters) throws JSONException {
         char c;
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         for (;;) {
             c = this.next();
             if (delimiters.indexOf(c) >= 0 || c == 0 ||
@@ -376,7 +375,7 @@ public class JSONTokener {
          * formatting character.
          */
 
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         while (c >= ' ' && ",:]}/\\\"[{;=#".indexOf(c) < 0) {
             sb.append(c);
             c = this.next();
@@ -415,9 +414,10 @@ public class JSONTokener {
                     return c;
                 }
             } while (c != to);
-        } catch (IOException exception) {
-            throw new JSONException(exception);
+        } catch (IOException exc) {
+            throw new JSONException(exc);
         }
+
         this.back();
         return c;
     }
