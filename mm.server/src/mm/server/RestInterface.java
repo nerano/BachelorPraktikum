@@ -1,15 +1,14 @@
 package mm.server;
 
+import org.json.JSONObject;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
-
-import mm.server.Ganeti;
-
-import org.json.JSONObject;
 
 @Path("/ganeti")
 public class RestInterface {
@@ -22,40 +21,41 @@ public class RestInterface {
     return json;
   }
   
-  @Path("/create")
   @POST
   public void createInstance(@QueryParam("instance") String instance, 
-      @QueryParam("disk") String diskTemplate, @QueryParam("mode") String mode) {
-    ga.create(instance, diskTemplate, mode);
-  }
-  
-  @Path("/start")
-  @PUT
-  public void startInstances(@QueryParam("instances") String instance) {
-    ga.startup(instance);
-  }
-  
-  @Path("/stop")
-  @PUT
-  public void stopInstances(@QueryParam("instances") String instance) {
-    ga.shutdown(instance);
+      @QueryParam("disk") String diskTemplate, @QueryParam("mode") String mode, 
+      @QueryParam("disks") JSONObject disks, @QueryParam("nics") JSONObject nics) {
+    ga.create(instance, diskTemplate, disks, nics, mode);
   }
   
   @DELETE
-  public void deleteInstances(@QueryParam("instances") String instance) {
+  @Path("{instance}")
+  public void deleteInstances(@PathParam("instance") String instance) {
     ga.delete(instance);
   }
   
-  @Path("/reboot")
   @POST
-  public void rebootInstances(@QueryParam("instances") String instance, 
+  @Path("{instance}")
+  public void rebootInstances(@PathParam("instance") String instance, 
       @QueryParam("type") String type) {
     ga.reboot(instance, type);
   }
   
-  @Path("/rename")
   @PUT
-  public void renameInstances(@QueryParam("instances") String instance, 
+  @Path("{instance}/start")
+  public void startInstances(@PathParam("instance") String instance) {
+    ga.startup(instance);
+  }
+  
+  @PUT
+  @Path("{instance}/stop")
+  public void stopInstances(@PathParam("instance") String instance) {
+    ga.shutdown(instance);
+  }
+  
+  @PUT
+  @Path("{instance}/rename")
+  public void renameInstances(@PathParam("instance") String instance, 
       @QueryParam("name") String newName) {
     ga.rename(instance, newName);
   }

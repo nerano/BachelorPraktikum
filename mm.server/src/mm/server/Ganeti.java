@@ -9,11 +9,13 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;*/
 
+
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-
 import javax.ws.rs.core.Response;
 
 public class Ganeti {
@@ -21,7 +23,9 @@ public class Ganeti {
   private static final String url = "http://localhost:5080/2";
   private ClientConfig config;
   private Client client;
-  WebTarget target;
+  private Invocation.Builder builder;
+  private Response rep;
+  private WebTarget target;
   
   /**
    * Creating instances of Client and authenticate with username and password.
@@ -56,11 +60,8 @@ public class Ganeti {
     String list = "";
     try { 
       list = target.path("instances").request().get(String.class);
-      System.out.println(list);
       list = list.substring(1);
-      System.out.println(list);
       JSONObject json = new JSONObject(list);
-      System.out.println(json.toString());
       return json;      
     } catch (Exception e) {
       e.printStackTrace();
@@ -74,9 +75,14 @@ public class Ganeti {
    * @param diskTemplate must be either Null, sharedfile, diskless, plain, blockdev, drbd, ext,
    *file or rbd.
    * @param mode must be either import, create or remote-import.
+   * @param disks must be a JSONObject with key of size and 
+   *may be a key of mode with value either ro or rw.
+   *@param nics must be a JSONObject with keys one of name, ip, mac, link, mode and network
+   *and values of Strings, either empty or not.
    * @return true if creating a VM was successful otherwise false.
    */
-  public boolean create(String instance, String diskTemplate, String mode) {
+  public boolean create(String instance, String diskTemplate, JSONObject disks, JSONObject nics,
+      String mode) {
     target = client.target(url);
     JSONObject json = new JSONObject();
     try {
@@ -85,11 +91,13 @@ public class Ganeti {
       json.put("conflicts_check", true);
       json.put("disk_template", diskTemplate);
       json.put("mode", mode);
-      //StringEntity quest = new StringEntity(json.toString());
-      String quest = "[" + json.toString() + "]";
-      System.out.println(quest);
-      Response rep = target.path("instances").request().post(Entity.text(quest));
+      json.put("nics", nics);
+      json.put("disks", disks);
+      
+      builder = target.path("instances").request().header("Content-Type", "application/json");
+      rep = builder.accept("application/json").post(Entity.json(json.toString()));
       System.out.println(rep);
+      
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -105,12 +113,12 @@ public class Ganeti {
    */
   public boolean startup(String instance) {
     target = client.target(url);
-    ClientConfig config = new ClientConfig();
-    Client client = ClientBuilder.newClient(config);
     JSONObject json = new JSONObject();
     try {
-      WebTarget target = client.target(url);
-      target.path("instances").path(instance).path("startup").request().put(Entity.json(json));
+      builder = target.path("instances").path(instance).path("startup").request()
+          .header("Content-Type", "application/json");
+      rep = builder.accept("application/json").put(Entity.json(json.toString()));
+      System.out.println(rep);
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -125,15 +133,12 @@ public class Ganeti {
    */
   public boolean shutdown(String instance) {
     target = client.target(url);
-    ClientConfig config = new ClientConfig();
-    Client client = ClientBuilder.newClient(config);
     JSONObject json = new JSONObject();
     try {
-      json.put("...", "...");
-      target.path("instances").path(instance).path("shutdown").request().put(Entity.json(json));
-      WebTarget target = client.target(url);
-      json.put("...", "...");
-      target.path("instances").path(instance).path("shutdown").request().put(Entity.json(json));
+      builder = target.path("instances").path(instance).path("shutdown").request()
+          .header("Content-Type", "application/json");
+      rep = builder.accept("application/json").put(Entity.json(json.toString()));
+      System.out.println(rep);
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -168,7 +173,11 @@ public class Ganeti {
     JSONObject json = new JSONObject();
     try {
       json.put("type", type);
-      target.path("instances").path(instance).path("reboot").request().post(Entity.json(json));
+      
+      builder = target.path("instances").path(instance).path("reboot").request()
+          .header("Content-Type", "application/json");
+      rep = builder.accept("application/json").post(Entity.json(json.toString()));
+      System.out.println(rep);
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -187,7 +196,11 @@ public class Ganeti {
     JSONObject json = new JSONObject();
     try {
       json.put("new_name", newName);
-      target.path("instances").path(instance).path("rename").request().put(Entity.json(json));
+      
+      builder = target.path("instances").path(instance).path("rename").request()
+          .header("Content-Type", "application/json");
+      rep = builder.accept("application/json").put(Entity.json(json.toString()));
+      System.out.println(rep);
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -195,9 +208,13 @@ public class Ganeti {
     return true;
   }
   
+  //{"id":"testvm.seemoo.tu-darmstadt.de","uri":"/2/instances/testvm.seemoo.tu-darmstadt.de"}
   public static void main(String[] args) throws Exception {
     Ganeti ga = new Ganeti();  
-    //ga.getInstances();
-    System.out.println(ga.create("test123", null, "create"));
+    System.out.println(ga.getInstances());
+    //System.out.println(ga.create("test123.seemoo.tu-darmstadt.de", null, "create"));
+    //ga.startup("testvm.seemoo.tu-darmstadt.de");
+    //ga.shutdown("testvm.seemoo.tu-darmstadt.de");
+    //ga.rename("testvm.seemoo.tu-darmstadt.de", "test456.seemoo.tu-darmstadt.de");
   }
 } 
