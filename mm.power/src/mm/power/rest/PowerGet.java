@@ -1,5 +1,6 @@
 package mm.power.rest;
 
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import mm.power.implementation.*;
 import mm.power.modeling.*;
@@ -99,7 +101,33 @@ public class PowerGet {
       
   }
 
-
+  
+  
+  @GET
+  @Path("/test")
+  public String getAlll() {
+      
+      String powerString = testGet();
+      
+      Gson gson = new Gson();
+      
+      LinkedList<Node> nodeList = new LinkedList<Node>();
+      
+      Type type = new TypeToken<LinkedList<Node>>(){}.getType();
+      
+      nodeList = (LinkedList<Node>) gson.fromJson(powerString, type);
+    
+      String ss;
+      
+      ss = nodeList.get(0).getId();
+      
+      
+      
+      return ss;
+      
+        
+        
+  }
 
 
 

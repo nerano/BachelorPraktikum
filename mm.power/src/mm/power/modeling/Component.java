@@ -6,10 +6,10 @@ import mm.power.implementation.PowerSupply;
 
 public class Component {
 
-    private String typ;
-    private transient PowerSupply ps;
-    private transient int port;
-    private int status;
+  private String typ;
+  private transient PowerSupply ps;
+  private transient int port;
+  private int status;
 
   public Component (String typ, PowerSupply ps, int port) {
         

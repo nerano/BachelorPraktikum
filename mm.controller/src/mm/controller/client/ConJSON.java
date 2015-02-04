@@ -1,6 +1,7 @@
 package mm.controller.client;
 
 import java.net.URI;
+import java.util.LinkedList;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,15 +15,18 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+import mm.controller.power.Node;
+import mm.controller.power.PowerGet;
+
 @Path("/conjson")
 public class ConJSON {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getJSON() {
+  public String getJSON() {
   
     
-    ClientConfig config = new ClientConfig();
+  /**  ClientConfig config = new ClientConfig();
     Client client = ClientBuilder.newClient(config);
     
     WebTarget jsonTarget = client.target(getBaseUri());
@@ -39,12 +43,12 @@ public class ConJSON {
     return response; **/
     
  
-    String responseString = jsonTarget.path("mm.net").path("rest").path("netjson").request()
+   /** String responseString = jsonTarget.path("mm.net").path("rest").path("netjson").request()
         .get(String.class) + "CONTROLLER";
     
     Response response = Response.ok(responseString, MediaType.APPLICATION_JSON).build();
     
-    return response;
+    return response; **/
     
     
     
@@ -54,8 +58,13 @@ public class ConJSON {
             .accept(MediaType.APPLICATION_JSON)
             .get(Response.class).toString()); **/
    
-
-  
+     
+      PowerGet powerget = new PowerGet();
+      
+      LinkedList<Node> test;
+      test = powerget.getAll();
+      System.out.println(test.toString());
+      return test.toString();
   
   }
   private static URI getBaseUri() {

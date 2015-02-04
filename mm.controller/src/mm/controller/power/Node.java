@@ -1,4 +1,4 @@
-package mm.power.modeling;
+package mm.controller.power;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,9 +33,7 @@ public class Node {
       
   }
 
-  public String getId(){
-      return this.id;
-  }
+  
   
   
   
