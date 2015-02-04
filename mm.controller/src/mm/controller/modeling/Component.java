@@ -2,9 +2,10 @@ package mm.controller.modeling;
 
 public class Component {
 
+  private String type;
   private boolean status;
   private int vLanId;
-  private String type;
+  
   
   public Component(String type) {
     this.type = type;

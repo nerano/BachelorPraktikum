@@ -93,6 +93,8 @@ public class Ganeti {
       json.put("mode", mode);
       json.put("nics", nics);
       json.put("disks", disks);
+      json.put("os_type", "debootstrap+wheezy");
+      json.put("pnode", "pxhost01.seemoo.tu-darmstadt.de");
       
       builder = target.path("instances").request().header("Content-Type", "application/json");
       rep = builder.accept("application/json").post(Entity.json(json.toString()));
@@ -208,11 +210,21 @@ public class Ganeti {
     return true;
   }
   
+  /*disk_template: plain,
+    disk: 0:size=5G
+    nic: 0:ip=10.10.11.2,mode=bridged,link=br0 */
   //{"id":"testvm.seemoo.tu-darmstadt.de","uri":"/2/instances/testvm.seemoo.tu-darmstadt.de"}
-  public static void main(String[] args) throws Exception {
-    Ganeti ga = new Ganeti();  
-    System.out.println(ga.getInstances());
-    //System.out.println(ga.create("test123.seemoo.tu-darmstadt.de", null, "create"));
+  public static void main(String[] args) throws Exception { 
+    JSONObject disks = new JSONObject();
+    JSONObject nic = new JSONObject();
+    disks.put("size", Integer.valueOf(5120));
+    disks.put("size", Integer.valueOf(1024));
+    nic.put("ip", "10.10.11.3");
+    nic.put("mode", "bridged");
+    nic.put("link", "br0");
+    Ganeti ga = new Ganeti(); 
+    //System.out.println(ga.getInstances());
+    System.out.println(ga.create("test123.seemoo.tu-darmstadt.de", "plain", disks, nic, "create"));
     //ga.startup("testvm.seemoo.tu-darmstadt.de");
     //ga.shutdown("testvm.seemoo.tu-darmstadt.de");
     //ga.rename("testvm.seemoo.tu-darmstadt.de", "test456.seemoo.tu-darmstadt.de");
