@@ -7,7 +7,7 @@ public class NodeObjects {
     
   private String id;
   private String typeName;
-  private List<Component> components = new LinkedList<Component>();
+  private LinkedList<Component> components = new LinkedList<Component>();
   private String building;
   private String room;
   private String latitude;
@@ -39,7 +39,7 @@ public class NodeObjects {
     this.components.add(comp);
   }
   
-  public List<Component> getComponents() {
+  public LinkedList<Component> getComponents() {
     return this.components;
   }
 
@@ -74,4 +74,6 @@ public class NodeObjects {
   public void setLongitude(String longitude) {
     this.longitude = longitude;
   }
+
+ 
 }

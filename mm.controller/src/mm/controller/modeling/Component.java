@@ -9,11 +9,11 @@ public class Component {
   
   public Component(String type) {
     this.type = type;
-    this.vLanId = 0;
-    this.status = false;
+    // this.vLanId;
+    // this.statusfalse;
   }
   
-  public boolean isStatus() {
+  public boolean getStatus() {
     return status;
   }
   public void setStatus(boolean status) {
