@@ -1,5 +1,5 @@
 package mm.net;
-
+/**
 import java.io.IOException;
 
 import javax.ws.rs.GET;
@@ -29,7 +29,7 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-@Path("/netmain")
+@Path("/netmain") **/
 public class NetMain {
 
   /**
@@ -37,7 +37,7 @@ public class NetMain {
    * @return test string
    * @throws IOException if fail. 
    */
-  @GET
+ /** @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String sayTest() throws IOException {
    
@@ -98,5 +98,9 @@ public class NetMain {
     System.out.println(responsePdu.toString());
     System.out.println(requestPdu.toString());
     return "NETtest";
+  
+  
   }
-}
+  */
+
+} 

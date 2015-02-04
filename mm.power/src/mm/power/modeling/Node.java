@@ -11,7 +11,7 @@ public class Node {
   
   
   
-  public Node(String id){
+  public Node(String id) {
       
     this.id = id;
     this.components = new LinkedList<Component>();
@@ -27,7 +27,7 @@ public class Node {
   }
 
   
-  public void addComponent(Component component){
+  public void addComponent(Component component) {
       
     components.add(component);
       
