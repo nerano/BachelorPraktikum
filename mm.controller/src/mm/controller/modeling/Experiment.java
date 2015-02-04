@@ -30,4 +30,13 @@ public class Experiment {
         
   }
     
+  public int getId(){
+      return this.id;
+  }
+  
+  public void addNode(NodeObjects node){
+      nodes.add(node);
+  }
+      
+
 }
