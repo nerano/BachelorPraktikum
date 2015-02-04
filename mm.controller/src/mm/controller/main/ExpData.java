@@ -10,14 +10,14 @@ public class ExpData {
 
 
  protected ExpData(){
-     super();
+     ExpData.expList = new LinkedList<Experiment>();
     }  
   
 public LinkedList<Experiment> getExpList() {
     return expList;
 }
 
-public Experiment getById(int id){
+static public Experiment getById(int id){
     
     Experiment exp = null;
     
@@ -32,7 +32,7 @@ public Experiment getById(int id){
 
 }
 
-public void addExp(Experiment exp){
+static public void addExp(Experiment exp){
     expList.add(exp);
 }
 
