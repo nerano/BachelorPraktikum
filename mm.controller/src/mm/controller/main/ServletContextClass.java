@@ -95,8 +95,8 @@ public class ServletContextClass implements ServletContextListener
         c1.setStatus(true);
         c2.setStatus(true);
         
-        c1.setvLanId(123);
-        c2.setvLanId(123);
+        c1.setvLanId(124);
+        c2.setvLanId(124);
         
         Component c3 = new Component("Komponente X");
         Component c4 = new Component("Komponente Z");

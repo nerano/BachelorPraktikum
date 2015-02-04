@@ -9,15 +9,15 @@ public class ExpData {
   private static LinkedList<Experiment> expList;
 
 
- protected ExpData(){
+  protected ExpData(){
      ExpData.expList = new LinkedList<Experiment>();
-    }  
+   }  
   
-public LinkedList<Experiment> getExpList() {
+  public LinkedList<Experiment> getExpList() {
     return expList;
-}
+  }
 
-static public Experiment getById(int id){
+  static public Experiment getById(int id){
     
     Experiment exp = null;
     
@@ -36,7 +36,7 @@ static public void addExp(Experiment exp){
     expList.add(exp);
 }
 
-public void remExp(Experiment exp){
+public void removeExp(Experiment exp){
     
     for (Experiment experiment : expList) {
         if(exp.equals(experiment)){
@@ -45,5 +45,18 @@ public void remExp(Experiment exp){
     }
 }
 
+public static boolean exists(int id){
+	 
+	 boolean bool = false;
+	 
+	 for (Experiment experiment : expList) {
+		if(experiment.getId() == id){
+			bool = true;
+		}
+	}
+	 
+	 return bool;
+	 
+}
 
 }
