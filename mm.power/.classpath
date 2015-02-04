@@ -14,5 +14,7 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="/home/john/Downloads/jaxrs-ri/jars/javax.ws.rs-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/john/Downloads/gson/gson-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/home/john/Downloads/gson/gson-2.3.1-javadoc.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

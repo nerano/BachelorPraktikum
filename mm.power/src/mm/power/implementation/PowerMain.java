@@ -1,4 +1,4 @@
-package mm.power;
+package mm.power.implementation;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -14,6 +14,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import mm.power.exceptions.EntryDoesNotExistException;
+import mm.power.exceptions.TransferNotCompleteException;
+
 @Path("/powermain")
 public class PowerMain {
 
@@ -24,11 +27,13 @@ public class PowerMain {
    * @return
    * @throws SocketException
    * @throws UnknownHostException
+ * @throws EntryDoesNotExistException 
+ * @throws TransferNotCompleteException 
    */
   @POST
   @Produces(MediaType.TEXT_PLAIN)
   public String turnTest(@QueryParam("outlet") int outlet, @QueryParam("state") String state)
-      throws SocketException, UnknownHostException {
+      throws SocketException, UnknownHostException, TransferNotCompleteException, EntryDoesNotExistException {
 
     DatagramSocket apiSocket = new DatagramSocket(8340);
 
@@ -38,9 +43,9 @@ public class PowerMain {
       InetAddress ip = java.net.InetAddress.getByAddress(ipByte);
       System.out.println("IPAdress : " + ip.toString());
 
-      PowerSupply homeTest = new SteckdoseHome(4, 17, ip, apiSocket, 75);
+     // PowerSupply homeTest = new AEHome(17, ip, apiSocket, 75);
 
-      homeTest.turnOn(2);
+    //  homeTest.turnOn(3);
       // steckdose.turnOn(3);
       // steckdose.turnOn(4);
 
