@@ -13,16 +13,15 @@ import javax.ws.rs.core.MediaType;
 @Path("/authmain")
 public class AuthMain {
 
-  MediaType mediatype = new MediaType(MediaType.TEXT_PLAIN, "subAuth");
-
-  
+  //MediaType mediatype = new MediaType(MediaType.TEXT_PLAIN, "subAuth");  
   private static final HashMap<String, String> users;
 
   static
   {
     users = new HashMap<String, String>();
-    users.put("testUser", "testPassword");
-    users.put("admin", "pw");
+    users.put("test", "test");
+    users.put("admin", "0000");
+    users.put("Sebastian", "s=8!1");
   }
 
   // This method is called if TEXT_PLAIN is request
@@ -40,11 +39,14 @@ public class AuthMain {
    */
   public String sayAuth(@QueryParam("user") String user, @QueryParam("pw") String pw) {
     
-
-    if (user != null && users.get(user).equals(pw)) {
-      return "true";
+    if (users.containsKey(user)) {
+      if (user != null && users.get(user).equals(pw)) {
+        return "Log in successful!";
+      } else {
+        return "Log in failed!\nUsername or Password was wrong.";
+      }
     } else {
-      return "false";
+      return "Log in failed!\nUsername or Password was wrong.";
     }
   }
 } 
