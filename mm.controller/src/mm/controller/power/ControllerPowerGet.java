@@ -1,5 +1,6 @@
 package mm.controller.power;
 
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.LinkedList;
 
@@ -8,12 +9,17 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
+import mm.controller.exclusion.GetPowerNodeStrat;
+import mm.controller.modeling.NodeObjects;
+
 import org.glassfish.jersey.client.ClientConfig;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
-public class PowerGet {
+public class ControllerPowerGet {
 
 
   private ClientConfig config = new ClientConfig();
@@ -25,22 +31,23 @@ public class PowerGet {
   
   
   
-  public LinkedList<Node> getAll() {
+  public LinkedList<NodeObjects> getAll() {
    
     
       String powerString = powerTarget.path("get").request().get(String.class);
       
       
-      Gson gson = new Gson();
+      Gson gson = new GsonBuilder().setExclusionStrategies(new GetPowerNodeStrat())
+    		  					   .setPrettyPrinting().create();
       
-      LinkedList<Node> nodeList = new LinkedList<Node>();
+      LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
       
-      nodeList = gson.fromJson(powerString, LinkedList.class);
+      Type type = new TypeToken<LinkedList<NodeObjects>>(){}.getType();
+      
+      nodeList = gson.fromJson(powerString, type);
     
       return nodeList;
-      
-        
-        
+       
   }
   
   public void getById(int id){

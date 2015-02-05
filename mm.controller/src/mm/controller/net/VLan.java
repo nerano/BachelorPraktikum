@@ -6,7 +6,7 @@ import java.util.List;
 public class VLan {
 
   private final int id;
-  private List<String> portList;
+  private LinkedList<String> portList;
 
     
   public VLan(int id){
@@ -21,6 +21,21 @@ public class VLan {
     portList.addAll(list);
         
   }
+
+
+public LinkedList<String> getPortList() {
+	return portList;
+}
+
+
+public void setPortList(LinkedList<String> portList) {
+	this.portList = portList;
+}
+
+
+public int getId() {
+	return id;
+}
     
     
     

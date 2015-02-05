@@ -53,9 +53,47 @@ public class Experiment implements Cloneable {
   }
 
 
+  public boolean contains(NodeObjects node){
+	  
+	 boolean bool = false;
+	 String nodeId = node.getId();
+	  for (NodeObjects nodeObjects : nodes) {
+		if( nodeObjects.getId().equals(nodeId) ){
+			bool = true;
+		}
+	}
+	  
+	  
+	  return bool;
+  }
 
+public boolean contains(String nodeId){
+	  
+	boolean bool = false;
+	 
+	  for (NodeObjects nodeObjects : nodes) {
+		if( nodeObjects.getId().equals(nodeId) ){
+			bool = true;
+		}
+	}
+	return bool;
 
+	}
 
+public NodeObjects getById(String nodeId){
+	
+	NodeObjects node = null;
+	
+	for (NodeObjects nodeObjects : nodes) {
+		if(nodeObjects.getId().equals(nodeId)){
+			node = nodeObjects;
+		}
+	}
+
+	return node;
+}
 
 
 }
+
+

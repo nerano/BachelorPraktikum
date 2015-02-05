@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import mm.power.implementation.*;
@@ -56,7 +57,7 @@ public class PowerGet {
   
   public String testGet(){
       
-    String nodeId = "TestID1";
+    String nodeId = "Knoten A";
     
     String componentTyp = "WARP";
     
@@ -72,21 +73,34 @@ public class PowerGet {
                                               socket);
    
   
-    testComponent.setStatus(1);
+    testComponent.setStatus(true);
     
     
     Component testComponent2 = new Component("APU",
             ps,
             socket);
     
+   
+    Component testComponent3 = new Component("Komponente X",
+            ps,
+            socket);
+    Component testComponent4 = new Component("Komponente Z",
+            ps,
+            socket);
+    
+    
+    
     testNode.addComponent(testComponent);
     testNode.addComponent(testComponent2);
    
-    Node testNode2 = new Node("TestID2");
+    Node testNode2 = new Node("Knoten B");
     
-    testNode2.addComponent(testComponent);
-    testNode2.addComponent(testComponent2);
+    testNode2.addComponent(testComponent3);
+    testNode2.addComponent(testComponent4);
     
+    
+    testComponent3.setStatus(false);
+    testComponent4.setStatus(true);
     
     List<Node> nodeList = new LinkedList<Node>();
     
@@ -94,7 +108,7 @@ public class PowerGet {
     nodeList.add(testNode2);
     
     
-    Gson gson = new Gson();
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String json = gson.toJson(nodeList);
     
     return json;

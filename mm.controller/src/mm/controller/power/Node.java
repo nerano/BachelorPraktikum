@@ -3,6 +3,8 @@ package mm.controller.power;
 import java.util.LinkedList;
 import java.util.List;
 
+import mm.controller.modeling.Component;
+
 public class Node {
 
 

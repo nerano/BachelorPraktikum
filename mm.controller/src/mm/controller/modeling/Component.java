@@ -5,6 +5,7 @@ public class Component {
   private String type;
   private boolean status;
   private int vLanId;
+  private String port;
   
   
   public Component(String type) {
@@ -30,5 +31,13 @@ public class Component {
   }
   public void setType(String type) {
     this.type = type;
+  }
+
+  public String getPort() {
+	return port;
+  }
+
+  public void setPort(String port) {
+	this.port = port;
   }
 }

@@ -6,32 +6,32 @@ import mm.power.implementation.PowerSupply;
 
 public class Component {
 
-  private String typ;
+  private String type;
   private transient PowerSupply ps;
   private transient int port;
-  private int status;
+  private boolean status;
 
-  public Component (String typ, PowerSupply ps, int port) {
+  public Component (String type, PowerSupply ps, int port) {
         
-    this.typ = typ;
+    this.type = type;
     this.ps = ps;
     this.port = port;
-        this.status = 0;
+        this.status = false;
         
   }
 
   
-  public void setStatus(int status){
+  public void setStatus(boolean status){
       
       this.status = status;
       
   }
 public String getTyp() {
-    return typ;
+    return type;
 }
 
 public void setTyp(String typ) {
-    this.typ = typ;
+    this.type = typ;
 }
 
 public PowerSupply getPs() {

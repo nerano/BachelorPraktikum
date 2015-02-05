@@ -1,5 +1,7 @@
 package mm.controller.main;
 
+import java.util.HashMap;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -16,6 +18,7 @@ public class ServletContextClass implements ServletContextListener
     
     public ExpData expdata;
     public static int counter;
+    public static HashMap<String, Component> portMapping;
 
    /**
     * !-- Initialize everything for the Controller here --!
@@ -24,11 +27,18 @@ public class ServletContextClass implements ServletContextListener
     {
        counter = 3;     
        expdata = new ExpData();
+       portMapping = new HashMap<String, Component>();
        
     
        addExpExample();
+       
     }
 
+    
+    public static Component getComponent(String port){
+    	return portMapping.get(port);
+    	
+    }
 
     public void contextDestroyed(ServletContextEvent arg0) 
     {
@@ -43,6 +53,10 @@ public class ServletContextClass implements ServletContextListener
         counter++;
     }
     
+  
+    
+    
+    
     public static void addExpExample(){
         
         exp1();
@@ -52,17 +66,30 @@ public class ServletContextClass implements ServletContextListener
     
     public static void exp1(){
         
-        Component c1 = new Component("WARP");
+    	String porta1 = "NetComponentA.1";
+ 	   String porta2 = "NetComponentA.2";
+ 	   
+ 	   String portf7 = "NetzKomponenteF.7";
+ 	   String portf8 = "NetzKomponenteF.8";
+    	
+    	
+    	Component c1 = new Component("Harry");
         Component c2 = new Component("APU");
         
-        c1.setStatus(true);
-        c2.setStatus(true);
+        c1.setStatus(false);
+        c2.setStatus(false);
         
-        c1.setvLanId(123);
-        c2.setvLanId(123);
+        c1.setvLanId(0);
+        c2.setvLanId(0);
         
         Component c3 = new Component("Komponente X");
         Component c4 = new Component("Komponente Z");
+        
+        c3.setvLanId(0);
+        c4.setvLanId(0);
+        
+        c3.setStatus(false);
+        c4.setStatus(false);
         
         NodeObjects node1 = new NodeObjects("Knoten A");
         NodeObjects node2 = new NodeObjects("Knoten B");
@@ -85,6 +112,16 @@ public class ServletContextClass implements ServletContextListener
         exp.addNode(node2);
         
         ExpData.addExp(exp);
+
+       portMapping.put(porta1, c1);
+ 	   portMapping.put(porta2, c2);
+ 	   portMapping.put(portf7, c3);
+ 	   portMapping.put(portf8, c4);
+    
+    
+    
+    
+    
     }
     
    public static void exp2(){
@@ -92,11 +129,11 @@ public class ServletContextClass implements ServletContextListener
         Component c1 = new Component("WARP");
         Component c2 = new Component("APU");
         
-        c1.setStatus(true);
-        c2.setStatus(true);
+        c1.setStatus(false);
+        c2.setStatus(false);
         
-        c1.setvLanId(124);
-        c2.setvLanId(124);
+       c1.setvLanId(124);
+       c2.setvLanId(124);
         
         Component c3 = new Component("Komponente X");
         Component c4 = new Component("Komponente Z");

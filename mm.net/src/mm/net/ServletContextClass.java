@@ -48,14 +48,16 @@ public class ServletContextClass implements ServletContextListener
        String port1 = "NetComponentA.1";
        String port2 = "NetComponentA.2";
        
-       String port3 = "NetzKomponenteB.7";
-       String port4 = "NetzKomponenteB.8";
+       String port3 = "NetzKomponenteF.7";
+       String port4 = "NetzKomponenteF.8";
        
        LinkedList<String>list1 = new LinkedList<String>();
        LinkedList<String>list2 = new LinkedList<String>();
        
        list1.add(port1);
        list1.add(port2);
+       list1.add(port3);
+       list1.add(port4);
        
        list2.add(port3);
        list2.add(port4);
