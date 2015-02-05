@@ -17,22 +17,21 @@ public class ControllerAuthGet {
   
   DataInput da = new DataInput();
   
-  public boolean authtentification() {
-    boolean login = false;
+  public void authtentification() {
     da.setUserName();
     da.setPassword();
     String user = da.getUserName();
     String pw = da.getPassword();
-    String data = "authmain?user=" + user + "&pw=" + pw;
-    
-    if(target.path(data).request().get(String.class).equals("Log in successful!")) {
-      login = true;
-    }
-    
-    return login;
+
+    System.out.println(target.path(user).path(pw).request().get(String.class));
   }
   
   public URI getBaseUri() {
-    return UriBuilder.fromUri("http://localhost8080/mm.auth/rest").build();
+    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/authmain").build();
+  }
+  
+  public static void main(String[] args) {
+    ControllerAuthGet auth = new ControllerAuthGet();
+    auth.authtentification();
   }
 }
