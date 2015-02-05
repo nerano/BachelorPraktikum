@@ -17,17 +17,21 @@ import mm.net.modeling.VLan;
 @Path ("/get")
 public class NetGet {
  
-	
-	
+
   @GET
   @Path("{id}")
   public String getById(@PathParam("id") int id) {
         
+      
   
   VLan vlan = mm.net.implementation.testGetFromNetHardware.get(id);
   
   Gson gson = new GsonBuilder().setPrettyPrinting().create();
   String json = gson.toJson(vlan);
+  
+  if(json.charAt(0) != '{'){
+      json = "404, VLan not found!";
+  }
   
   return json;
         

@@ -73,7 +73,7 @@ public class ServletContextClass implements ServletContextListener
  	   String portf8 = "NetzKomponenteF.8";
     	
     	
-    	Component c1 = new Component("Harry");
+    	Component c1 = new Component("WARP");
         Component c2 = new Component("APU");
         
         c1.setStatus(false);
