@@ -1,6 +1,7 @@
 package mm.controller.main;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -19,6 +20,7 @@ public class ServletContextClass implements ServletContextListener
     public ExpData expdata;
     public static int counter;
     public static HashMap<String, Component> portMapping;
+    public static LinkedList<NodeObjects> allNodes;
 
    /**
     * !-- Initialize everything for the Controller here --!
@@ -28,6 +30,9 @@ public class ServletContextClass implements ServletContextListener
        counter = 3;     
        expdata = new ExpData();
        portMapping = new HashMap<String, Component>();
+       allNodes = new LinkedList<NodeObjects>();
+       //TODO add all parsed Nodes to allNodes
+       
        
     
        addExpExample();
@@ -66,7 +71,7 @@ public class ServletContextClass implements ServletContextListener
     
     public static void exp1(){
         
-    	String porta1 = "NetComponentA.1";
+       String porta1 = "NetComponentA.1";
  	   String porta2 = "NetComponentA.2";
  	   
  	   String portf7 = "NetzKomponenteF.7";
@@ -118,9 +123,8 @@ public class ServletContextClass implements ServletContextListener
  	   portMapping.put(portf7, c3);
  	   portMapping.put(portf8, c4);
     
-    
-    
-    
+    allNodes.add(node1);
+    allNodes.add(node2);
     
     }
     
