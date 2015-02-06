@@ -27,7 +27,19 @@ public class ControllerGet {
 	
 		private ControllerPowerGet powerGet = new ControllerPowerGet();
 		private ControllerNetGet netGet = new ControllerNetGet();
-	
+		
+		@GET
+		@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+		@Path("/nodes")
+		public String getAllNodes(){
+		    String response;
+	        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	        
+	        response = gson.toJson(mm.controller.main.ServletContextClass.allNodes);
+		    
+	        return response;
+		}
+		
 	 @GET
 	 @Produces({"json/application","text/plain"})
 	 @Path("/activeExp/{id}")
@@ -99,7 +111,6 @@ public class ControllerGet {
 		 
 		 
 	 }
-	 
 	 
 	 protected void merge(LinkedList<NodeObjects> expList, LinkedList<NodeObjects> secondList, String merge){
 		 
@@ -202,6 +213,5 @@ public class ControllerGet {
     public String getTest(){
         return "testHALLO";
     }
-    
     
 }

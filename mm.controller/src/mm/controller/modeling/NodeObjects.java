@@ -1,7 +1,6 @@
 package mm.controller.modeling;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public class NodeObjects {
     
