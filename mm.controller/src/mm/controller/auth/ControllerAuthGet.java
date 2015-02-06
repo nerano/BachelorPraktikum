@@ -17,13 +17,13 @@ public class ControllerAuthGet {
   
   DataInput da = new DataInput();
   
-  public void authtentification() {
+  public String authtentification() {
     da.setUserName();
     da.setPassword();
     String user = da.getUserName();
     String pw = da.getPassword();
 
-    System.out.println(target.path(user).path(pw).request().get(String.class));
+    return target.path(user).path(pw).request().get(String.class);
   }
   
   public URI getBaseUri() {
@@ -32,6 +32,6 @@ public class ControllerAuthGet {
   
   public static void main(String[] args) {
     ControllerAuthGet auth = new ControllerAuthGet();
-    auth.authtentification();
+    System.out.println(auth.authtentification());
   }
 }
