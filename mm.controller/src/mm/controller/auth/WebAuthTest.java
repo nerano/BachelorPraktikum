@@ -1,5 +1,6 @@
 package mm.controller.auth;
 
+import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URI;
 
 @Path("/")
+@Singleton
 public class WebAuthTest implements ContainerResponseFilter {
    
   private ClientConfig config = new ClientConfig();
