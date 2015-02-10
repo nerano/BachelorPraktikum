@@ -25,7 +25,7 @@ public class ControllerPut {
 	 * Used for creating a new Experiment and adding it to the ExperimentData, expects a Experiment with
 	 * ID and a list of nodes in JSON format.
 	 * @param exp experiment to create in the controller
-	 * @return 201 for successful creation
+	 * @return 201 for successful creation, 409 if experiment with this id already exists
 	 */
 	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
@@ -43,8 +43,6 @@ public class ControllerPut {
         	response = Response.status(409).entity(responseString).build();
         	return response;
         } else {
-        	
-        	
         	ExpData.addExp(experiment);
         	responseString = "New Experiment posted/created with ID : " + id;
         	response = Response.status(201).entity(responseString).build();

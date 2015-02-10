@@ -32,9 +32,7 @@ public class ServletContextClass implements ServletContextListener
        portMapping = new HashMap<String, Component>();
        allNodes = new LinkedList<NodeObjects>();
        //TODO add all parsed Nodes to allNodes
-       
-       
-    
+
        addExpExample();
        
     }
