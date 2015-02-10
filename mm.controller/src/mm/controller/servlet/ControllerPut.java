@@ -2,6 +2,7 @@ package mm.controller.servlet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -14,7 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @Path("/post")
-public class ControllerPost {
+public class ControllerPut {
 
 	
 	 private Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -26,21 +27,30 @@ public class ControllerPost {
 	 * @param exp experiment to create in the controller
 	 * @return 201 for successful creation
 	 */
-	@POST
+	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Path("/test")
+	@Path("/exp")
 	public Response addNewExperiment(String exp){
 	   
         Experiment experiment = gson.fromJson(exp, Experiment.class);
+        String responseString;
+        Response response;
+        int id = experiment.getId();
         
-        ExpData.addExp(experiment);
         
-	    Response response;
-	    String responseString;
-	    responseString = "New Experiment posted/created with ID : " + experiment.getId();
-        response = Response.status(201).entity(responseString).build();
-        
-        return response;
+        if(ExpData.exists(id)) {
+        	responseString = "Experiment with this ID already exists";
+        	response = Response.status(409).entity(responseString).build();
+        	return response;
+        } else {
+        	
+        	
+        	ExpData.addExp(experiment);
+        	responseString = "New Experiment posted/created with ID : " + id;
+        	response = Response.status(201).entity(responseString).build();
+        	return response;
+        }
+       
 	}
 
 
