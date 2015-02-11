@@ -1,7 +1,5 @@
 package mm.server;
 
-import org.json.JSONObject;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,29 +14,27 @@ public class RestInterface {
   Ganeti ga = new Ganeti();
   
   @GET
-  public JSONObject getInstances() {
-    JSONObject json = ga.getInstances();
-    return json;
+  public String getInstances() {
+    String list = ga.getInstances();
+    return list;
   }
   
   @POST
-  public void createInstance(@QueryParam("instance") String instance, 
-      @QueryParam("disk") String diskTemplate, @QueryParam("mode") String mode, 
-      @QueryParam("disks") JSONObject disks, @QueryParam("nics") JSONObject nics) {
-    ga.create(instance, diskTemplate, disks, nics, mode);
+  public boolean createInstance(@QueryParam("json") String json) {
+    return ga.create(json);
   }
   
   @DELETE
   @Path("{instance}")
-  public void deleteInstances(@PathParam("instance") String instance) {
-    ga.delete(instance);
+  public boolean deleteInstances(@PathParam("instance") String instance) {
+    return ga.delete(instance);
   }
   
   @POST
   @Path("{instance}")
-  public void rebootInstances(@PathParam("instance") String instance, 
+  public boolean rebootInstances(@PathParam("instance") String instance, 
       @QueryParam("type") String type) {
-    ga.reboot(instance, type);
+    return ga.reboot(instance, type);
   }
   
   @PUT
@@ -49,14 +45,14 @@ public class RestInterface {
   
   @PUT
   @Path("{instance}/stop")
-  public void stopInstances(@PathParam("instance") String instance) {
-    ga.shutdown(instance);
+  public boolean stopInstances(@PathParam("instance") String instance) {
+    return ga.shutdown(instance);
   }
   
   @PUT
   @Path("{instance}/rename")
-  public void renameInstances(@PathParam("instance") String instance, 
+  public boolean renameInstances(@PathParam("instance") String instance, 
       @QueryParam("name") String newName) {
-    ga.rename(instance, newName);
+    return ga.rename(instance, newName);
   }
 }

@@ -4,13 +4,6 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.json.JSONObject;
 
-/*import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;*/
-
-
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -54,15 +47,14 @@ public class Ganeti {
    * 
    * @return list of all instances of the server.
    */
-  public JSONObject getInstances() {
+  public String getInstances() {
     target = client.target(url);
-    //target = client.resource(url);
     String list = "";
     try { 
       list = target.path("instances").request().get(String.class);
       list = list.substring(1);
-      JSONObject json = new JSONObject(list);
-      return json;      
+      //JSONObject json = new JSONObject(list);
+      return list;      
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -71,34 +63,16 @@ public class Ganeti {
   
   /**
    * Creates an instance with the given name.
-   * @param instance name of the instance.
-   * @param diskTemplate must be either Null, sharedfile, diskless, plain, blockdev, drbd, ext,
-   *file or rbd.
-   * @param mode must be either import, create or remote-import.
-   * @param disks must be a JSONObject with key of size and 
-   *may be a key of mode with value either ro or rw.
-   *@param nics must be a JSONObject with keys one of name, ip, mac, link, mode and network
-   *and values of Strings, either empty or not.
+   * @param param is the String with all parameters to create an instance.
    * @return true if creating a VM was successful otherwise false.
    */
-  public boolean create(String instance, String diskTemplate, JSONObject disks, JSONObject nics,
-      String mode) {
+  public boolean create(String param) {
     target = client.target(url);
-    JSONObject json = new JSONObject();
-    try {
-      json.put("instance_name", instance);
-      json.put("__version__", Integer.valueOf(1));
-      json.put("conflicts_check", true);
-      json.put("disk_template", diskTemplate);
-      json.put("mode", mode);
-      json.put("nics", nics);
-      json.put("disks", disks);
-      json.put("os_type", "debootstrap+wheezy");
-      json.put("pnode", "pxhost01.seemoo.tu-darmstadt.de");
-      
-      builder = target.path("instances").request().header("Content-Type", "application/json");
-      rep = builder.accept("application/json").post(Entity.json(json.toString()));
-      System.out.println(rep);
+    try { 
+      System.out.println(param);
+      //builder = target.path("instances").request().header("Content-Type", "application/json");
+      //rep = builder.accept("application/json").post(Entity.json(param));
+      //System.out.println(rep);
       
     } catch (Exception e) {
       e.printStackTrace();
@@ -198,6 +172,8 @@ public class Ganeti {
     JSONObject json = new JSONObject();
     try {
       json.put("new_name", newName);
+      json.put("name_check", false);
+      json.put("ip_check", false);
       
       builder = target.path("instances").path(instance).path("rename").request()
           .header("Content-Type", "application/json");
@@ -212,21 +188,25 @@ public class Ganeti {
   
   /*disk_template: plain,
     disk: 0:size=5G
-    nic: 0:ip=10.10.11.2,mode=bridged,link=br0 */
-  //{"id":"testvm.seemoo.tu-darmstadt.de","uri":"/2/instances/testvm.seemoo.tu-darmstadt.de"}
+    nic: 0:ip=10.10.11.2,mode=bridged,link=br0 
+  {"id":"testvm.seemoo.tu-darmstadt.de","uri":"/2/instances/testvm.seemoo.tu-darmstadt.de"}
+  {"__version__":1,"name_check":false,"pnode":"pxhost01.seemoo.tu-darmstadt.de","disk_template":"plain",
+   "conflicts_check":false,"ip_check":false,"instance_name":"test123.seemoo.tu-darmstadt.de",
+   "nics":[{"link":"br0"},{"mode":"bridged"},{"ip":"10.10.11.3"}],"disks":[{"size":5120}],
+   "os_type":"debootstrap+wheezy","mode":"create"}*/
   public static void main(String[] args) throws Exception { 
-    JSONObject disks = new JSONObject();
-    JSONObject nic = new JSONObject();
-    disks.put("size", Integer.valueOf(5120));
-    disks.put("size", Integer.valueOf(1024));
-    nic.put("ip", "10.10.11.3");
-    nic.put("mode", "bridged");
-    nic.put("link", "br0");
-    Ganeti ga = new Ganeti(); 
+    Ganeti ga = new Ganeti();
+    String createJson = "{\"__version__\":1,\"name_check\":false,"
+        + "\"pnode\":\"pxhost01.seemoo.tu-darmstadt.de\",\"disk_template\":\"plain\","
+        + "\"conflicts_check\":false,\"ip_check\":false,"
+        + "\"instance_name\":\"test123.seemoo.tu-darmstadt.de\","
+        + "\"nics\":[{\"link\":\"br0\"},{\"mode\":\"bridged\"},{\"ip\":\"10.10.11.3\"}],"
+        + "\"disks\":[{\"size\":5120}],\"os_type\":\"debootstrap+wheezy\",\"mode\":\"create\","
+        + "\"start\":false}";
     //System.out.println(ga.getInstances());
-    System.out.println(ga.create("test123.seemoo.tu-darmstadt.de", "plain", disks, nic, "create"));
+    System.out.println(ga.create(createJson));
     //ga.startup("testvm.seemoo.tu-darmstadt.de");
     //ga.shutdown("testvm.seemoo.tu-darmstadt.de");
-    //ga.rename("testvm.seemoo.tu-darmstadt.de", "test456.seemoo.tu-darmstadt.de");
+    //ga.rename("test456.seemoo.tu-darmstadt.de", "testvm.seemoo.tu-darmstadt.de");
   }
 } 
