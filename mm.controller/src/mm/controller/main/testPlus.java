@@ -14,14 +14,14 @@ public class testPlus {
     @Path("/test")
     public String getResource() {
        //counter++;
-        return "Counter: " + ServletContextClass.getCounter();
+        return "Counter: " + Initialize.getCounter();
     }
 
     @GET
     @Path("/testplus")
     public String getResourcePlus(){
-        ServletContextClass.counterp();
-        return "Counter: " + ServletContextClass.getCounter();
+        Initialize.counterp();
+        return "Counter: " + Initialize.getCounter();
     }
 
 

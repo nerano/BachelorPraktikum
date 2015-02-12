@@ -9,7 +9,9 @@ package mm.power.exceptions;
  */
 public class TransferNotCompleteException extends Exception {
 
-    public TransferNotCompleteException(String s){
+	private static final long serialVersionUID = -7934749168529609745L;
+
+	public TransferNotCompleteException(String s){
         
         super(s);
     }

@@ -20,7 +20,7 @@ import mm.controller.net.ControllerNetGet;
 import mm.controller.net.VLan;
 import mm.controller.power.Node;
 import mm.controller.power.ControllerPowerGet;
-import mm.controller.main.ServletContextClass;
+import mm.controller.main.Initialize;
 
 @Path("/get")
 public class ControllerGet {
@@ -35,7 +35,7 @@ public class ControllerGet {
 		    String response;
 	        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	        
-	        response = gson.toJson(mm.controller.main.ServletContextClass.allNodes);
+	        response = gson.toJson(mm.controller.main.Initialize.allNodes);
 		    
 	        return response;
 		}
@@ -93,7 +93,7 @@ public class ControllerGet {
 		 LinkedList<String> portList = vlan.getPortList();
 		
 		 for (String string : portList) {
-			component = mm.controller.main.ServletContextClass.getComponent(string);
+			component = mm.controller.main.Initialize.getComponent(string);
 	
 			for (NodeObjects nodeObjects : expList) {
 				 

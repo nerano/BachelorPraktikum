@@ -7,7 +7,8 @@ import mm.power.exceptions.TransferNotCompleteException;
 
 public class PowerOverEthernetCisco implements PowerSupply{
 
-  int ports;
+  private int ports;
+  private String id;
   
   PowerOverEthernetCisco(int ports) {
     this.ports = ports;
@@ -51,5 +52,11 @@ public boolean toggle(int socket) throws IOException,
         TransferNotCompleteException, EntryDoesNotExistException {
     // TODO Auto-generated method stub
     return false;
+}
+
+@Override
+public String getId() {
+	return this.id;
+	
 }
 }

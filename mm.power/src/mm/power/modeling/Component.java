@@ -1,6 +1,6 @@
 package mm.power.modeling;
 
-import com.google.gson.annotations.Expose;
+
 
 import mm.power.implementation.PowerSupply;
 

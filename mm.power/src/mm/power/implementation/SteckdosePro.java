@@ -8,7 +8,7 @@ import mm.power.exceptions.TransferNotCompleteException;
 public class SteckdosePro implements PowerSupply {
 
   int dosen;
-
+  private String id;
   SteckdosePro(int dosen) {
     this.dosen = dosen;
   }
@@ -52,5 +52,10 @@ public boolean toggle(int socket) throws IOException,
         TransferNotCompleteException, EntryDoesNotExistException {
     // TODO Auto-generated method stub
     return false;
+}
+
+@Override
+public String getId() {
+	return this.id;
 }
 }

@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -28,31 +25,31 @@ import mm.power.exceptions.TransferNotCompleteException;
 public class AEHome implements PowerSupply {
 
   private static final int socket = 3; // Three sockets on a Anel Elektronik Home version
-  private int id;
-  private InetAddress ip;
-  private DatagramSocket udpSocket;
-  private int port;
+  private String id;
+  //private InetAddress ip;
+  private String host;
+  private String type;
+  private long lastStatus = 0l;
+  private String states;
 
-  private static final String TEST_URL_STRG = "http://192.168.178.21/strg.cfg";
+  private final String TEST_URL_STRG = "http://192.168.178.21/strg.cfg";
   private static final String TEST_URL_CTRL = "http://192.168.178.21/ctrl.htm";
   private static final String TEST_USER_BASE64 = "Basic YWRtaW46YW5lbA==";
   private static final String TEST_USER = "adminanel";
+  private final long CACHE_TIME = 5000;
   /**
    * Constructor for a power outlet "Anel Elektronik Home", which posses 3 toggable 
    * sockets.
    * @param id field for identifying a outlet
-   * @param ip field for the IP address to contact the outlet via UDP or HTTP
-   * @param udpSocket .
-   * @param port .
+   * @param type type of the PowerSupply
+   * @param host hostname or IP of the PowerSupply
    */
-  public AEHome(int id, /** InetAddress ip, DatagramSocket udpSocket, **/
-            int port) {
+  public AEHome(String id, String type, String host) {
 
     this.id = id;
-   // this.ip = ip;
-   // this.udpSocket = udpSocket;
-    this.port = port;
-
+    this.type= type;
+    this.host = host;
+    
   }
 
     /**
@@ -139,6 +136,7 @@ public class AEHome implements PowerSupply {
 
     int responseCode = connection.getResponseCode();
 
+    lastStatus = 0l;
     if (responseCode == 200) {
       return true;
     } else {
@@ -180,6 +178,7 @@ public class AEHome implements PowerSupply {
         break;
     }
 
+    lastStatus = 0l;
     return bool;
 
   }
@@ -218,6 +217,7 @@ public class AEHome implements PowerSupply {
         break;
     }
 
+    lastStatus = 0l;
     return bool;
 
   }
@@ -234,8 +234,13 @@ public class AEHome implements PowerSupply {
   public String status() throws ProtocolException, 
      MalformedURLException, IOException, TransferNotCompleteException {
 
-    String states = getStates();
+    if (java.lang.System.currentTimeMillis() - lastStatus > CACHE_TIME) {
+    	 states = getStates();
+	} else {
+		return states;
+	}
 
+    lastStatus = java.lang.System.currentTimeMillis();
     return states;
 
   }
@@ -260,14 +265,19 @@ public class AEHome implements PowerSupply {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
 
-    String sentence = getStates();
+    if (java.lang.System.currentTimeMillis() - lastStatus > CACHE_TIME) {
+   	 states = getStates();
+	} 
 
-    if (sentence.charAt(0) == '0' || sentence.charAt(0) == '1') {
+    String sentence = null; 
+   
+    if (states.charAt(0) == '0' || states.charAt(0) == '1') {
 
-      sentence = sentence.substring((socket - 1), (socket - 1) + 1);
+      sentence = states.substring((socket - 1), (socket - 1) + 1);
 
     }
-
+    
+    lastStatus = java.lang.System.currentTimeMillis();
     return sentence;
 
   }
@@ -333,32 +343,13 @@ public class AEHome implements PowerSupply {
 
   } **/
 
-  public int getSocket() {
-    return socket;
+ 
+  public String getId() {
+    return this.id;
   }
 
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
+  public void setId(String id) {
     this.id = id;
-  }
-
-  public InetAddress getIp() {
-    return ip;
-  }
-
-  public void setIp(InetAddress ip) {
-    this.ip = ip;
-  }
-
-  public DatagramSocket getUdpSocket() {
-    return udpSocket;
-  }
-
-  public void setUdpSocket(DatagramSocket udpSocket) {
-    this.udpSocket = udpSocket;
   }
 
 

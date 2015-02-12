@@ -8,6 +8,7 @@ import mm.power.exceptions.TransferNotCompleteException;
 
 
 public interface PowerSupply {
+	
 
   public boolean turnOn(int socket) throws IOException, 
                TransferNotCompleteException, EntryDoesNotExistException;
@@ -23,6 +24,8 @@ public interface PowerSupply {
   
   public boolean toggle(int socket) throws IOException, 
                TransferNotCompleteException, EntryDoesNotExistException;
+
+  public String getId();
 
 
 }

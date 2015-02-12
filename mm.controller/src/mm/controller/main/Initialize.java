@@ -13,7 +13,7 @@ import mm.controller.main.*;
 
 
 
-public class ServletContextClass implements ServletContextListener
+public class Initialize implements ServletContextListener
     {
            
     

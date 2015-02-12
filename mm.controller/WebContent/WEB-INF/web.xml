@@ -11,7 +11,7 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
   <listener>
-  	  <listener-class>mm.controller.main.ServletContextClass</listener-class>
+  	  <listener-class>mm.controller.main.Initialize</listener-class>
 	</listener>
   <servlet-mapping>
     <servlet-name>Jersey REST Service</servlet-name>

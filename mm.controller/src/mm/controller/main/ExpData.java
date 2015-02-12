@@ -18,6 +18,13 @@ public class ExpData {
      ExpData.expList = new LinkedList<Experiment>();
    }  
   
+  protected ExpData(LinkedList<Experiment> expList){
+	     ExpData.expList = expList;
+	   } 
+  
+  
+  
+  
   public LinkedList<Experiment> getExpList() {
     return expList;
   }
