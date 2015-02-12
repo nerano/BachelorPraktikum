@@ -4,6 +4,8 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -50,11 +52,28 @@ public class Ganeti {
   public String getInstances() {
     target = client.target(url);
     String list = "";
+    String id = "";
+    List<String> arr = new ArrayList<String>();
     try { 
       list = target.path("instances").request().get(String.class);
-      list = list.substring(1);
-      //JSONObject json = new JSONObject(list);
-      return list;      
+      System.out.println(list);
+      // extract every instance-id and add this name to an ArrayList
+      do {
+        if (list.startsWith("id\":")) {
+          list = list.substring(6);
+          do {
+            id += list.charAt(0);
+            list = list.substring(1);
+          } while (!list.startsWith("\""));
+          arr.add(id);
+          System.out.println(id);
+          id = "";
+        } else {
+          list = list.substring(1);
+          System.out.println(list);
+        }
+      } while (!list.isEmpty());
+      return arr.toString();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -69,10 +88,10 @@ public class Ganeti {
   public boolean create(String param) {
     target = client.target(url);
     try { 
-      System.out.println(param);
-      //builder = target.path("instances").request().header("Content-Type", "application/json");
-      //rep = builder.accept("application/json").post(Entity.json(param));
-      //System.out.println(rep);
+      //System.out.println(param);
+      builder = target.path("instances").request().header("Content-Type", "application/json");
+      rep = builder.accept("application/json").post(Entity.json(param));
+      System.out.println(rep);
       
     } catch (Exception e) {
       e.printStackTrace();
@@ -203,8 +222,8 @@ public class Ganeti {
         + "\"nics\":[{\"link\":\"br0\"},{\"mode\":\"bridged\"},{\"ip\":\"10.10.11.3\"}],"
         + "\"disks\":[{\"size\":5120}],\"os_type\":\"debootstrap+wheezy\",\"mode\":\"create\","
         + "\"start\":false}";
-    //System.out.println(ga.getInstances());
-    System.out.println(ga.create(createJson));
+    System.out.println(ga.getInstances());
+    //System.out.println(ga.create(createJson));
     //ga.startup("testvm.seemoo.tu-darmstadt.de");
     //ga.shutdown("testvm.seemoo.tu-darmstadt.de");
     //ga.rename("test456.seemoo.tu-darmstadt.de", "testvm.seemoo.tu-darmstadt.de");
