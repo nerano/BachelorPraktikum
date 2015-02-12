@@ -20,7 +20,7 @@ import mm.controller.net.ControllerNetGet;
 import mm.controller.net.VLan;
 import mm.controller.power.Node;
 import mm.controller.power.ControllerPowerGet;
-import mm.controller.main.Initialize;
+import mm.controller.main.ServletContextClass;
 
 @Path("/get")
 public class ControllerGet {
@@ -35,7 +35,7 @@ public class ControllerGet {
 		    String response;
 	        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	        
-	        response = gson.toJson(mm.controller.main.Initialize.allNodes);
+	        response = gson.toJson(mm.controller.main.ServletContextClass.allNodes);
 		    
 	        return response;
 		}
@@ -86,77 +86,6 @@ public class ControllerGet {
 	 }
 
 	
-	public void merge(LinkedList<NodeObjects> expList, VLan vlan){
-		 
-		 LinkedList<Component> compList = new LinkedList<Component>();
-		 Component component;
-		 LinkedList<String> portList = vlan.getPortList();
-		
-		 for (String string : portList) {
-			component = mm.controller.main.Initialize.getComponent(string);
-	
-			for (NodeObjects nodeObjects : expList) {
-				 
-				 compList = nodeObjects.getComponents();
-				 
-				 for (Component component2 : compList) {
-					if(component == component2){
-						component2.setvLanId(vlan.getId());
-					}
-				}
-				
-			}
-			
-		}
-		 
-		 
-	 }
-	 
-	 protected void merge(LinkedList<NodeObjects> expList, LinkedList<NodeObjects> secondList, String merge){
-		 
-		 String nodeId;
-		 
-		 for (NodeObjects nodeObjects : expList) {
-			
-			 nodeId = nodeObjects.getId();
-			 
-			 	for (NodeObjects secondObject : secondList) {
-					if(secondObject.getId().equals(nodeId)){
-						
-					if(merge.equals("status")){
-						mergeComponentsStatus(nodeObjects, secondObject);
-					}
-						
-						
-					}
-				}
-
-		}
-		 
-		 
-	 }
-	 
-	 
-	 protected void mergeComponentsStatus(NodeObjects expNode, NodeObjects node){
-		 
-		LinkedList<Component> expCompList = expNode.getComponents();
-		LinkedList<Component> secondCompList = node.getComponents();
-		
-		for (Component component : expCompList) {
-			String compType = component.getType();
-		
-			for (Component component2 : secondCompList) {
-				if(component2.getType().equals(compType)){
-					component.setStatus(component2.getStatus());
-				}
-			}
-		}
-	
-	 }
-	 
-
-			
-	 
 	 protected boolean isNodeActive(NodeObjects node, int id){
 		
 		 boolean bool = false;
