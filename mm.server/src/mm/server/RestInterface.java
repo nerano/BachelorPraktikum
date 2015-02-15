@@ -1,58 +1,72 @@
 package mm.server;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
 import javax.ws.rs.PUT;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
+/**
+ * This class will called by the controller and execute the equivalent methods of the ganeti class.
+ * @author Benedikt Bakker
+ *
+ */
 @Path("/ganeti")
 public class RestInterface {
 
   Ganeti ga = new Ganeti();
   
   @GET
+  @Produces(MediaType.APPLICATION_JSON)
   public String getInstances() {
-    String list = ga.getInstances();
-    return list;
+    return ga.getInstances();
   }
   
   @POST
-  public boolean createInstance(@QueryParam("json") String json) {
-    return ga.create(json);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public void createInstance(String json) {
+    ga.create(json);
   }
   
   @DELETE
   @Path("{instance}")
-  public boolean deleteInstances(@PathParam("instance") String instance) {
-    return ga.delete(instance);
+  public void deleteInstance(@PathParam("instance") String instance) {
+    ga.delete(instance);
   }
   
   @POST
   @Path("{instance}")
-  public boolean rebootInstances(@PathParam("instance") String instance, 
-      @QueryParam("type") String type) {
-    return ga.reboot(instance, type);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public void rebootInstance(@PathParam("instance") String instance, 
+      String type) {
+    ga.reboot(instance, type);
   }
   
   @PUT
   @Path("{instance}/start")
-  public void startInstances(@PathParam("instance") String instance) {
-    ga.startup(instance);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public void startInstance(@PathParam("instance") String instance,
+      String type) {
+    ga.startup(instance,type);
   }
   
   @PUT
   @Path("{instance}/stop")
-  public boolean stopInstances(@PathParam("instance") String instance) {
-    return ga.shutdown(instance);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public void stopInstance(@PathParam("instance") String instance,
+      String type) {
+    ga.shutdown(instance,type);
   }
   
   @PUT
   @Path("{instance}/rename")
-  public boolean renameInstances(@PathParam("instance") String instance, 
-      @QueryParam("name") String newName) {
-    return ga.rename(instance, newName);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public void renameInstance(@PathParam("instance") String instance, 
+      String newName) {
+    ga.rename(instance, newName);
   }
 }
