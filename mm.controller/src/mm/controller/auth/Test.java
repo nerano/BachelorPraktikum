@@ -68,11 +68,11 @@ package mm.controller.auth;
 
     private static URI getBaseURI() {
 
-      return UriBuilder.fromUri("http://localhost:8080/com.vogella.jersey.first").build();
+      return UriBuilder.fromUri("http://localhost:8080/mm.auth").build();
     }
     
     private static URI getUrlWithSessionId() throws MalformedURLException, IllegalArgumentException, UriBuilderException {
       
-      return UriBuilder.fromUri("http://localhost:8080/com.vogella.jersey.first/rest/hello/" + sessionId).build();    
+      return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/hello/" + sessionId).build();    
     }
   }
