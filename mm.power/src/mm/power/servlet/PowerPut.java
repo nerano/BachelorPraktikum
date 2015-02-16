@@ -1,41 +1,102 @@
 package mm.power.servlet;
 
+import java.io.IOException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import mm.power.modeling.PowerSource;
+import mm.power.exceptions.EntryDoesNotExistException;
+import mm.power.exceptions.TransferNotCompleteException;
+import mm.power.main.PowerData;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import mm.power.modeling.PowerSupply;
 
 
 @Path("/put")
 public class PowerPut {
 
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Path("/turn")
-	public Response turnOn(String ps){
+	@Path("/turnOn/{incoming}")
+	public Response turnOn(String incoming) throws IOException, EntryDoesNotExistException, TransferNotCompleteException{
 		
-		Response response = null;
-		PowerSource powerSource = gson.fromJson(ps, PowerSource.class);
+		String[] parts = incoming.split(";");
+		String id;
+		StringBuffer buffer = new StringBuffer();
+		int socket;
+		boolean check = true;
+		
+		if(!(parts[parts.length-1].equals("end"))){
+			  
+			// throw new TransferNotCompleteException("Transfer not Complete in PowerPut turnOn. Message : " + incoming);
+			 return Response.status(400).entity("Messagetransfer not complete").build();
+		}
+		
+		PowerSupply ps;
+		
+		for(int i = 0; i < parts.length - 2; i = i + 2) {
+			
+			 id = parts[i];
+			 socket = Integer.parseInt(parts[i+1]);
+			
+			if(!(PowerData.exists(id))){
+				return Response.status(404).entity("404, PowerSource '" + id + "' not found").build();
+			}
+			
+			ps = PowerData.getById(id);
+			
+		
+			if(!ps.turnOn(socket)){
+				buffer.append(" ").append(id).append(socket);
+				check = false;
+			} 
+			
+			
+		}
+		
+		if(check){
+			return Response.status(200).entity("All PowerSources successful turned on").build();
+		} else {
+			return Response.status(500).entity("Following PowerSources could not be turned on" + buffer.toString()).build();
+		}
 		
 		
-		
-	
-		return response;
 	}
 	
-
-	//turnon
-	//turnoff
-	
-	
-
-
+	@PUT
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Path("/turnOff/{incoming}")
+	public Response turnOff(String incoming) throws TransferNotCompleteException, IOException, EntryDoesNotExistException{
+		
+		String[] parts = incoming.split(";");
+		String id;
+		int socket;
+		
+		if(!(parts[parts.length-1].equals("end"))){
+			  throw new TransferNotCompleteException("Transfer not Complete in PowerPut turnOff. Message : " + incoming);
+		  }
+		
+		PowerSupply ps;
+		
+		for(int i = 0; i < parts.length - 2; i = i + 2) {
+			
+			 id = parts[i];
+			 socket = Integer.parseInt(parts[i+1]);
+			
+			if(!(PowerData.exists(id))){
+				return Response.status(404).entity("404, PowerSource '" + id + "' not found").build();
+			}
+			
+			ps = PowerData.getById(id);
+			ps.turnOff(socket);
+		
+		}
+		
+		return Response.status(200).entity("All PowerSources successful turned off").build();
+	}
+		
 }

@@ -1,4 +1,4 @@
-package mm.power.implementation;
+package mm.power.modeling;
 
 import java.io.IOException;
 

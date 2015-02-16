@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import mm.power.exceptions.EntryDoesNotExistException;
 import mm.power.exceptions.TransferNotCompleteException;
+import mm.power.modeling.PowerSupply;
 
 public class PowerOverEthernetCisco implements PowerSupply{
 
