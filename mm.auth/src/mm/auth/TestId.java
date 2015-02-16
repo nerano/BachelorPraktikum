@@ -39,6 +39,12 @@ public class TestId{
     //System.out.println(target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).get(String.class));
     //System.out.println(target.path("rest").path("hello").path("VLAN1").request().accept(MediaType.TEXT_PLAIN).get(String.class));
   }*/
+  
+  @GET
+  @Path("/Test")
+  public void hallo() {
+    System.out.println("hallo");
+  }
 
   
   private static URI getBaseURI() {
