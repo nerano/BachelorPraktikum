@@ -1,4 +1,4 @@
-package mm.net.rest;
+package mm.net.servlet;
 
 import java.util.LinkedList;
 

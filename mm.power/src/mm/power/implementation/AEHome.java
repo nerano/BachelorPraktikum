@@ -11,6 +11,7 @@ import java.net.URL;
 
 import mm.power.exceptions.SocketDoesNotExistException;
 import mm.power.exceptions.TransferNotCompleteException;
+import mm.power.modeling.PowerSupply;
 
 /**
  * This class describes methods, inherited from the PowerSupply interface, which are suited
