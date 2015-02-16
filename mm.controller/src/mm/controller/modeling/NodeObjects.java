@@ -1,6 +1,9 @@
 package mm.controller.modeling;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+
+import mm.controller.main.ControllerData;
 
 public class NodeObjects {
     
@@ -13,6 +16,43 @@ public class NodeObjects {
   private String longitude;
    
   public NodeObjects() {  }
+  
+  
+  /**
+   * Updates a the PowerStatus of the Node with the information from the given list of PowerSources
+   * @param statusList a list with PowerSources
+   */
+  public void updateNodeStatusPower(LinkedList<PowerSource> statusList) {
+		
+		for (PowerSource powerSource : statusList) {
+			for (Component component : components) {
+				if(component.getPowerSource().equals(powerSource.getId())) {
+					component.setStatus(powerSource.getStatus());
+				}
+			}
+		}
+	}
+  
+  
+  public void updateNodeStatusVLan(LinkedList<VLan> vlanList) {
+	  
+	  LinkedList<String> portList;
+	  Component component;
+	  
+	  for (VLan vLan : vlanList) {
+		portList = vLan.getPortList();
+	
+		for (String string : portList) {
+			component = ControllerData.getComponentByPort(string);
+			if(component != null) {
+			component.setvLanId(vLan.getId());
+			}
+		}
+	  
+	  }
+	  
+  }
+  
   
   public NodeObjects(String id) {
     this.id = id;

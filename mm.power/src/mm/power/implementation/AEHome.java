@@ -236,12 +236,11 @@ public class AEHome implements PowerSupply {
 
     if (java.lang.System.currentTimeMillis() - lastStatus > CACHE_TIME) {
     	 states = getStates();
-	} else {
+    	 lastStatus = java.lang.System.currentTimeMillis();
+    	 return states;
+    } else {
 		return states;
 	}
-
-    lastStatus = java.lang.System.currentTimeMillis();
-    return states;
 
   }
 
@@ -267,7 +266,8 @@ public class AEHome implements PowerSupply {
 
     if (java.lang.System.currentTimeMillis() - lastStatus > CACHE_TIME) {
    	 states = getStates();
-	} 
+   	 lastStatus = java.lang.System.currentTimeMillis();
+    } 
 
     String sentence = null; 
    
@@ -277,7 +277,7 @@ public class AEHome implements PowerSupply {
 
     }
     
-    lastStatus = java.lang.System.currentTimeMillis();
+    
     return sentence;
 
   }

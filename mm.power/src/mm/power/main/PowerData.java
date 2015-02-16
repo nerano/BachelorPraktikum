@@ -10,21 +10,21 @@ import mm.power.implementation.PowerSupply;
 public class PowerData {
 
 
-	private static LinkedList<PowerSupply> powerDataList;
+	private static LinkedList<PowerSupply> POWERSUPPLY_LIST;
 
 
 
 	public PowerData(){
-		powerDataList = new LinkedList<PowerSupply>();
+		POWERSUPPLY_LIST = new LinkedList<PowerSupply>();
 		
 	}
 	
 	public PowerData(LinkedList<PowerSupply> powerList){
-		powerDataList = powerList;
+		POWERSUPPLY_LIST = powerList;
 	}
 
 	public LinkedList<PowerSupply> getPowerList() {
-	    return powerDataList;
+	    return POWERSUPPLY_LIST;
 	  }
 
 	  
@@ -36,7 +36,7 @@ public class PowerData {
 	  static public PowerSupply getById(String id){
 	    
 		  PowerSupply ps = null;
-	    for (PowerSupply powerSupply : powerDataList) {
+	    for (PowerSupply powerSupply : POWERSUPPLY_LIST) {
 	        if(powerSupply.getId().equals(id)){
 	            ps = powerSupply;
 	        }
@@ -51,7 +51,7 @@ public class PowerData {
 	   * @param ps PowerSupply to add
 	   */
 	  static public void addPs(PowerSupply ps){
-	    powerDataList.add(ps);
+	    POWERSUPPLY_LIST.add(ps);
 	  }
 	  
 	  /**
@@ -62,9 +62,9 @@ public class PowerData {
 	  public static boolean removePs(PowerSupply ps){
 	    
 		  boolean bool = false;
-		  for (PowerSupply powerSupply : powerDataList) {
+		  for (PowerSupply powerSupply : POWERSUPPLY_LIST) {
 	        if(ps == powerSupply){
-	            powerDataList.remove(powerSupply);
+	            POWERSUPPLY_LIST.remove(powerSupply);
 	            bool = true;
 	        }
 	    }
@@ -80,9 +80,9 @@ public class PowerData {
 	  public static boolean removePs(String id){
 		  boolean bool = false;
 		  
-		  for (PowerSupply ps : powerDataList) {
+		  for (PowerSupply ps : POWERSUPPLY_LIST) {
 			if(ps.getId().equals(id)){
-				powerDataList.remove(ps);
+				POWERSUPPLY_LIST.remove(ps);
 				bool = true;
 			}
 		}
@@ -101,7 +101,7 @@ public class PowerData {
 		 
 		 boolean bool = false;
 		 
-		 for (PowerSupply ps : powerDataList) {
+		 for (PowerSupply ps : POWERSUPPLY_LIST) {
 			if(ps.getId().equals(id)){
 				bool = true;
 			}

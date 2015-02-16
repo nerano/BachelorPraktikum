@@ -57,14 +57,14 @@ public class PowerGet {
   @GET
   @Path("{incoming}")
   @Produces({MediaType.TEXT_PLAIN, "json/application"})
-    public Response getById(@PathParam("incoming") String incoming2) throws TransferNotCompleteException, IOException, EntryDoesNotExistException {
+    public Response getById(@PathParam("incoming") String incoming) throws TransferNotCompleteException, IOException, EntryDoesNotExistException {
 
 	  LinkedList<PowerSource> returnList = new LinkedList<PowerSource>();
 	  PowerSupply ps;
 	  boolean status;
 	  String id;
 	  int socket;
-	  String incoming = "TESTAEHOME#1;1;TESTAEHOME#1;2;TESTAEHOME#1;3;notfound;2;end";
+	  //String incoming = "TESTAEHOME#1;1;TESTAEHOME#1;2;TESTAEHOME#1;3;notfound;2;end";
 	  
 	  String[] parts = incoming.split(";");
 	  
@@ -77,12 +77,13 @@ public class PowerGet {
 	  for (int i = 0; i < parts.length - 2; i = i + 2) {
 		  
 		  id = parts[i];
-		  socket = Integer.parseInt(parts[i+1]);
-		  ps = PowerData.getById(id);
-
+		  
 		  if(!(PowerData.exists(id))){
 			  return Response.status(404).entity("404, PowerSource '" + id + "' not found").build();
 		  }
+		  
+		  socket = Integer.parseInt(parts[i+1]);
+		  ps = PowerData.getById(id);
 		  
 		if(ps.status(socket).equals("0")){
 			status = false;

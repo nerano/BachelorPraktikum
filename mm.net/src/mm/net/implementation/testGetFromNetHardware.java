@@ -9,12 +9,12 @@ public class testGetFromNetHardware {
 		 VLan vlan = null;
 		 
 		 if(id == 123){
-			 vlan = mm.net.ServletContextClass.vlan1;
+			 vlan = mm.net.main.Initialize.vlan1;
 			 
 		 }
 		 
 		 if(id == 124){
-			 vlan = mm.net.ServletContextClass.vlan2;
+			 vlan = mm.net.main.Initialize.vlan2;
 		 }
 		 
 		 return vlan;

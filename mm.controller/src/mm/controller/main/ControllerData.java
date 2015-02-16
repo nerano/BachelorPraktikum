@@ -1,0 +1,139 @@
+package mm.controller.main;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import mm.controller.modeling.Component;
+import mm.controller.modeling.Experiment;
+
+/**
+ * Holds a static List with all experiments. Works as the central data point for
+ * the experiments with various methods of manipulation
+ * 
+ * @author john
+ *
+ */
+public class ControllerData {
+
+	/* !-- Global List of Experiments --! */
+	private static LinkedList<Experiment> EXPERIMENT_LIST;
+	/* !-- Global Mapping from PORTs to COMPONENTs --! */
+	private static HashMap<String, Component> PORT_TO_COMPONENT;
+
+	public static Component getComponentByPort(String port) {
+		return PORT_TO_COMPONENT.get(port);
+	}
+
+	protected ControllerData() {
+		EXPERIMENT_LIST = new LinkedList<Experiment>();
+		PORT_TO_COMPONENT = new HashMap<String, Component>();
+	}
+
+	protected ControllerData(LinkedList<Experiment> expList) {
+		EXPERIMENT_LIST = expList;
+		PORT_TO_COMPONENT = new HashMap<String, Component>();
+
+	}
+
+	
+	public static void addPort(String port, Component component){
+		PORT_TO_COMPONENT.put(port, component);
+	}
+	
+	
+	public LinkedList<Experiment> getExpList() {
+		return EXPERIMENT_LIST;
+	}
+
+	/**
+	 * Returns the Experiment with the given ID.
+	 * 
+	 * @param id
+	 *            ID of the Experiment
+	 * @return Experiment with the ID, null if no experiment was found
+	 */
+	static public Experiment getById(String id) {
+
+		Experiment exp = null;
+		for (Experiment experiment : EXPERIMENT_LIST) {
+			if (experiment.getId().equals(id)) {
+				exp = experiment;
+			}
+		}
+		return exp;
+	}
+
+	/**
+	 * Adds a experiment to the global data.
+	 * 
+	 * @param exp
+	 *            experiment to add
+	 */
+	static public void addExp(Experiment exp) {
+		EXPERIMENT_LIST.add(exp);
+	}
+
+	/**
+	 * Removes a experiment from the global data.
+	 * 
+	 * @param exp
+	 *            experiment to remove
+	 * @return bool true if experiment was in the list and was removed, false if
+	 *         experiment was not in the list
+	 */
+	public static boolean removeExp(Experiment exp) {
+
+		boolean bool = false;
+		for (Experiment experiment : EXPERIMENT_LIST) {
+			if (exp.equals(experiment)) {
+				EXPERIMENT_LIST.remove(experiment);
+				bool = true;
+			}
+		}
+		return bool;
+	}
+
+	/**
+	 * Removes a experiment from the global data
+	 * 
+	 * @param id
+	 *            ID of the experiment to remove
+	 * @return bool true if experiment was in the list and was removed, false if
+	 *         experiment was not in the list
+	 */
+	public static boolean removeExp(String id) {
+		boolean bool = false;
+
+		for (Experiment experiment : EXPERIMENT_LIST) {
+			if (experiment.getId().equals(id)) {
+				EXPERIMENT_LIST.remove(experiment);
+				bool = true;
+			}
+		}
+
+		return bool;
+	}
+
+	public static LinkedList<Experiment> getAllExp(){
+		return EXPERIMENT_LIST;
+	}
+	/**
+	 * Returns if a experiment with a given ID exists in the global data
+	 * 
+	 * @param id
+	 *            experiment ID to look for
+	 * @return false if the experiment does not exist, true if it does
+	 */
+	public static boolean exists(String id) {
+
+		boolean bool = false;
+
+		for (Experiment experiment : EXPERIMENT_LIST) {
+			if (experiment.getId().equals(id)) {
+				bool = true;
+			}
+		}
+		return bool;
+	}
+
+}

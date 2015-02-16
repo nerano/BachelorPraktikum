@@ -30,8 +30,8 @@ public class Initialize implements ServletContextListener
        addExpExample();
     
        String id = "TESTAEHOME#1";
-   	String type = "AE HOME";
-   	String host = "";
+   		String type = "AE HOME";
+   		String host = "";
    
    
    	PowerSupply ps1 = new AEHome(id, type, host);

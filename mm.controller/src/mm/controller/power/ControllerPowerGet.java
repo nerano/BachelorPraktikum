@@ -1,7 +1,9 @@
 package mm.controller.power;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 
 import javax.ws.rs.client.Client;
@@ -9,65 +11,108 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
-import mm.controller.exclusion.GetPowerNodeStrat;
+import mm.controller.modeling.Component;
+import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
+import mm.controller.modeling.PowerSource;
 
 import org.glassfish.jersey.client.ClientConfig;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 public class ControllerPowerGet {
 
+	private ClientConfig config = new ClientConfig();
+	private Client client = ClientBuilder.newClient(config);
+	private WebTarget powerTarget = client.target(getBaseUri());
 
-  private ClientConfig config = new ClientConfig();
-  Client client = ClientBuilder.newClient(config);
-  
-  WebTarget powerTarget = client.target(getBaseUri());
-    
-  
-  
-  
-  
-  public LinkedList<NodeObjects> getAll() {
-   
-    
-      String powerString = powerTarget.path("get").request().get(String.class);
-      
-      
-      Gson gson = new GsonBuilder().setExclusionStrategies(new GetPowerNodeStrat())
-    		  					   .setPrettyPrinting().create();
-      
-      LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
-      
-      Type type = new TypeToken<LinkedList<NodeObjects>>(){}.getType();
-      
-      nodeList = gson.fromJson(powerString, type);
-    
-      return nodeList;
-       
-  }
-  
-  public void getById(int id){
-      
-      
-      String responseString = powerTarget.path("get").path(Integer.toString(id))
-              .request().get(String.class);
-      
-      
-        
-        
-  }
-  
-  
-  
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-  private static URI getBaseUri() {
-      return UriBuilder.fromUri("http://localhost:8080/mm.power/rest/").build();
-    }
-    
+	public LinkedList<PowerSource> status(NodeObjects node)
+			throws UnsupportedEncodingException {
 
+		LinkedList<NodeObjects> list = new LinkedList<NodeObjects>();
+		list.add(node);
+		return status(list);
+
+	}
+
+	public LinkedList<PowerSource> status(Experiment exp)
+			throws UnsupportedEncodingException {
+
+		LinkedList<NodeObjects> list = exp.getList();
+		return status(list);
+	}
+
+	public LinkedList<PowerSource> status(LinkedList<NodeObjects> nodes)
+			throws UnsupportedEncodingException {
+
+		LinkedList<PowerSource> returnList = new LinkedList<PowerSource>();
+
+		String parameter = turnNodeListToStatusString(nodes);
+
+		String powerString = powerTarget.path("get").path(parameter).request()
+				.get(String.class);
+
+		Type type = new TypeToken<LinkedList<PowerSource>>() {}.getType();
+
+		returnList = gson.fromJson(powerString, type);
+
+		return returnList;
+
+	}
+
+	private String turnNodeListToStatusString(LinkedList<NodeObjects> list)
+			throws UnsupportedEncodingException {
+
+		StringBuffer buffer = new StringBuffer();
+
+		LinkedList<Component> compList;
+
+		for (NodeObjects nodeObject : list) {
+
+			compList = nodeObject.getComponents();
+
+			for (Component component : compList) {
+
+				buffer.append(component.getPowerSource());
+
+				if (buffer.length() > 0) {
+					if (buffer.charAt(buffer.length()-1) != ';') {
+						buffer.append(";");
+					}
+				}
+			
+			}
+
+		}
+
+		buffer.append("end");
+
+		return URLEncoder.encode(buffer.toString(), "UTF-8");
+	}
+
+	public LinkedList<PowerSource> getAll() {
+
+		String powerString = powerTarget.path("get").request()
+				.get(String.class);
+
+		LinkedList<PowerSource> nodeList = new LinkedList<PowerSource>();
+
+		Type type = new TypeToken<LinkedList<PowerSource>>() {
+		}.getType();
+
+		nodeList = gson.fromJson(powerString, type);
+
+		return nodeList;
+
+	}
+
+	private static URI getBaseUri() {
+		return UriBuilder.fromUri("http://localhost:8080/mm.power/rest/")
+				.build();
+	}
 
 }

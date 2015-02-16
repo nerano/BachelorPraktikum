@@ -133,7 +133,8 @@ public class XmlParser {
     NodeObjects nodeObjects = new NodeObjects();
     Node node;
     int count = 0;
-    boolean first = true;
+    @SuppressWarnings("unused")
+	boolean first = true;
     
     while (count < nodeList.getLength()) {
       node = nodeList.item(count);
@@ -186,7 +187,8 @@ public class XmlParser {
     VmObjects vmObjects = new VmObjects();
     Node node;
     int count = 0;
-    boolean first = true;
+    @SuppressWarnings("unused")
+	boolean first = true;
     
     while (count < nodeList.getLength()) {
       node = nodeList.item(count);

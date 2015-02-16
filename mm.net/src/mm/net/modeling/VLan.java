@@ -21,9 +21,24 @@ public class VLan {
     portList.addAll(list);
         
   }
+
+
+public List<String> getPortList() {
+	return portList;
+}
+
+
+public void setPortList(List<String> portList) {
+	this.portList = portList;
+}
+
+
+public int getId() {
+	return id;
+}
     
     
-    
+   
     
 
 

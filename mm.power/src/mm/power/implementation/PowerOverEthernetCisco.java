@@ -7,7 +7,8 @@ import mm.power.exceptions.TransferNotCompleteException;
 
 public class PowerOverEthernetCisco implements PowerSupply{
 
-  private int ports;
+  @SuppressWarnings("unused")
+private int ports;
   private String id;
   
   PowerOverEthernetCisco(int ports) {
