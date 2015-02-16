@@ -9,6 +9,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+/* No more need for this class */
 public class ControllerAuthGet {
 
   private ClientConfig config = new ClientConfig();

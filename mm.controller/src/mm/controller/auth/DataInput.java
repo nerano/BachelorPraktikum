@@ -2,6 +2,7 @@ package mm.controller.auth;
 
 import java.util.Scanner;
 
+/* Will be done by the Webinterface, works */
 public class DataInput {
 
   private String userName;

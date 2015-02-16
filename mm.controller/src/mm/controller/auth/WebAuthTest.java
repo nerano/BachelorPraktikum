@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URI;
 
+/* Works with the Webinterface */
 @Path("/")
 @Singleton
 public class WebAuthTest implements ContainerResponseFilter {
