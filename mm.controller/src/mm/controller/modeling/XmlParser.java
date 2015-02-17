@@ -139,7 +139,7 @@ public class XmlParser {
     while (count < nodeList.getLength()) {
       node = nodeList.item(count);
       if (node.getNodeName().equals("id")) {
-        if (first = true) {
+        if (first) {
           nodeObjects.setId(node.getTextContent());
           first = false;
         } else {

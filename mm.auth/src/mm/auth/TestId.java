@@ -22,7 +22,7 @@ public class TestId{
   static Client client = ClientBuilder.newClient(config);
   static WebTarget target = client.target(getBaseURI());
   
-  @GET
+  /*@GET
   @Path("/sessionID")
   public void getSessionID(HttpServletRequest request, HttpServletResponse response) throws IOException {
     HttpSession session = request.getSession();

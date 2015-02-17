@@ -26,6 +26,7 @@ public interface PowerSupply {
                TransferNotCompleteException, EntryDoesNotExistException;
 
   public String getId();
-
+  
+  public String toString();
 
 }

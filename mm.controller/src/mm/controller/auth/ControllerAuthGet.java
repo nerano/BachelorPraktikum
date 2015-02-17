@@ -12,27 +12,35 @@ import org.glassfish.jersey.client.ClientConfig;
 /* No more need for this class */
 public class ControllerAuthGet {
 
-  private ClientConfig config = new ClientConfig();
-  Client client = ClientBuilder.newClient(config);
-  WebTarget target = client.target(getBaseUri());
+  private static ClientConfig config = new ClientConfig();
+  static Client client = ClientBuilder.newClient(config);
+  static WebTarget target = client.target(getBaseUri());
+  static String sessionId;
   
-  DataInput da = new DataInput();
+  static DataInput da = new DataInput();
   
   public String authtentification() {
+    
     da.setUserName();
     da.setPassword();
     String user = da.getUserName();
     String pw = da.getPassword();
 
-    return target.path(user).path(pw).request().get(String.class);
+    return target.path("/authmain").path(user).path(pw).request().get(String.class);
   }
   
-  public URI getBaseUri() {
-    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/authmain").build();
+  public static URI getBaseUri() {
+    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest").build();
   }
   
   public static void main(String[] args) {
     ControllerAuthGet auth = new ControllerAuthGet();
-    System.out.println(auth.authtentification());
+    sessionId = auth.authtentification();
+    System.out.println(target.path("/session").path(sessionId).request().get(String.class));
+    String sessionId2 = auth.authtentification();
+    System.out.println(target.path("/session").path(sessionId2).request().get(String.class));
+    System.out.println(target.path("/session").path(sessionId).request().get(String.class));
+    
+    da.closeScanner();
   }
 }

@@ -32,8 +32,8 @@ public class AEHome implements PowerSupply {
   private long lastStatus = 0l;
   private String states;
 
-  private final String TEST_URL_STRG = "http://192.168.178.21/strg.cfg";
-  private static final String TEST_URL_CTRL = "http://192.168.178.21/ctrl.htm";
+  private final String TEST_URL_STRG = "http://130.83.33.111/strg.cfg";
+  private static final String TEST_URL_CTRL = "http://130.83.33.111/ctrl.htm";
   private static final String TEST_USER_BASE64 = "Basic YWRtaW46YW5lbA==";
   //private static final String TEST_USER = "adminanel";
   private final long CACHE_TIME = 5000;
@@ -165,7 +165,6 @@ public class AEHome implements PowerSupply {
         
         
     String state = status(socket);
-    System.out.println(state);
     boolean bool = false;
     switch (state) {
       case "1":
@@ -368,6 +367,8 @@ public class AEHome implements PowerSupply {
 		this.host = host;
 	}
 
-	
+	public String toString() {
+    return this.getId()+" "+this.getType()+" "+this.getHost();	  
+	}
 
 }

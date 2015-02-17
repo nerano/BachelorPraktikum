@@ -17,8 +17,6 @@ public class DataInput {
   public void setPassword() {
     System.out.println("Enter your password: ");
     this.password = scanIn.nextLine();
-    
-    this.scanIn.close();
   }
   
   public String getUserName() {
@@ -27,5 +25,9 @@ public class DataInput {
   
   public String getPassword() {
     return this.password;
+  }
+
+  public void closeScanner() {
+    this.scanIn.close();
   }
 }
