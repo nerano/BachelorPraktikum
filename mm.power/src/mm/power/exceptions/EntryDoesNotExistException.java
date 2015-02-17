@@ -12,7 +12,12 @@ package mm.power.exceptions;
 public class EntryDoesNotExistException extends Exception{
 
 
-    public EntryDoesNotExistException(String s){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4317528826378144593L;
+
+	public EntryDoesNotExistException(String s){
         
         super(s);
     }

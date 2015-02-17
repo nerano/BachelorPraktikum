@@ -1,10 +1,7 @@
 package mm.power.servlet;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.LinkedList;
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,11 +11,8 @@ import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
 import mm.power.exceptions.EntryDoesNotExistException;
 import mm.power.exceptions.TransferNotCompleteException;
-import mm.power.implementation.*;
 import mm.power.main.PowerData;
 import mm.power.modeling.*;
 

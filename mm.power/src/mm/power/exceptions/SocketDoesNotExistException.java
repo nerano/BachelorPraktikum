@@ -8,7 +8,12 @@ package mm.power.exceptions;
  */
 public class SocketDoesNotExistException extends EntryDoesNotExistException {
 
-    public SocketDoesNotExistException(String s){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3562102439796636150L;
+
+	public SocketDoesNotExistException(String s){
         
         super(s);
     }

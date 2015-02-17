@@ -59,7 +59,7 @@ public class Initialize implements ServletContextListener
        list2.add(port4);
        
        list3.add(port1);
-       list3.add(port3);
+       list3.add(port2);
        
        vlan1.addPorts(list1);
        vlan2.addPorts(list2);

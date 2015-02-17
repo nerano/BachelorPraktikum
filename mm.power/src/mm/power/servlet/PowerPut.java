@@ -18,10 +18,17 @@ import mm.power.modeling.PowerSupply;
 @Path("/put")
 public class PowerPut {
 
-	
+	/**
+	 * 
+	 * @param incoming
+	 * @return
+	 * @throws IOException
+	 * @throws EntryDoesNotExistException
+	 * @throws TransferNotCompleteException
+	 */
 	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Path("/turnOn/{incoming}")
+	@Path("/turnOn")
 	public Response turnOn(String incoming) throws IOException, EntryDoesNotExistException, TransferNotCompleteException{
 		
 		String[] parts = incoming.split(";");
@@ -69,7 +76,7 @@ public class PowerPut {
 	
 	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Path("/turnOff/{incoming}")
+	@Path("/turnOff/")
 	public Response turnOff(String incoming) throws TransferNotCompleteException, IOException, EntryDoesNotExistException{
 		
 		String[] parts = incoming.split(";");

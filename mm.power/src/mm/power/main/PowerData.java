@@ -2,10 +2,6 @@ package mm.power.main;
 
 import java.util.LinkedList;
 
-
-
-
-import mm.power.implementation.AEHome;
 import mm.power.modeling.PowerSupply;
 
 public class PowerData {

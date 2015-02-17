@@ -1,6 +1,5 @@
 package mm.controller.modeling;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Experiment implements Cloneable {
@@ -120,6 +119,7 @@ public class Experiment implements Cloneable {
 		return nodes;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Experiment clone() throws CloneNotSupportedException {
 		Experiment cloned = (Experiment) super.clone();

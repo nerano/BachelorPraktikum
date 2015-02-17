@@ -110,6 +110,7 @@ public class Initialize implements ServletContextListener
         VLan vlan2 = new VLan(124);
         
         exp.addVLan(vlan1);
+        exp.addVLan(vlan2);
         
         
         ControllerData.addExp(exp);

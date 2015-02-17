@@ -8,7 +8,13 @@ public class NetComponent {
 
     private String ip;
     
-    String getId() {
+    public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+	String getId() {
         return Id;
     }
     public void setId(String id) {

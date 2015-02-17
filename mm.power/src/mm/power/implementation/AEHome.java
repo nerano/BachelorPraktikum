@@ -28,15 +28,14 @@ public class AEHome implements PowerSupply {
   private static final int socket = 3; // Three sockets on a Anel Elektronik Home version
   private String id;
   //private InetAddress ip;
-  private String host;
-  private String type;
+  private String host, type;
   private long lastStatus = 0l;
   private String states;
 
   private final String TEST_URL_STRG = "http://192.168.178.21/strg.cfg";
   private static final String TEST_URL_CTRL = "http://192.168.178.21/ctrl.htm";
   private static final String TEST_USER_BASE64 = "Basic YWRtaW46YW5lbA==";
-  private static final String TEST_USER = "adminanel";
+  //private static final String TEST_USER = "adminanel";
   private final long CACHE_TIME = 5000;
   /**
    * Constructor for a power outlet "Anel Elektronik Home", which posses 3 toggable 
@@ -352,6 +351,23 @@ public class AEHome implements PowerSupply {
   public void setId(String id) {
     this.id = id;
   }
+  
+  public String getType() {
+		return type;
+	}
 
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	
 
 }
