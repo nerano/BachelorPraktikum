@@ -19,7 +19,6 @@ import mm.power.modeling.PowerSupply;
  * and password is needed. If both are correct, there are two options: You can establish
  * a connection via the UDP protocl or the HTTP protocol. If you are going to use the
  * UDP protocol you have to specify the corresponding port from the outlet. 
- * @author julian
  * 
  *
  */
@@ -27,15 +26,14 @@ public class AEHome implements PowerSupply {
 
   private static final int socket = 3; // Three sockets on a Anel Elektronik Home version
   private String id;
-  //private InetAddress ip;
   private String host, type;
   private long lastStatus = 0l;
   private String states;
 
-  private final String TEST_URL_STRG = "http://130.83.33.111/strg.cfg";
-  private static final String TEST_URL_CTRL = "http://130.83.33.111/ctrl.htm";
-  private static final String TEST_USER_BASE64 = "Basic YWRtaW46YW5lbA==";
-  //private static final String TEST_USER = "adminanel";
+  private String URL_STRG;
+  private String URL_CTRL;
+  private String USER_BASE64 = "Basic YWRtaW46YW5lbA==";
+  //private String TEST_USER = "adminanel";
   private final long CACHE_TIME = 5000;
   /**
    * Constructor for a power outlet "Anel Elektronik Home", which posses 3 toggable 
@@ -50,6 +48,9 @@ public class AEHome implements PowerSupply {
     this.type= type;
     this.host = host;
     
+    URL_STRG = "http://" + host + "/strg.cfg";
+    URL_CTRL = "http://" + host + "/ctrl.htm";
+    USER_BASE64 = "Basic YWRtaW46YW5lbA==";
   }
 
     /**
@@ -68,14 +69,14 @@ public class AEHome implements PowerSupply {
 
     
     String states;
-    URL url = new URL(TEST_URL_STRG);
+    URL url = new URL(URL_STRG);
     HttpURLConnection connection = null;
 
     connection = (HttpURLConnection) url.openConnection();
 
     connection.setRequestMethod("GET");
 
-    connection.setRequestProperty("Authorization", TEST_USER_BASE64);
+    connection.setRequestProperty("Authorization", USER_BASE64);
       
     BufferedReader in = new BufferedReader(new InputStreamReader(
                 connection.getInputStream()));
@@ -117,14 +118,15 @@ public class AEHome implements PowerSupply {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
         
-    URL url = new URL(TEST_URL_CTRL);
+    lastStatus = 0l;
+    URL url = new URL(URL_CTRL);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
     connection.setRequestMethod("POST");
     connection.setRequestProperty("User-Agent", "MM");
 
     connection.setRequestProperty("Content-type", "text/plain");
-    connection.setRequestProperty("Authorization", TEST_USER_BASE64);
+    connection.setRequestProperty("Authorization", USER_BASE64);
 
     String urlParameters = "F" + (socket - 1) + "=T";
 
@@ -136,7 +138,7 @@ public class AEHome implements PowerSupply {
 
     int responseCode = connection.getResponseCode();
 
-    lastStatus = 0l;
+    
     if (responseCode == 200) {
       return true;
     } else {
@@ -163,7 +165,7 @@ public class AEHome implements PowerSupply {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
         
-        
+    lastStatus = 0l;
     String state = status(socket);
     boolean bool = false;
     switch (state) {
@@ -177,7 +179,7 @@ public class AEHome implements PowerSupply {
         break;
     }
 
-    lastStatus = 0l;
+    
     return bool;
 
   }
@@ -197,11 +199,13 @@ public class AEHome implements PowerSupply {
   public boolean turnOn(int socket) throws IOException, 
       TransferNotCompleteException, SocketDoesNotExistException {
 
+	
     if (socket > AEHome.socket) {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
         
     boolean bool = false;
+    lastStatus = 0l;
     String sentence = status(socket);
 
     switch (sentence) {
@@ -216,7 +220,7 @@ public class AEHome implements PowerSupply {
         break;
     }
 
-    lastStatus = 0l;
+   
     return bool;
 
   }
