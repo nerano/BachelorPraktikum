@@ -18,9 +18,12 @@ public class TestMain {
     String reboot = "{\"type\":\"soft\","
         + "\"ignore_secondaries\":1}";
     Ganeti ga = new Ganeti();
-    System.out.println(ga.getInstances());
+    //System.out.println(ga.getInstances());
+    //System.out.println(ga.getInstanceInfo("benvm.seemoo.tu-darmstadt.de"));
+    System.out.println(ga.getInstanceInfoParam("benvm.seemoo.tu-darmstadt.de","always_failover"));
+    System.out.println(ga.getInstanceInfoParam("benvm.seemoo.tu-darmstadt.de","status"));
     //System.out.println(ga.create(createJson));
-    //ga.startup("testvm.seemoo.tu-darmstadt.de","");
+    //ga.startup("benvm.seemoo.tu-darmstadt.de","");
     //ga.shutdown("testvm.seemoo.tu-darmstadt.de","");
     //ga.rename("test123.seemoo.tu-darmstadt.de", "benvm.seemoo.tu-darmstadt.de");
     //ga.delete("test123.seemoo.tu-darmstadt.de");

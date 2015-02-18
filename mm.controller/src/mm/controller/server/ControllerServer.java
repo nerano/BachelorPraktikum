@@ -49,6 +49,34 @@ public class ControllerServer {
   }
   
   /**
+   * This method will return a list of all attributes of a given instance.
+   * @param instance the name of the instance which attributes will be shown.
+   * @return the list of all attributes of an instances.
+   */
+  @GET
+  @Path("{instance}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getInstanceInfo(@PathParam("instance") String instance) {
+    target = client.target(url);
+    return target.path(instance).request().get(String.class); 
+  }
+  
+  /**
+   * This method will return the status of a given parameter of an instances on the server.
+   * @param instance name of the instance which parameter will be shown.
+   * @param param the name of the status which should be returned.
+   * @return the attribute of the given parameter of an instance.
+   */
+  @GET
+  @Path("{instance}/{param}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getInstanceInfoParam(@PathParam("instance") String instance,
+      @PathParam("param") String param) {
+    target = client.target(url);
+    return target.path(instance).path(param).request().get(String.class); 
+  }
+  
+  /**
    * Creates an instance with the given parameters.
    * @param params a String of a JSONObject with all requested settings of the new instance.
    */

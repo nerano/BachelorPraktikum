@@ -36,35 +36,83 @@ public class Ganeti {
   }
   
   /**
+   * This private method will be called by the get Methods and will parse a list
+   *with a given param.
+   * @param list is a String a the get request from the ganeti server.
+   * @param param is a given param, which should be parse the list.
+   * @return a String of a List with only the names of the Ganeti instances.
+   */
+  private String parseList(String list, String param) {
+    List<String> arr = new ArrayList<String>();
+    StringBuilder id = new StringBuilder();
+    do {
+      if (list.startsWith(param + "\":")) {
+        list = list.substring(param.length() + 3);
+        if (list.startsWith("\"")) {
+          list = list.substring(1);
+        }
+        do {
+          id.append(list.charAt(0));
+          list = list.substring(1);
+        } while (!list.startsWith("\"") && !list.startsWith(","));
+        arr.add(id.toString());
+        id.delete(0, id.length());
+      } else {
+        list = list.substring(1);
+      }
+    } while (!list.isEmpty());
+    return arr.toString();
+  }
+  
+  /**
    * 
    * @return list of all instances of the server.
    */
   public String getInstances() {
     target = client.target(url);
     String list = "";
-    String id = "";
-    List<String> arr = new ArrayList<String>();
     try { 
-      list = target.path("instances").request().get(String.class);
-      // extract every instance-id and add this name to an ArrayList
-      do {
-        if (list.startsWith("id\":")) {
-          list = list.substring(6);
-          do {
-            id += list.charAt(0);
-            list = list.substring(1);
-          } while (!list.startsWith("\""));
-          arr.add(id);
-          id = "";
-        } else {
-          list = list.substring(1);
-        }
-      } while (!list.isEmpty());
-      return arr.toString();
+      list = target.path("instances").request().get(String.class);      
     } catch (Exception e) {
       e.printStackTrace();
       return "";
     }
+    return this.parseList(list, "id");
+  }
+  
+  /**
+   * This method will return all attributes of an instance.
+   * @param instance the name of the instance,
+   * @return a list with all attributes.
+   */
+  public String getInstanceInfo(String instance) {
+    target = client.target(url);
+    String list = "";
+    try { 
+      list = target.path("instances").path(instance).request().get(String.class);      
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "";
+    }
+    return list;
+  }
+  
+  /**
+   * This method will return one attribute of an instance.
+   * @param instance the name of the instance.
+   * @param param the name of the parameter.
+   * @return a list with the attribute of a given status.
+   */
+  public String getInstanceInfoParam(String instance, String param) {
+    target = client.target(url);
+    String list = "";
+    try { 
+      list = target.path("instances").path(instance).request().get(String.class);      
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "";
+    }
+    return this.parseList(list, param);
   }
   
   /**
