@@ -2,6 +2,7 @@ package mm.auth;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.inject.Singleton;
@@ -21,6 +22,7 @@ public class Session {
   private GregorianCalendar timer;
   private Date currentDate;
   private Date expire;
+  private HashMap<String, Date> ids = new HashMap<String, Date>();
   
   /*@GET
   @Path("getID")
@@ -43,27 +45,33 @@ public class Session {
   public String createSessionId() {
     this.buildSessionId();
     this.setTimer();
+    if (!this.ids.containsKey(this.sessionId.toString())) {
+      this.ids.put(this.sessionId.toString(), this.expire);
+    }
     return this.sessionId.toString();
   }
   
-  public void buildSessionId() {
+  private void buildSessionId() {
     this.sessionId = UUID.randomUUID();
   } 
   
   private void setTimer() {
     this.timer = new GregorianCalendar();
     this.timer.add(GregorianCalendar.MINUTE, 15);
+    
+    // test ob die Session als ungültig erkannt wird
+    //this.timer.add(GregorianCalendar.SECOND, 10);
+    
     this.expire = timer.getTime();
     //System.out.println(this.expire.toString());
-    this.timer = null;
   }
   
-  private boolean checkTime() {
+  private boolean checkTime(String sessionId) {
     this.currentDate = new Date();
     //System.out.println(currentDate.toString());
     //System.out.println(this.expire.toString());
     if (this.currentDate.getTime() >= this.expire.getTime()) {
-      this.sessionId = null;
+      this.ids.remove(sessionId);
       return false;
     }
     return true;
@@ -74,13 +82,15 @@ public class Session {
   @Produces(MediaType.TEXT_PLAIN)
   @Consumes("text/plain")
   public String testSession(@PathParam("sessionId") String sessionId) {
-    System.out.println("Local SessionId: "+sessionId);
-    System.out.println("Globale SessionId "+this.sessionId.toString());
-    if (this.checkTime()) {
-      if (this.sessionId.toString().equals(sessionId)) {
+    //System.out.println("Local SessionId: " + sessionId);
+    //System.out.println("Globale SessionId " + this.sessionId.toString());
+    System.out.println(this.ids.containsKey(sessionId));
+    if (this.ids.containsKey(sessionId)) {
+      this.expire = this.ids.get(sessionId);
+      if (this.checkTime(sessionId)) {
         return "SessionID still valid!";
       }
-    } 
+    }
     return "New LogIn!!!";
   }
   

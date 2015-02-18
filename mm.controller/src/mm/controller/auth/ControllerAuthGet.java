@@ -38,7 +38,20 @@ public class ControllerAuthGet {
     sessionId = auth.authtentification();
     System.out.println(target.path("/session").path(sessionId).request().get(String.class));
     String sessionId2 = auth.authtentification();
-    System.out.println(target.path("/session").path(sessionId2).request().get(String.class));
+    //System.out.println(target.path("/session").path(sessionId2).request().get(String.class));
+    
+    /* Pausiert die Methode für 11 Sekunden um zu testen ob die SessionID invalid wird
+    try {
+      Thread.sleep(11000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }*/
+    
+    if (target.path("/session").path(sessionId2).request().get(String.class).equals("New LogIn!!!")) {
+      System.out.println("Your session expired. Please log in again: ");
+      auth.authtentification();
+    }
     System.out.println(target.path("/session").path(sessionId).request().get(String.class));
     
     da.closeScanner();
