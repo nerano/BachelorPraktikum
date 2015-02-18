@@ -38,9 +38,13 @@ public class WebAuthTest implements ContainerResponseFilter {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response consumeJSON( String data ) throws JSONException {
     JSONObject json = new JSONObject(data);
-    System.out.println(json);
-    if(target.path(json.get("user").toString()).path(json.get("password")
-        .toString()).request().get(String.class).equals("Log in successful!")) {
+    //System.out.println(json);
+    if(!target.path(json.get("user").toString()).path(json.get("password")
+        .toString()).request().get(String.class).equals("LogIn failed!")) {
+      
+      /* Folgende Zeile ist zur Kontrolle der SessionId
+      / System.out.println(target.path(json.get("user").toString()).path(json.get("password")
+        .toString()).request().get(String.class));*/
      return Response.status(200).entity("1").build();
     }
     return Response.status(200).entity("0").build();
