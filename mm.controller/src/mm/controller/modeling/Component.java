@@ -1,13 +1,18 @@
 package mm.controller.modeling;
 
+import java.util.LinkedList;
+
+import mm.controller.power.ControllerPowerPut;
+
 public class Component {
 
   private String type;
   @SuppressWarnings("unused")
-private boolean status;
-  private int vLanId;
-  private String port;
+  private boolean status;
+  private int vLanIds;
+  private String ports;
   private String powerSource;
+  private ControllerPowerPut powerPut = new ControllerPowerPut();
   
   public Component(String type) {
     this.type = type;
@@ -24,7 +29,7 @@ private boolean status;
   }
   
   protected int getvLanId(){
-	  return vLanId;
+	  return vLanIds;
   }
  
   public void setStatus(boolean status) {
@@ -32,7 +37,7 @@ private boolean status;
   }
   
   public void setvLanId(int vLanId) {
-    this.vLanId = vLanId;
+    this.vLanIds = vLanId;
   }
   public String getType() {
     return type;
@@ -42,10 +47,49 @@ private boolean status;
   }
 
   public String getPort() {
-	return port;
+	return ports;
   }
 
   public void setPort(String port) {
-	this.port = port;
+	this.ports = port;
   }
+
+  public boolean turnOn() {
+	  
+	  StringBuffer buffer = new StringBuffer();
+	  
+	  buffer.append(powerSource);
+	  
+	  if(buffer.charAt(buffer.length()-1) != ';'){
+		  buffer.append(";");
+	  }
+	  
+	  buffer.append("end");
+	  
+	  System.out.println(buffer.toString());
+	  
+	  boolean bool = powerPut.turnOn(buffer.toString());
+	  
+	  return bool;
+	  
+  }
+  
+ public boolean turnOff() {
+	  
+	  StringBuffer buffer = new StringBuffer();
+	  
+	  buffer.append(powerSource);
+	  
+	  if(buffer.charAt(buffer.length()-1) != ';'){
+		  buffer.append(";");
+	  }
+	  
+	  buffer.append("end");
+	  
+	  return powerPut.turnOff(buffer.toString());
+	   
+  }
+  
+
+
 }

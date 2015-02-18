@@ -19,7 +19,7 @@ public class Initialize implements ServletContextListener
     
     public ControllerData controllerData;
     
-    public static LinkedList<NodeObjects> ALL_NODES;
+    //public static LinkedList<NodeObjects> ALL_NODES;
     public static HashMap<String, Component> POWER_TO_COMPONENT;
     public static HashMap<Component, String> COMPONENT_TO_POWER;
    
@@ -31,7 +31,7 @@ public class Initialize implements ServletContextListener
        controllerData = new ControllerData();
        
        POWER_TO_COMPONENT = new HashMap<String, Component>();
-       ALL_NODES = new LinkedList<NodeObjects>();
+       //ALL_NODES = new LinkedList<NodeObjects>();
        //TODO add all parsed Nodes to allNodes
 
        addExpExample();
@@ -60,9 +60,9 @@ public class Initialize implements ServletContextListener
  	   String portf7 = "NetzKomponenteF.7";
  	   String portf8 = "NetzKomponenteF.8";
     	
-       String powerSource1 = "TESTAEHOME#1;1";
-       String powerSource2 = "TESTAEHOME#1;2";
-       String powerSource3 = "TESTAEHOME#1;3";
+       String powerSource1 = "AeHome#1;1";
+       String powerSource2 = "AeHome#1;2";
+       String powerSource3 = "AeHome#1;3";
  	   
     	Component c1 = new Component("WARP");
         Component c2 = new Component("APU");
@@ -120,8 +120,8 @@ public class Initialize implements ServletContextListener
        ControllerData.addPort(portf7, c3);
        ControllerData.addPort(portf8, c4);
     
- 	   ALL_NODES.add(node1);
- 	   ALL_NODES.add(node2);
+ 	   ControllerData.addNode(node1);
+ 	   ControllerData.addNode(node2);
     
     }
     

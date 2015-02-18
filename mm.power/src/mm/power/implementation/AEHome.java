@@ -27,7 +27,6 @@ public class AEHome implements PowerSupply {
   private static final int socket = 3; // Three sockets on a Anel Elektronik Home version
   private String id;
   private String host, type;
-  private long lastStatus = 0l;
   private String states;
 
   private String URL_STRG;
@@ -118,7 +117,6 @@ public class AEHome implements PowerSupply {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
         
-    lastStatus = 0l;
     URL url = new URL(URL_CTRL);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -165,7 +163,7 @@ public class AEHome implements PowerSupply {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
         
-    lastStatus = 0l;
+
     String state = status(socket);
     boolean bool = false;
     switch (state) {
@@ -205,7 +203,6 @@ public class AEHome implements PowerSupply {
     }
         
     boolean bool = false;
-    lastStatus = 0l;
     String sentence = status(socket);
 
     switch (sentence) {
@@ -237,15 +234,12 @@ public class AEHome implements PowerSupply {
   public String status() throws ProtocolException, 
      MalformedURLException, IOException, TransferNotCompleteException {
 
-    if (java.lang.System.currentTimeMillis() - lastStatus > CACHE_TIME) {
     	 states = getStates();
-    	 lastStatus = java.lang.System.currentTimeMillis();
-    	 return states;
-    } else {
+ 
 		return states;
 	}
 
-  }
+  
 
     /**
      * Returns the state of a given socket "[0/1]" where 0 is off
@@ -267,10 +261,8 @@ public class AEHome implements PowerSupply {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
 
-    if (java.lang.System.currentTimeMillis() - lastStatus > CACHE_TIME) {
    	 states = getStates();
-   	 lastStatus = java.lang.System.currentTimeMillis();
-    } 
+  
 
     String sentence = null; 
    

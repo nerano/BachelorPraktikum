@@ -53,6 +53,44 @@ public class NodeObjects {
 	  
   }
   
+  public boolean turnOff(){
+	  boolean bool = true;
+	  
+	  for (Component component : components) {
+		bool = component.turnOff();
+	}
+	  return bool;
+  }
+  
+  public boolean turnOn(){
+	  boolean bool = true;
+	  
+	  for (Component component : components) {
+		bool = component.turnOn();
+	}
+	  return bool;
+  }
+  
+  public boolean turnOn(String comp){
+	  
+	  for (Component component : components) {
+		if(component.getType().equals(comp)){
+			return component.turnOn();
+		}
+	}
+	  return false;
+  }
+
+  public boolean turnOff(String comp){
+	  
+	  for (Component component : components) {
+		if(component.getType().equals(comp)){
+			return component.turnOff();
+		}
+	}
+	  return false;
+  }
+  
   
   public NodeObjects(String id) {
     this.id = id;

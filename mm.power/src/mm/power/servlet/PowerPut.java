@@ -1,6 +1,7 @@
 package mm.power.servlet;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -11,7 +12,6 @@ import javax.ws.rs.core.Response;
 import mm.power.exceptions.EntryDoesNotExistException;
 import mm.power.exceptions.TransferNotCompleteException;
 import mm.power.main.PowerData;
-
 import mm.power.modeling.PowerSupply;
 
 
@@ -31,10 +31,15 @@ public class PowerPut {
 	@Path("/turnOn")
 	public Response turnOn(String incoming) throws IOException, EntryDoesNotExistException, TransferNotCompleteException{
 		
+		System.out.println("IN POWER SERVICE KAM AN " + incoming);
+		
+		//URLDecoder.decode(incoming, "UTF-8")
+		
 		String[] parts = incoming.split(";");
 		String id;
 		StringBuffer buffer = new StringBuffer();
 		int socket;
+		PowerSupply ps;
 		boolean check = true;
 		
 		if(!(parts[parts.length-1].equals("end"))){
@@ -43,7 +48,7 @@ public class PowerPut {
 			 return Response.status(400).entity("Messagetransfer not complete").build();
 		}
 		
-		PowerSupply ps;
+		
 		
 		for(int i = 0; i < parts.length - 2; i = i + 2) {
 			

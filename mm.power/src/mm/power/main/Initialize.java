@@ -34,13 +34,14 @@ public class Initialize implements ServletContextListener {
     //psdata = new PowerData(map);
     PowerData.addPs(ps1);*/
     XmlParser parser = new XmlParser();
-    parser.parseXml("C:/Users/Sebastian/git/BachelorPraktikum/mm.power/PowerSupply.xml");
+   // parser.parseXml("C:/Users/Sebastian/git/BachelorPraktikum/mm.power/PowerSupply.xml");
+    parser.parseXml("C:/Users/milton/git/BachelorPraktikum/mm.power/PowerSupply.xml");
     HashMap<String, PowerSupply> map = parser.getPowerSupply();
     System.out.println(map.get("AeHome#2").toString());
     new PowerData(map);
    // PowerData.addPs(ps1);
 
-    try {
+    /** try {
       map.get("AeHome#2").turnOn(1);
       map.get("AeHome#2").turnOn(3);
       map.get("AeHome#2").turnOff(1);
@@ -54,7 +55,7 @@ public class Initialize implements ServletContextListener {
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    }
+    } **/
     
     
   }

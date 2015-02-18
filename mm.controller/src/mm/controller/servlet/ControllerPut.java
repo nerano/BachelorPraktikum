@@ -3,12 +3,14 @@ package mm.controller.servlet;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import mm.controller.main.ControllerData;
 import mm.controller.modeling.Experiment;
+import mm.controller.modeling.NodeObjects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,7 +40,7 @@ public class ControllerPut {
         String id = experiment.getId();
         
         
-        if(ControllerData.exists(id)) {
+        if(ControllerData.exists(experiment)) {
         	responseString = "Experiment with this ID already exists";
         	response = Response.status(409).entity(responseString).build();
         	return response;
@@ -49,6 +51,117 @@ public class ControllerPut {
         	return response;
         }
        
+	}
+	
+	@PUT
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/turnOff")
+	public Response turnNodeOff(String data) {
+		
+		NodeObjects node = ControllerData.getNodeById(data);
+	
+		String responseString;
+		
+		if(ControllerData.exists(node)) {
+			
+			if(node.turnOff()){
+				responseString = "All Components in the Node turned off";
+				return Response.status(200).entity(responseString).build();
+			} else {
+				responseString = "WARNING: Not all Components were turned off";
+				return Response.status(500).entity(responseString).build();
+			}
+			
+		} else {
+			responseString = "404, Node not found!";
+			return Response.status(404).entity(responseString).build();
+		}
+		
+		
+	}
+	
+	@PUT
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/turnOn")
+	public Response turnNodeOn(String data) {
+		
+		NodeObjects node = ControllerData.getNodeById(data);
+		String responseString;
+		
+		if(ControllerData.exists(node)) {
+			
+			boolean bool = node.turnOn();
+			
+			if(bool){
+				responseString = "All Components in the Node turned on";
+				return Response.status(200).entity(responseString).build();
+			} else {
+				responseString = "WARNING: Not all Components were turned on";
+				return Response.status(500).entity(responseString).build();
+			}
+			
+		} else {
+			responseString = "404, Node not found!";
+			return Response.status(404).entity(responseString).build();
+		}
+		
+		
+	}
+	
+	@PUT
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/turnOn/{comp}")
+	public Response turnCompOn(String data, @PathParam("comp") String comp) {
+		
+		NodeObjects node = gson.fromJson(data, NodeObjects.class);
+		String responseString;
+		
+		if(ControllerData.exists(node)) {
+			
+			if(node.turnOn(comp)){
+				responseString = "Component in the Node turned on";
+				return Response.status(200).entity(responseString).build();
+			} else {
+				responseString = "WARNING: Component were not turned on";
+				return Response.status(500).entity(responseString).build();
+			}
+			
+		} else {
+			responseString = "404, Node not found!";
+			return Response.status(404).entity(responseString).build();
+		}
+		
+		
+	}
+	
+	@PUT
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/turnOff/{comp}")
+	public Response turnCompOff(String data, @PathParam("comp") String comp) {
+		
+		NodeObjects node = gson.fromJson(data, NodeObjects.class);
+		String responseString;
+		
+		if(ControllerData.exists(node)) {
+			
+			if(node.turnOff(comp)){
+				responseString = "Component in the Node turned off";
+				return Response.status(200).entity(responseString).build();
+			} else {
+				responseString = "WARNING: Component were not turned off";
+				return Response.status(500).entity(responseString).build();
+			}
+			
+		} else {
+			responseString = "404, Node not found!";
+			return Response.status(404).entity(responseString).build();
+		}
+		
+		
 	}
 
 

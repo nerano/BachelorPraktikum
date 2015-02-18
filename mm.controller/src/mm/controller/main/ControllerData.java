@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import mm.controller.modeling.Component;
 import mm.controller.modeling.Experiment;
+import mm.controller.modeling.NodeObjects;
 
 /**
  * Holds a static List with all experiments. Works as the central data point for
@@ -19,6 +20,7 @@ public class ControllerData {
 	private static LinkedList<Experiment> EXPERIMENT_LIST;
 	/* !-- Global Mapping from PORTs to COMPONENTs --! */
 	private static HashMap<String, Component> PORT_TO_COMPONENT;
+	private static HashMap<String, NodeObjects> ALL_NODES;
 
 	public static Component getComponentByPort(String port) {
 		return PORT_TO_COMPONENT.get(port);
@@ -27,6 +29,7 @@ public class ControllerData {
 	protected ControllerData() {
 		EXPERIMENT_LIST = new LinkedList<Experiment>();
 		PORT_TO_COMPONENT = new HashMap<String, Component>();
+		ALL_NODES = new HashMap<String, NodeObjects>();
 	}
 
 	protected ControllerData(LinkedList<Experiment> expList) {
@@ -35,7 +38,19 @@ public class ControllerData {
 
 	}
 
+	public static void addNode(NodeObjects node){
+		ALL_NODES.put(node.getId(), node);
+		
+	}
 	
+	public static HashMap<String, NodeObjects> getAllNodes(){
+		return ALL_NODES;
+	}
+	
+	public static LinkedList<NodeObjects> getAllNodesAsList(){
+		return new LinkedList<NodeObjects>(ALL_NODES.values());
+		
+	}
 	public static void addPort(String port, Component component){
 		PORT_TO_COMPONENT.put(port, component);
 	}
@@ -45,6 +60,12 @@ public class ControllerData {
 		return EXPERIMENT_LIST;
 	}
 
+	
+	static public NodeObjects getNodeById(String id){
+		
+		return ALL_NODES.get(id);
+	}
+	
 	/**
 	 * Returns the Experiment with the given ID.
 	 * 
@@ -52,7 +73,7 @@ public class ControllerData {
 	 *            ID of the Experiment
 	 * @return Experiment with the ID, null if no experiment was found
 	 */
-	static public Experiment getById(String id) {
+	static public Experiment getExpById(String id) {
 
 		Experiment exp = null;
 		for (Experiment experiment : EXPERIMENT_LIST) {
@@ -117,6 +138,38 @@ public class ControllerData {
 	public static LinkedList<Experiment> getAllExp(){
 		return EXPERIMENT_LIST;
 	}
+	
+	public static boolean exists(NodeObjects node){
+		
+		if( ALL_NODES.get(node.getId()) == null) {
+			return false;
+		} else {
+			return true;
+		}
+		
+	}
+	
+	public static boolean existsNode(String id){
+		
+		if( ALL_NODES.get(id) == null) {
+			return false;
+		} else {
+			return true;
+		}
+		
+	}
+	
+	public static boolean existsExp(String id){
+		
+		for (Experiment experiment : EXPERIMENT_LIST) {
+			if(experiment.getId().equals(id)){
+				return true;
+			}
+		}
+	
+		return false;
+	}
+	
 	/**
 	 * Returns if a experiment with a given ID exists in the global data
 	 * 
@@ -124,8 +177,10 @@ public class ControllerData {
 	 *            experiment ID to look for
 	 * @return false if the experiment does not exist, true if it does
 	 */
-	public static boolean exists(String id) {
-
+	public static boolean exists(Experiment exp) {
+		
+		String id = exp.getId();
+		
 		boolean bool = false;
 
 		for (Experiment experiment : EXPERIMENT_LIST) {

@@ -42,7 +42,7 @@ public class ControllerGet {
 		Gson gson = new GsonBuilder()/**.setExclusionStrategies (new NoStatusNodeStrat()) **/
 				 .setPrettyPrinting().create();
 		// TODO TESTEN
-		responseString = gson.toJson(mm.controller.main.Initialize.ALL_NODES);
+		responseString = gson.toJson(ControllerData.getAllNodesAsList());
 
 		response = Response.status(200).entity(responseString).build();
 		
@@ -57,14 +57,16 @@ public class ControllerGet {
 		
 		String responseString;
 		Response response;
+		
+		
 
-		if (!(ControllerData.exists(id))) {
+		if (!(ControllerData.existsExp(id))) {
 			responseString = "404, Experiment not found";
 			response = Response.status(404).entity(responseString).build();
 			return response;
 		}
 		
-		Experiment exp = ControllerData.getById(id);
+		Experiment exp = ControllerData.getExpById(id);
 
 		LinkedList<PowerSource> statusList = powerGet.status(exp);
 		
@@ -171,7 +173,7 @@ public class ControllerGet {
 		Response response;
 		String responseString;
 
-		if (!(ControllerData.exists(id))) {
+		if (!(ControllerData.existsExp(id))) {
 			responseString = "404, Experiment not found";
 			response = Response.status(404).entity(responseString).build();
 			return response;
@@ -180,7 +182,7 @@ public class ControllerGet {
 		Gson gson = new GsonBuilder().setExclusionStrategies(new NoStatusNodeStrat())
 									 .setPrettyPrinting().create();
 
-		responseString = gson.toJson(ControllerData.getById(id));
+		responseString = gson.toJson(ControllerData.getExpById(id));
 
 		response = Response.status(200).entity(responseString).build();
 
