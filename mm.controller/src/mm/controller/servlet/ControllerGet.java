@@ -42,8 +42,9 @@ public class ControllerGet {
 		Gson gson = new GsonBuilder()/**.setExclusionStrategies (new NoStatusNodeStrat()) **/
 				 .setPrettyPrinting().create();
 		// TODO TESTEN
-		responseString = gson.toJson(ControllerData.getAllNodesAsList());
-
+		LinkedList<NodeObjects> list = ControllerData.getAllNodesAsList();
+		responseString = gson.toJson(list);
+		// responseString = ControllerData.getAllNodesAsList().toString();
 		response = Response.status(200).entity(responseString).build();
 		
 		return response;

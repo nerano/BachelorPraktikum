@@ -48,7 +48,10 @@ public class ControllerData {
 	}
 	
 	public static LinkedList<NodeObjects> getAllNodesAsList(){
-		return new LinkedList<NodeObjects>(ALL_NODES.values());
+		
+		LinkedList<NodeObjects> returnList = new LinkedList<NodeObjects>(ALL_NODES.values());
+		
+		return returnList;
 		
 	}
 	public static void addPort(String port, Component component){

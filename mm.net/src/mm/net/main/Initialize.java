@@ -40,7 +40,7 @@ public class Initialize implements ServletContextListener
        vlan2 = new VLan(124);
        vlan3 = new VLan(125);
         
-       String port1 = "NätComponentA.1";
+       String port1 = "NetComponentA.1";
        String port2 = "NetComponentA.2";
        
        String port3 = "NetzKomponenteF.7";

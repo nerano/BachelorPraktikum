@@ -37,17 +37,6 @@ public class ControllerPowerPut {
 		
 		System.out.println("HALLO TEST OUT PRINT");
 		
-		String tmp = parameter;
-		/** try {
-			// tmp = URLDecoder.decode(parameter, "UTF-8");
-			//parameter = URLEncoder.encode(tmp, "UTF-8");
-			//parameter = URLEncoder.encode("AeHome#1;1;end", "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} **/
-		
-		
-		
 		Response response = putTarget.path("turnOn").request().accept(MediaType.TEXT_PLAIN)
 											.put(
 													Entity.entity(parameter, MediaType.TEXT_PLAIN),
@@ -71,13 +60,6 @@ public class ControllerPowerPut {
 		
 		// String testString = "TESTAEHOME#1;1;end";
 		
-		String tmp;
-		try {
-			tmp = URLDecoder.decode(parameter, "UTF-8");
-			parameter = URLEncoder.encode(tmp, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
 		Response response = putTarget.path("turnOff").request().accept(MediaType.TEXT_PLAIN)
 											.put(
 													Entity.entity(parameter, MediaType.TEXT_PLAIN),

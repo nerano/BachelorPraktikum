@@ -88,13 +88,15 @@ public class AEHome implements PowerSupply {
     }
     in.close();
    
-    String[] variables = new String[59];
+    String[] variables;
+    
+    //variables[58] = "";
     variables = response.toString().split(";");
        
-    if (variables[58].equals("end")) {
+    if (variables[variables.length-2].equals("end")) {
       states = variables[20] + variables[21] + variables[22];
     } else {
-      throw new TransferNotCompleteException("Transmission not complete on Outlet " + this.id);
+      throw new TransferNotCompleteException("Transmission not complete on Outlet " + this.id + " " + response);
     }
 
     return states;
@@ -163,6 +165,12 @@ public class AEHome implements PowerSupply {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);
     }
         
+    try {
+		Thread.sleep(500);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
     String state = status(socket);
     boolean bool = false;
@@ -197,6 +205,12 @@ public class AEHome implements PowerSupply {
   public boolean turnOn(int socket) throws IOException, 
       TransferNotCompleteException, SocketDoesNotExistException {
 
+	  try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	
     if (socket > AEHome.socket) {
       throw new SocketDoesNotExistException("Socketnumber exceeds existing sockets on: " + this.id);

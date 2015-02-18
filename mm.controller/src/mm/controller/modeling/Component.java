@@ -1,6 +1,5 @@
 package mm.controller.modeling;
 
-import java.util.LinkedList;
 
 import mm.controller.power.ControllerPowerPut;
 
@@ -8,11 +7,12 @@ public class Component {
 
   private String type;
   @SuppressWarnings("unused")
-  private boolean status;
+private boolean status;
   private int vLanIds;
   private String ports;
   private String powerSource;
-  private ControllerPowerPut powerPut = new ControllerPowerPut();
+  private transient ControllerPowerPut powerPut = new ControllerPowerPut();
+  
   
   public Component(String type) {
     this.type = type;
@@ -55,6 +55,7 @@ public class Component {
   }
 
   public boolean turnOn() {
+
 	  
 	  StringBuffer buffer = new StringBuffer();
 	  
@@ -75,6 +76,7 @@ public class Component {
   }
   
  public boolean turnOff() {
+	 
 	  
 	  StringBuffer buffer = new StringBuffer();
 	  

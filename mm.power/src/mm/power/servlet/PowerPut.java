@@ -81,7 +81,7 @@ public class PowerPut {
 	
 	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Path("/turnOff/")
+	@Path("/turnOff")
 	public Response turnOff(String incoming) throws TransferNotCompleteException, IOException, EntryDoesNotExistException{
 		
 		String[] parts = incoming.split(";");
@@ -106,6 +106,7 @@ public class PowerPut {
 			ps = PowerData.getById(id);
 			ps.turnOff(socket);
 		
+
 		}
 		
 		return Response.status(200).entity("All PowerSources successful turned off").build();

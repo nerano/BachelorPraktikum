@@ -54,7 +54,7 @@ public class Initialize implements ServletContextListener
     
     public static void exp1(){
         
-       String porta1 = "NätComponentA.1";
+       String porta1 = "NetComponentA.1";
  	   String porta2 = "NetComponentA.2";
  	   
  	   String portf7 = "NetzKomponenteF.7";
@@ -86,7 +86,7 @@ public class Initialize implements ServletContextListener
         c3.setPort(portf7);
         c4.setPort(portf8);
         
-        NodeObjects node1 = new NodeObjects("Knoten A");
+        NodeObjects node1 = new NodeObjects("KnotenA");
         NodeObjects node2 = new NodeObjects("Knoten B");
         
         

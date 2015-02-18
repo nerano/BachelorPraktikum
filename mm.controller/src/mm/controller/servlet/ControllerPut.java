@@ -1,6 +1,8 @@
 package mm.controller.servlet;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -40,7 +42,7 @@ public class ControllerPut {
         String id = experiment.getId();
         
         
-        if(ControllerData.exists(experiment)) {
+        if(exp != null && ControllerData.exists(experiment)) {
         	responseString = "Experiment with this ID already exists";
         	response = Response.status(409).entity(responseString).build();
         	return response;
@@ -63,9 +65,11 @@ public class ControllerPut {
 	
 		String responseString;
 		
-		if(ControllerData.exists(node)) {
+		if(!(node == null) && ControllerData.exists(node)) {
 			
-			if(node.turnOff()){
+			boolean bool = node.turnOff();
+			
+			if(bool){
 				responseString = "All Components in the Node turned off";
 				return Response.status(200).entity(responseString).build();
 			} else {
@@ -90,7 +94,7 @@ public class ControllerPut {
 		NodeObjects node = ControllerData.getNodeById(data);
 		String responseString;
 		
-		if(ControllerData.exists(node)) {
+		if(!(node == null) && ControllerData.exists(node)) {
 			
 			boolean bool = node.turnOn();
 			
@@ -103,7 +107,7 @@ public class ControllerPut {
 			}
 			
 		} else {
-			responseString = "404, Node not found!";
+			responseString = "404, Node not found! Node " + node;
 			return Response.status(404).entity(responseString).build();
 		}
 		
@@ -116,10 +120,10 @@ public class ControllerPut {
 	@Path("/turnOn/{comp}")
 	public Response turnCompOn(String data, @PathParam("comp") String comp) {
 		
-		NodeObjects node = gson.fromJson(data, NodeObjects.class);
+		NodeObjects node = ControllerData.getNodeById(data);
 		String responseString;
 		
-		if(ControllerData.exists(node)) {
+		if(!(node == null) && ControllerData.exists(node)) {
 			
 			if(node.turnOn(comp)){
 				responseString = "Component in the Node turned on";
@@ -143,10 +147,10 @@ public class ControllerPut {
 	@Path("/turnOff/{comp}")
 	public Response turnCompOff(String data, @PathParam("comp") String comp) {
 		
-		NodeObjects node = gson.fromJson(data, NodeObjects.class);
+		NodeObjects node = ControllerData.getNodeById(data);
 		String responseString;
 		
-		if(ControllerData.exists(node)) {
+		if(!(node == null) && ControllerData.exists(node)) {
 			
 			if(node.turnOff(comp)){
 				responseString = "Component in the Node turned off";
