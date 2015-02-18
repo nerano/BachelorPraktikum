@@ -44,7 +44,7 @@ public class Ganeti {
    */
   private String parseList(String list, String param) {
     List<String> arr = new ArrayList<String>();
-    String id = "";
+    StringBuilder id = new StringBuilder();
     do {
       if (list.startsWith(param + "\":")) {
         list = list.substring(param.length() + 3);
@@ -52,11 +52,11 @@ public class Ganeti {
           list = list.substring(1);
         }
         do {
-          id += list.charAt(0);
+          id.append(list.charAt(0));
           list = list.substring(1);
         } while (!list.startsWith("\"") && !list.startsWith(","));
-        arr.add(id);
-        id = "";
+        arr.add(id.toString());
+        id.delete(0, id.length());
       } else {
         list = list.substring(1);
       }
@@ -81,7 +81,7 @@ public class Ganeti {
   }
   
   /**
-   * This method returns a list with all attributes.
+   * This method will return all attributes of an instance.
    * @param instance the name of the instance,
    * @return a list with all attributes.
    */
@@ -98,7 +98,7 @@ public class Ganeti {
   }
   
   /**
-   * This method returns the attribute of a given parameter.
+   * This method will return one attribute of an instance.
    * @param instance the name of the instance.
    * @param param the name of the parameter.
    * @return a list with the attribute of a given status.
