@@ -26,6 +26,21 @@ public class RestInterface {
     return ga.getInstances();
   }
   
+  @GET
+  @Path("{instance}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getInstanceInfo(@PathParam("instance") String instance) {
+    return ga.getInstanceInfo(instance);
+  }
+  
+  @GET
+  @Path("{instance}/{param}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getInstanceInfoParam(@PathParam("instance") String instance,
+      @PathParam("param") String param) {
+    return ga.getInstanceInfoParam(instance,param);
+  }
+  
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public void createInstance(String json) {

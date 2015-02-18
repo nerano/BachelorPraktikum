@@ -1,6 +1,6 @@
 package mm.controller.server;
 
-public class TestControllerServer {
+public class TestMainControllerServer {
 
   public static void main(String[] args) {
     ControllerServer conser = new ControllerServer();
@@ -26,5 +26,6 @@ public class TestControllerServer {
     //conser.renameInstance("testController2.seemoo.tu-darmstadt.de", newName);
     //conser.deleteInstance("testController.seemoo.tu-darmstadt.de");
     //conser.rebootInstance("testController2.seemoo.tu-darmstadt.de", "");
+    //conser.deleteInstance("unittestcontroller.seemoo.tu-darmstadt.de");
   }
 }
