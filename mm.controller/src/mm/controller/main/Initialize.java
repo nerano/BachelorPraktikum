@@ -60,9 +60,9 @@ public class Initialize implements ServletContextListener
  	   String portf7 = "NetzKomponenteF.7";
  	   String portf8 = "NetzKomponenteF.8";
     	
-       String powerSource1 = "AeHome#1;1";
-       String powerSource2 = "AeHome#1;2";
-       String powerSource3 = "AeHome#1;3";
+       String powerSource1 = "AeHome1;1";
+       String powerSource2 = "AeHome1;2";
+       String powerSource3 = "AeHome1;3";
  	   
     	Component c1 = new Component("WARP");
         Component c2 = new Component("APU");
@@ -86,7 +86,7 @@ public class Initialize implements ServletContextListener
         c3.setPort(portf7);
         c4.setPort(portf8);
         
-        NodeObjects node1 = new NodeObjects("KnotenA");
+        NodeObjects node1 = new NodeObjects("Knoten A");
         NodeObjects node2 = new NodeObjects("Knoten B");
         
         

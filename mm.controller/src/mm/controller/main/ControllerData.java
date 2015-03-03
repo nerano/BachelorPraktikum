@@ -10,9 +10,6 @@ import mm.controller.modeling.NodeObjects;
 /**
  * Holds a static List with all experiments. Works as the central data point for
  * the experiments with various methods of manipulation
- * 
- * @author john
- *
  */
 public class ControllerData {
 
@@ -20,6 +17,7 @@ public class ControllerData {
 	private static LinkedList<Experiment> EXPERIMENT_LIST;
 	/* !-- Global Mapping from PORTs to COMPONENTs --! */
 	private static HashMap<String, Component> PORT_TO_COMPONENT;
+	/* !-- Global HashMap of all known Nodes--! */
 	private static HashMap<String, NodeObjects> ALL_NODES;
 
 	public static Component getComponentByPort(String port) {
@@ -137,11 +135,21 @@ public class ControllerData {
 
 		return bool;
 	}
-
+	/**
+	 * Returns the List containing all experiments.
+	 * 
+	 * @return LinkedList<Experiment> 
+	 */
 	public static LinkedList<Experiment> getAllExp(){
 		return EXPERIMENT_LIST;
 	}
 	
+	/**
+	 * Checks if a node with the given Node Object exists.
+	 * <p>
+	 * @param node  node Object to check
+	 * @return boolean
+	 */
 	public static boolean exists(NodeObjects node){
 		
 		if( ALL_NODES.get(node.getId()) == null) {
@@ -151,7 +159,12 @@ public class ControllerData {
 		}
 		
 	}
-	
+	/**
+	 * Checks if a node with the given node ID exists.
+	 * <p>
+	 * @param id  node ID to check
+	 * @return  boolean
+	 */
 	public static boolean existsNode(String id){
 		
 		if( ALL_NODES.get(id) == null) {
@@ -161,7 +174,12 @@ public class ControllerData {
 		}
 		
 	}
-	
+	/**
+	 * Checks if a experiment with the given ID exists.
+	 * <p>
+	 * @param id  experiment id to check
+	 * @return  boolean
+	 */
 	public static boolean existsExp(String id){
 		
 		for (Experiment experiment : EXPERIMENT_LIST) {
@@ -174,7 +192,7 @@ public class ControllerData {
 	}
 	
 	/**
-	 * Returns if a experiment with a given ID exists in the global data
+	 * Returns if a experiment object exists in the global data.
 	 * 
 	 * @param id
 	 *            experiment ID to look for

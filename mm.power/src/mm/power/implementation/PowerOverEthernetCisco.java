@@ -1,9 +1,9 @@
 package mm.power.implementation;
 
-import java.io.IOException;
 
-import mm.power.exceptions.EntryDoesNotExistException;
-import mm.power.exceptions.TransferNotCompleteException;
+
+import javax.ws.rs.core.Response;
+
 import mm.power.modeling.PowerSupply;
 
 public class PowerOverEthernetCisco implements PowerSupply{
@@ -16,14 +16,14 @@ private int ports;
     this.ports = ports;
   }
 
-  public boolean turnOn(int dose) {
+  public Response turnOn(int dose) {
     System.out.println("Buchse " + dose + " wurde angeschaltet");
-    return true;
+    return null;
   }
 
-  public boolean turnOff(int dose) {
+  public Response turnOff(int dose) {
     System.out.println("Buchse " + dose + " wurde ausgeschaltet");
-    return true;
+    return null;
   }
 
   public boolean reset() {
@@ -37,23 +37,21 @@ private int ports;
   }
 
 @Override
-public String status() throws IOException, TransferNotCompleteException {
+public Response status() {
     // TODO Auto-generated method stub
     return null;
 }
 
 @Override
-public String status(int socket) throws IOException,
-        TransferNotCompleteException, EntryDoesNotExistException {
+public Response status(int socket) {
     // TODO Auto-generated method stub
     return null;
 }
 
 @Override
-public boolean toggle(int socket) throws IOException,
-        TransferNotCompleteException, EntryDoesNotExistException {
+public Response toggle(int socket) {
     // TODO Auto-generated method stub
-    return false;
+    return null;
 }
 
 @Override

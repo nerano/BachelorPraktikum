@@ -23,7 +23,10 @@ import mm.controller.modeling.VLan;
 import mm.controller.net.ControllerNetGet;
 import mm.controller.power.ControllerPowerGet;
 
-
+/**
+ * Class for all GET methods in the controller servlet
+ * 
+ */
 @Path("/get")
 public class ControllerGet {
 
@@ -31,25 +34,38 @@ public class ControllerGet {
 	private ControllerNetGet netGet = new ControllerNetGet();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+	/**
+	 * Returns all nodes.
+	 * <p>
+	 * Returns all nodes which are known to the controller; these are all nodes specified 
+	 * in the XML-file and parsed on startup. No dynamic information is serialized, only static.
+	 * E.g. the VLAN and power status is not serialized, but the location.
+	 * 
+	 * The Response Object holds a JSON representation of a list, which contains all nodes.
+	 *
+	 * @return a Response Object with status code 200
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
 	@Path("/nodes")
 	public Response getAllNodes() {
-		
-		Response response;
-		String responseString;
 
 		Gson gson = new GsonBuilder()/**.setExclusionStrategies (new NoStatusNodeStrat()) **/
 				 .setPrettyPrinting().create();
 		// TODO TESTEN
 		LinkedList<NodeObjects> list = ControllerData.getAllNodesAsList();
-		responseString = gson.toJson(list);
-		// responseString = ControllerData.getAllNodesAsList().toString();
-		response = Response.status(200).entity(responseString).build();
 		
-		return response;
+		String responseString = gson.toJson(list);
+		// responseString = ControllerData.getAllNodesAsList().toString();
+		return Response.status(200).entity(responseString).build();
 	}
-
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws CloneNotSupportedException
+	 * @throws UnsupportedEncodingException
+	 */
 	@GET
 	@Produces({ "json/application", "text/plain" })
 	@Path("/activeExp/{id}")
@@ -101,71 +117,20 @@ public class ControllerGet {
 		return response;
 	}
 
-	/** public void merge(LinkedList<NodeObjects> expList, VLan vlan) {
-
-		LinkedList<Component> compList = new LinkedList<Component>();
-		Component component;
-		LinkedList<String> portList = vlan.getPortList();
-
-		for (String string : portList) {
-			component = mm.controller.main.Initialize.getComponent(string);
-
-			for (NodeObjects nodeObjects : expList) {
-
-				compList = nodeObjects.getComponents();
-
-				for (Component component2 : compList) {
-					if (component == component2) {
-						component2.setvLanId(vlan.getId());
-					}
-				}
-
-			}
-
-		}
-
-	}
-
-	/** protected void merge(LinkedList<NodeObjects> expList,
-			LinkedList<NodeObjects> secondList, String merge) {
-
-		String nodeId;
-
-		for (NodeObjects nodeObjects : expList) {
-
-			nodeId = nodeObjects.getId();
-
-			for (NodeObjects secondObject : secondList) {
-				if (secondObject.getId().equals(nodeId)) {
-
-					if (merge.equals("status")) {
-						mergeComponentsStatus(nodeObjects, secondObject);
-					}
-
-				}
-			}
-
-		}
-
-	}
-
-	protected void mergeComponentsStatus(NodeObjects expNode, NodeObjects node) {
-
-		LinkedList<Component> expCompList = expNode.getComponents();
-		LinkedList<Component> secondCompList = node.getComponents();
-
-		for (Component component : expCompList) {
-			String compType = component.getType();
-
-			for (Component component2 : secondCompList) {
-				if (component2.getType().equals(compType)) {
-					component.setStatus(component2.getStatus());
-				}
-			}
-		}
-
-	} **/
-
+	/**
+	 * Returns an experiment.
+	 * <p>
+	 * Returns an experiment with the given ID in JSON format, the ID is passed through the URI
+	 * The Response Objects holds the JSON in the message body
+	 * URI: baseuri:port/mm.controller/rest/get/exp/{id}
+	 * 
+	 * Possible HTTP status codes:
+	 * 
+	 * <li> 200: The requested experiment is located in the message body.
+	 * <li> 404: The requested experiment with the given ID does not exist.
+	 * @param id  Identifier of the experiment
+	 * @return a Response Object
+	 */
 	@GET
 	@Produces({ "json/application", "text/plain" })
 	@Path("/exp/{id}")
@@ -190,14 +155,21 @@ public class ControllerGet {
 		return response;
 	}
 	
+	/**
+	 * Returns a list of all experiments.
+	 * <p>
+	 * Returns a list of all currently existing experiments in JSON format. 
+	 * No input Parameters are required.
+	 * URI: baseuri:port/mm.controller/rest/get/exp
+	 * 
+	 * @return a Response Object with the JSON in the message body.
+	 */
 	@GET
 	@Produces({ "json/application", "text/plain" })
 	@Path("/exp")
 	public Response getAllExp(){
 		
-		String responseString;
-	
-		responseString = gson.toJson(ControllerData.getAllExp());
+		String responseString = gson.toJson(ControllerData.getAllExp());
 		
 		return Response.status(200).entity(responseString).build();
 	}

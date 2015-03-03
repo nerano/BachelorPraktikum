@@ -6,7 +6,7 @@ import mm.power.modeling.PowerSupply;
 
 public class PowerData {
 
-  private static HashMap<String, PowerSupply> POWERSUPPLY_MAP;
+  private static HashMap<String, PowerSupply> POWERSUPPLY_MAP = new HashMap<String, PowerSupply>();
 
   public PowerData(HashMap<String, PowerSupply> powerList) {
     POWERSUPPLY_MAP = powerList;

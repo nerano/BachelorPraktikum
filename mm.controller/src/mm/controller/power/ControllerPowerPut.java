@@ -41,25 +41,19 @@ public class ControllerPowerPut {
 	 * @param parameter A String with all PowerSources to turn on, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
 	 * @return a Response Object with a status code and message body
 	 */
-	public boolean turnOn(String parameter) {
+	public Response turnOn(String parameter) {
 	
 		// String testString = "TESTAEHOME#1;1;end";
-		
-		System.out.println("HALLO TEST OUT PRINT");
 		
 		Response response = putTarget.path("turnOn").request().accept(MediaType.TEXT_PLAIN)
 											.put(
 													Entity.entity(parameter, MediaType.TEXT_PLAIN),
 																						Response.class);	
 	
-		System.out.println(parameter);
-		System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
+		//System.out.println(parameter);
+		// System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
 		
-		if(response.getStatus() == 200){
-			return true;
-		} else {
-			return false;
-		}
+		return response;
 	}
 	/**
    * Turns off a set of PowerSources. 

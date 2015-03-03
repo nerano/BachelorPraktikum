@@ -37,7 +37,7 @@ public class Initialize implements ServletContextListener {
    // parser.parseXml("C:/Users/Sebastian/git/BachelorPraktikum/mm.power/PowerSupply.xml");
     parser.parseXml("C:/Users/milton/git/BachelorPraktikum/mm.power/PowerSupply.xml");
     HashMap<String, PowerSupply> map = parser.getPowerSupply();
-    System.out.println(map.get("AeHome#2").toString());
+    System.out.println(map.get("AeHome2").toString());
     new PowerData(map);
    // PowerData.addPs(ps1);
 

@@ -2,6 +2,8 @@ package mm.power.implementation;
 
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import mm.power.exceptions.EntryDoesNotExistException;
 import mm.power.exceptions.TransferNotCompleteException;
 import mm.power.modeling.PowerSupply;
@@ -14,14 +16,14 @@ public class SteckdosePro implements PowerSupply {
     this.dosen = dosen;
   }
 
-  public boolean turnOn(int dose) {
+  public Response turnOn(int dose) {
     System.out.println("PRO Dose " + dose + " wurde angeschaltet");
-    return true;
+    return null;
   }
 
-  public boolean turnOff(int dose) {
+  public Response turnOff(int dose) {
     System.out.println("PRO Dose " + dose + " wurde ausgeschaltet");
-    return true;
+    return null;
   }
 
   public boolean reset() {
@@ -36,23 +38,21 @@ public class SteckdosePro implements PowerSupply {
   }
 
 @Override
-public String status() throws IOException, TransferNotCompleteException {
+public Response status() {
     // TODO Auto-generated method stub
     return null;
 }
 
 @Override
-public String status(int socket) throws IOException,
-        TransferNotCompleteException, EntryDoesNotExistException {
+public Response status(int socket) {
     // TODO Auto-generated method stub
     return null;
 }
 
 @Override
-public boolean toggle(int socket) throws IOException,
-        TransferNotCompleteException, EntryDoesNotExistException {
+public Response toggle(int socket) {
     // TODO Auto-generated method stub
-    return false;
+    return null;
 }
 
 @Override

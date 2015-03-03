@@ -1,29 +1,20 @@
 package mm.power.modeling;
 
-import java.io.IOException;
 
-import mm.power.exceptions.EntryDoesNotExistException;
-import mm.power.exceptions.TransferNotCompleteException;
-
-
+import javax.ws.rs.core.Response;
 
 public interface PowerSupply {
 	
 
-  public boolean turnOn(int socket) throws IOException, 
-               TransferNotCompleteException, EntryDoesNotExistException;
+  public Response turnOn(int socket);
   
-  public boolean turnOff(int socket) throws IOException, 
-               TransferNotCompleteException, EntryDoesNotExistException;
+  public Response turnOff(int socket);
   
-  public String  status() throws IOException, 
-               TransferNotCompleteException;
+  public Response status();
  
-  public String  status(int socket) throws IOException, 
-               TransferNotCompleteException, EntryDoesNotExistException;
+  public Response status(int socket);
   
-  public boolean toggle(int socket) throws IOException, 
-               TransferNotCompleteException, EntryDoesNotExistException;
+  public Response toggle(int socket);
 
   public String getId();
   

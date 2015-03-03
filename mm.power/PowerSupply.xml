@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Supplys>
-	<id>AeHome#1</id>
-		<host>192.168.178.21</host>
-		<type>AeHome</type>
-	<id>AeHome#2</id>
-		<host>192.168.178.21</host>
-		<type>AeHome</type>
-	<id>AeHome#3</id>
-		<host>192.168.178.21</host>
-		<type>AeHome</type>
+	<id>AeHome1</id>
+	<host>TESTFAILHOST</host>
+	<type>AeHome</type>
+	<id>AeHome2</id>
+	<host>TESTFAILHOST</host>
+	<type>AeHome</type>
+	<id>AeHome3</id>
+	<host>TESTFAILHOST</host>
+	<type>AeHome</type>
 </Supplys>
