@@ -24,6 +24,17 @@ public class ControllerPut {
 	 private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	
+	@PUT
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response addNewExperiment2(String exp) {
+	  
+	  
+	  
+	  
+	}
+	 
+	 
+	 
 	/**
 	 * Used for creating a new Experiment and adding it to the ExperimentData, expects a Experiment with
 	 * ID and a list of nodes in JSON format.
@@ -65,11 +76,12 @@ public class ControllerPut {
 	
 		String responseString;
 		
-		if(!(node == null) && ControllerData.exists(node)) {
+		if(node != null && ControllerData.exists(node)) {
 			
-			boolean bool = node.turnOff();
+			Response r = node.turnOff();
 			
-			if(bool){
+			
+			if(r.getStatus() == 200){
 				responseString = "All Components in the Node turned off";
 				return Response.status(200).entity(responseString).build();
 			} else {
@@ -78,7 +90,7 @@ public class ControllerPut {
 			}
 			
 		} else {
-			responseString = "404, Node not found!";
+			responseString = "404, Node '" + data + "' not found!";
 			return Response.status(404).entity(responseString).build();
 		}
 		
@@ -123,18 +135,22 @@ public class ControllerPut {
 		NodeObjects node = ControllerData.getNodeById(data);
 		String responseString;
 		
-		if(!(node == null) && ControllerData.exists(node)) {
+		if(node != null && ControllerData.exists(node)) {
 			
-			if(node.turnOn(comp)){
+			Response r = node.turnOn(comp);
+		  
+		  if(r.getStatus() == 200){
 				responseString = "Component in the Node turned on";
 				return Response.status(200).entity(responseString).build();
 			} else {
-				responseString = "WARNING: Component were not turned on";
+				
+			  responseString = "WARNING: Component was not turned on \n";
+			  responseString += (String) r.getEntity();
 				return Response.status(500).entity(responseString).build();
 			}
 			
 		} else {
-			responseString = "404, Node not found!";
+			responseString = "404, Node not found! Node: " + data;
 			return Response.status(404).entity(responseString).build();
 		}
 		
@@ -147,26 +163,30 @@ public class ControllerPut {
 	@Path("/turnOff/{comp}")
 	public Response turnCompOff(String data, @PathParam("comp") String comp) {
 		
-		NodeObjects node = ControllerData.getNodeById(data);
-		String responseString;
-		
-		if(!(node == null) && ControllerData.exists(node)) {
-			
-			if(node.turnOff(comp)){
-				responseString = "Component in the Node turned off";
-				return Response.status(200).entity(responseString).build();
-			} else {
-				responseString = "WARNING: Component were not turned off";
-				return Response.status(500).entity(responseString).build();
-			}
-			
-		} else {
-			responseString = "404, Node not found!";
-			return Response.status(404).entity(responseString).build();
-		}
-		
-		
-	}
+	  NodeObjects node = ControllerData.getNodeById(data);
+    String responseString;
+    
+    if(node != null && ControllerData.exists(node)) {
+      
+      Response r = node.turnOff(comp);
+      
+      if(r.getStatus() == 200){
+        responseString = "Component in the Node turned off";
+        return Response.status(200).entity(responseString).build();
+      } else {
+        
+        responseString = "WARNING: Component was not turned off \n";
+        responseString += (String) r.getEntity();
+        return Response.status(500).entity(responseString).build();
+      }
+      
+    } else {
+      responseString = "404, Node not found! Node: " + data;
+      return Response.status(404).entity(responseString).build();
+    }
+    
+    
+  }
 
 
 

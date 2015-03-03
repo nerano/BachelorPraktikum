@@ -1,9 +1,6 @@
 package mm.controller.power;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -27,9 +24,22 @@ public class ControllerPowerPut {
 	private WebTarget putTarget = client.target(getPowerPutUri());
 	
 	/**
+	 * Turns on a set of PowerSources. 
+	 * <p>
+	 * Expects a String in the following form: "[PowerSource;Socket;]end" 
+	 * In the following all PowerSources in the string are going to turned on.
+	 * To achieve this the parameter String is sent to the PowerService.
+	 * <p>
+	 * Possible HTTP status codes in the returned Response Object:
 	 * 
-	 * @param parameter
-	 * @return
+	 * <li> 200: Everything went as expected and the PowerSources are now turned on
+	 * <li> 404: Only one or multiple PowerSources do not exist in the PowerSources under
+	 * the given identifier
+	 * <li> 500: Some other error occurred(and possible 404s), the response body contains a specified error description
+	 *   A 500 ResponseCode overwrites a 404 code.
+	 *   
+	 * @param parameter A String with all PowerSources to turn on, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
+	 * @return a Response Object with a status code and message body
 	 */
 	public boolean turnOn(String parameter) {
 	
@@ -52,11 +62,25 @@ public class ControllerPowerPut {
 		}
 	}
 	/**
-	 * 
-	 * @param parameter
-	 * @return
-	 */
-	public boolean turnOff(String parameter) {
+   * Turns off a set of PowerSources. 
+   * <p>
+   * Expects a String in the following form: "[PowerSource;Socket;]end" 
+   * In the following all PowerSources in the string are going to turned off.
+   * To achieve this the parameter String is sent to the PowerService.
+   * <p>
+   * Possible HTTP status codes in the returned Response Object:
+   * 
+   * <li> 200: Everything went as expected and the PowerSources are now turned off.
+   *           The message body/entity is empty.
+   * <li> 404: Only one or multiple PowerSources do not exist in the PowerSources under
+   *           the given identifier. The message body contains a String with further information.
+   * <li> 500: Some other error occurred(and possible 404s), the response body contains a specified error description
+   *   A 500 ResponseCode overwrites a 404 code.
+   *   
+   * @param parameter A String with all PowerSources to turn off, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
+   * @return a Response Object with a status code and message body
+   */
+	public Response turnOff(String parameter) {
 		
 		// String testString = "TESTAEHOME#1;1;end";
 		
@@ -68,11 +92,7 @@ public class ControllerPowerPut {
 		
 		System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
 
-		if(response.getStatus() == 200){
-			return true;
-		} else {
-			return false;
-		}
+		return response;
 	
 	}
 

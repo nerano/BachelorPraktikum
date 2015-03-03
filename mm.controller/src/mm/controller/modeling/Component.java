@@ -1,6 +1,8 @@
 package mm.controller.modeling;
 
 
+import javax.ws.rs.core.Response;
+
 import mm.controller.power.ControllerPowerPut;
 
 public class Component {
@@ -75,7 +77,7 @@ private boolean status;
 	  
   }
   
- public boolean turnOff() {
+ public Response turnOff() {
 	 
 	  
 	  StringBuffer buffer = new StringBuffer();
@@ -88,7 +90,10 @@ private boolean status;
 	  
 	  buffer.append("end");
 	  
-	  return powerPut.turnOff(buffer.toString());
+	  Response r = powerPut.turnOff(buffer.toString());
+	  
+	  
+	  return r;
 	   
   }
   
