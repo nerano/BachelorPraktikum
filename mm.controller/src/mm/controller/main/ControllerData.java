@@ -14,11 +14,11 @@ import mm.controller.modeling.NodeObjects;
 public class ControllerData {
 
 	/* !-- Global List of Experiments --! */
-	private static LinkedList<Experiment> EXPERIMENT_LIST;
+	private static LinkedList<Experiment> EXPERIMENT_LIST = new LinkedList<Experiment>();
 	/* !-- Global Mapping from PORTs to COMPONENTs --! */
-	private static HashMap<String, Component> PORT_TO_COMPONENT;
+	private static HashMap<String, Component> PORT_TO_COMPONENT = new HashMap<String, Component>();
 	/* !-- Global HashMap of all known Nodes--! */
-	private static HashMap<String, NodeObjects> ALL_NODES;
+	private static HashMap<String, NodeObjects> ALL_NODES = new HashMap<String, NodeObjects>();
 
 	public static Component getComponentByPort(String port) {
 		return PORT_TO_COMPONENT.get(port);
@@ -65,6 +65,10 @@ public class ControllerData {
 	static public NodeObjects getNodeById(String id){
 		
 		return ALL_NODES.get(id);
+	}
+	
+	static public void setAllNodes(HashMap<String, NodeObjects> map) {
+	  ALL_NODES = map;
 	}
 	
 	/**

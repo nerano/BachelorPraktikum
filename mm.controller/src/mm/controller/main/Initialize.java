@@ -9,6 +9,7 @@ import mm.controller.modeling.Component;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.VLan;
+import mm.controller.parser.XmlParser;
 
 
 
@@ -27,11 +28,11 @@ public class Initialize implements ServletContextListener
     */
     public void contextInitialized(ServletContextEvent arg0) 
     {   
-       controllerData = new ControllerData();
+       XmlParser parser = new XmlParser();
        
        POWER_TO_COMPONENT = new HashMap<String, Component>();
-       //ALL_NODES = new LinkedList<NodeObjects>();
        //TODO add all parsed Nodes to allNodes
+       ControllerData.setAllNodes(parser.parseXml("C:/Users/Sebastian/git/BachelorPraktikum/nodesExample.xml"));
 
        addExpExample();
        
