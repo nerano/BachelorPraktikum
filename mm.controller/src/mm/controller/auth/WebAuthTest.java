@@ -38,16 +38,18 @@ public class WebAuthTest implements ContainerResponseFilter {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response consumeJSON( String data ) throws JSONException {
     JSONObject json = new JSONObject(data);
+    String sessionId;
     //System.out.println(json);
-    if(!target.path(json.get("user").toString()).path(json.get("password")
-        .toString()).request().get(String.class).equals("LogIn failed!")) {
-      
+    Response response = target.path("createSession").path(json.get("user").toString())
+        .path(json.get("password").toString()).request().get();
+    if(response.getStatus() != 200) {      
       /* Folgende Zeile ist zur Kontrolle der SessionId
       / System.out.println(target.path(json.get("user").toString()).path(json.get("password")
         .toString()).request().get(String.class));*/
-     return Response.status(200).entity("1").build();
+     return Response.status(403).entity("Wrong password or username").build();
     }
-    return Response.status(200).entity("0").build();
+    sessionId = response.readEntity(String.class);
+    return Response.ok(sessionId).build();
   }
   
   @GET
@@ -58,7 +60,7 @@ public class WebAuthTest implements ContainerResponseFilter {
   }
   
   public URI getBaseUri() {
-    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/authmain").build();
+    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/session").build();
   }
 
   public void filter(ContainerRequestContext requestContext,ContainerResponseContext responseContext) throws IOException {

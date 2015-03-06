@@ -1,5 +1,6 @@
 package mm.auth;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -10,9 +11,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 @Path("/session")
 @Singleton
@@ -23,32 +25,27 @@ public class Session {
   private Date currentDate;
   private Date expire;
   private HashMap<String, Date> ids = new HashMap<String, Date>();
+  private AuthMain auth = new AuthMain();
   
-  /*@GET
-  @Path("getID")
-  @Produces(MediaType.TEXT_PLAIN)
-  public String test() {
-    System.out.println(this.sessionId.toString());
-    return this.sessionId.toString();
-  }*/
-  
+  /**
+   * This Method.
+   * @param user
+   * @param pw
+   * @return
+   */
   @GET
-  @Path("getId")
+  @Path("/createSession/{user}/{pw}")
   @Produces(MediaType.TEXT_PLAIN)
-  public String test() {
-    return "test";
-  }
-  
-  @GET
-  @Path("/createSession")
-  @Produces(MediaType.TEXT_PLAIN)
-  public String createSessionId() {
-    this.buildSessionId();
-    this.setTimer();
-    if (!this.ids.containsKey(this.sessionId.toString())) {
-      this.ids.put(this.sessionId.toString(), this.expire);
+  public Response createSessionId(@PathParam("user") String user, @PathParam("pw") String pw) {
+    if (this.auth.sayAuth(user, pw)) {
+      this.buildSessionId();
+      this.setTimer();
+      if (!this.ids.containsKey(this.sessionId.toString())) {
+        this.ids.put(this.sessionId.toString(), this.expire);
+      }
+      return Response.ok(this.sessionId.toString()).build();
     }
-    return this.sessionId.toString();
+    return Response.status(403).entity("LogIn failed!").build();
   }
   
   private void buildSessionId() {
@@ -68,8 +65,6 @@ public class Session {
   
   private boolean checkTime(String sessionId) {
     this.currentDate = new Date();
-    //System.out.println(currentDate.toString());
-    //System.out.println(this.expire.toString());
     if (this.currentDate.getTime() >= this.expire.getTime()) {
       this.ids.remove(sessionId);
       return false;
@@ -77,14 +72,16 @@ public class Session {
     return true;
   }
   
+  /**
+   * This Method.
+   * @param sessionId
+   * @return
+   */
   @GET
-  @Path("{sessionId}")
+  @Path("isValid/{sessionId}")
   @Produces(MediaType.TEXT_PLAIN)
   @Consumes("text/plain")
   public String testSession(@PathParam("sessionId") String sessionId) {
-    //System.out.println("Local SessionId: " + sessionId);
-    //System.out.println("Globale SessionId " + this.sessionId.toString());
-    System.out.println(this.ids.containsKey(sessionId));
     if (this.ids.containsKey(sessionId)) {
       this.expire = this.ids.get(sessionId);
       if (this.checkTime(sessionId)) {
@@ -96,5 +93,9 @@ public class Session {
   
   public String getSessionId() {
     return this.sessionId.toString();
+  }
+  
+  public URI getBaseUri() {
+    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/authmain").build();
   }
 }
