@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="test.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<Node>
+	<id>01</id>
+	<components>
+		<component>apu</component>
+		<ports>NetComponent;1</ports>
+		<powerSource>aehome;1</powerSource>
+		
+		<component>warp</component>
+		<ports>NetComponent;3</ports>
+		<powerSource>aehome;2</powerSource>
+	</components>
+	<building>Gebäude1</building>
+	<room>5</room>
+	
+	<id>04</id>
+	<components>
+		<component>warp</component>
+		<ports>NetComponent;100</ports>
+		<powerSource>aehome;8</powerSource>
+		
+		<component>aliax</component>
+		<ports>NetComponent;10</ports>
+		<powerSource>aehome;4</powerSource>
+	</components>
+	<building>Gebäude3</building>
+	<room>15</room>
+</Node>
