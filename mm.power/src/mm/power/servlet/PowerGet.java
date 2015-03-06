@@ -20,7 +20,7 @@ public class PowerGet {
 	
   /**
    * Returns information about the power source with the given ID.
-   * @param id ID of the PowerSupply and the socket/port number e.g "PowerSupply;1;end"
+   * @param incoming  ID of the PowerSupply and the socket/port number e.g "PowerSupply;1;end"
    * @return response A response Object with the requested information
    */
   @GET

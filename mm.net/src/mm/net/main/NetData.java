@@ -1,11 +1,14 @@
 package mm.net.main;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import mm.net.modeling.VLan;
 
 public class NetData {
 	private static LinkedList<VLan> VLAN_LIST;
+	
+	private HashMap<String, NetComponent> NETCOMPONENT_LIST = new HashMap<String, NetComponent>();
 
 	public NetData() {
 		VLAN_LIST = new LinkedList<VLan>();

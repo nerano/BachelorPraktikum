@@ -35,7 +35,6 @@ public class AEHome implements PowerSupply {
 	private String URL_CTRL;
 	private String USER_BASE64;
 	// private String TEST_USER = "adminanel";
-	private final long CACHE_TIME = 5000;
 
 	/**
 	 * Constructor for a power outlet "Anel Elektronik Home", which posses 3

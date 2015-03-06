@@ -15,7 +15,7 @@ public class ControllerDelete {
 	 * Deletes an experiment.
 	 * <p>
 	 * Deletes an experiment with the given ID, the ID is part of the URI
-	 * URI: baseuri:port/mm.controller/rest/delete/exp/{id} 
+	 * URI: <code>baseuri:port/mm.controller/rest/delete/exp/{id}</code> 
 	 * The message body contains a human readable form of the status code
 	 * <p>
 	 * Possible HTTP status codes:

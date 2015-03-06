@@ -16,23 +16,25 @@ import mm.power.modeling.PowerSupply;
 public class PowerPut {
 
 	/**
-	 * Turns Sockets on from a given concatenated input String.
+	 * Turns PowerSources on from a given concatenated input String.
 	 * <p>
-	 * Address of this method: baseuri:port/mm.power/rest/put/turnOn/ String
+	 * Address of this method is <code> baseuri:port/mm.power/rest/put/turnOn/</code> <br> String
 	 * consists of PowerSource;Socket couples, which are divided by a ";". The
 	 * string has to be in the message entity and must end with an "end". If
 	 * everything was successfully turned on the response holds the status 200.
+	 * </p>
 	 * <p>
 	 * Possible HTTP States:
-	 * <li>200: Everything went right, all PowerSources could be turned on.
-	 * <li>404: One or multiple PowerSources could not be found. Which one are
+	 * <li>200: Everything went right, all PowerSources could be turned on.</li>
+	 * <li>404: One or multiple PowerSources could not be found. Which one are</li>
 	 * specified in the returned Response body. Occurs only if there was no
 	 * other error
+	 * </p>
 	 * <p>
 	 * <li>500: Something in the process of turning on did not work as intended.
 	 * E.g. UnknownHost or Timeout on the HTTP connection. Cause and specific
-	 * error can be found in the Response body or the ServerLog.
-	 * <p>
+	 * error can be found in the Response body or the ServerLog.</li>
+	 * </p>
 	 * 
 	 * @param incoming
 	 *            String, expected format "[PowerSource;Socket;]end" multiple
@@ -102,7 +104,11 @@ public class PowerPut {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			return Response.status(500).entity(sw.toString()).build();
+			String responseString = "Error occurred in PowerPut /turnOn. " 
+								  + "Nothing was turned on, because of error: \n"
+								  + sw.toString()
+								  + "\n End of Error.";
+			return Response.status(500).entity(responseString).build();
 		}
 
 	}
@@ -124,7 +130,6 @@ public class PowerPut {
 	 * <li>500: Something in the process of turning off did not work as
 	 * intended. E.g. UnknownHost or Timeout on the HTTP connection. Cause and
 	 * specific error can be found in the Response body or the ServerLog.
-	 * <p>
 	 * 
 	 * @param incoming
 	 *            String, expected format "[PowerSource;Socket;]end" multiple

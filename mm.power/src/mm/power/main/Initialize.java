@@ -1,14 +1,10 @@
 package mm.power.main;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import mm.power.exceptions.EntryDoesNotExistException;
-import mm.power.exceptions.TransferNotCompleteException;
-import mm.power.implementation.AEHome;
 import mm.power.modeling.PowerSupply;
 import mm.power.parser.XmlParser;
 
@@ -35,7 +31,9 @@ public class Initialize implements ServletContextListener {
     PowerData.addPs(ps1);*/
     XmlParser parser = new XmlParser();
    // parser.parseXml("C:/Users/Sebastian/git/BachelorPraktikum/mm.power/PowerSupply.xml");
-    parser.parseXml("C:/Users/milton/git/BachelorPraktikum/mm.power/PowerSupply.xml");
+    //parser.parseXml("C:/Users/milton/git/BachelorPraktikum/mm.power/PowerSupply.xml");
+    parser.parseXml("xml/PowerSupply.xml");
+    
     HashMap<String, PowerSupply> map = parser.getPowerSupply();
     System.out.println(map.get("AeHome2").toString());
     new PowerData(map);

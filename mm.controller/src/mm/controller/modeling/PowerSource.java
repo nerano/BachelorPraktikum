@@ -5,7 +5,16 @@ public class PowerSource {
 
 	private String id;
 	private boolean status;
+	private String failure;
 	
+	public String getFailure() {
+		return failure;
+	}
+
+	public void setFailure(String failure) {
+		this.failure = failure;
+	}
+
 	public PowerSource(String id){
 		this.id = id;
 	}
