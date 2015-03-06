@@ -19,8 +19,7 @@ import org.xml.sax.SAXException;
 public class XmlParser {
 
   /**
-   * private variables for the Document, DocumentBuilder,
-   *  TransformerFactory, Transformer and DOMSource.
+   * private variables for the Document, DocumentBuilder and DOMSource.
    */
   private DocumentBuilder docBuilder;
   private Document doc;
@@ -29,7 +28,7 @@ public class XmlParser {
 
   /**
    * Constructor, creates a new instance of DocumentBuilderFactory and
-   * DocuemtnBuilder. Changes the Namespace- and XIncludeawareness to true.
+   * DocuemtnBuilder. Changes the Namespaceawareness and possible XIncludeawareness to true.
    * 
    * @throws ParserConfigurationException
    *           if the documentBuilder can not be instantiated.
@@ -55,7 +54,7 @@ public class XmlParser {
    * 
    * @param file
    *          contains a String which locates the XML file to be parsed
-   * @return true if the file was parsed, else false
+   * @return HashMap including the NodeID as key and an Node Object as the value
    * @throws SAXException
    *           or IOException if the committed file can not be found.
    */
