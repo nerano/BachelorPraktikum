@@ -5,6 +5,7 @@ import java.net.URI;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -19,26 +20,26 @@ public class ControllerAuthGet {
   
   static DataInput da = new DataInput();
   
-  public String authtentification() {
+  public Response authtentification() {
     
     da.setUserName();
     da.setPassword();
     String user = da.getUserName();
     String pw = da.getPassword();
 
-    return target.path("/authmain").path(user).path(pw).request().get(String.class);
+    return target.path("createSession").path(user).path(pw).request().get();
   }
   
   public static URI getBaseUri() {
-    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest").build();
+    return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/session").build();
   }
   
   public static void main(String[] args) {
     ControllerAuthGet auth = new ControllerAuthGet();
-    sessionId = auth.authtentification();
-    System.out.println(target.path("/session").path(sessionId).request().get(String.class));
-    String sessionId2 = auth.authtentification();
-    //System.out.println(target.path("/session").path(sessionId2).request().get(String.class));
+    sessionId = auth.authtentification().readEntity(String.class);
+    System.out.println(target.path("isValid").path(sessionId).request().get(String.class));
+    String sessionId2 = auth.authtentification().readEntity(String.class);
+    System.out.println(target.path("isValid").path(sessionId2).request().get(String.class));
     
     /* Pausiert die Methode für 11 Sekunden um zu testen ob die SessionID invalid wird
     try {
@@ -48,11 +49,11 @@ public class ControllerAuthGet {
       e.printStackTrace();
     }*/
     
-    if (target.path("/session").path(sessionId2).request().get(String.class).equals("New LogIn!!!")) {
+    if (target.path("isValid").path(sessionId2).request().get(String.class).equals("New LogIn!!!")) {
       System.out.println("Your session expired. Please log in again: ");
       auth.authtentification();
     }
-    System.out.println(target.path("/session").path(sessionId).request().get(String.class));
+    System.out.println(target.path("isValid").path(sessionId).request().get(String.class));
     
     da.closeScanner();
   }

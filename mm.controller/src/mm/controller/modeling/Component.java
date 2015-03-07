@@ -7,11 +7,10 @@ import mm.controller.power.ControllerPowerPut;
 public class Component {
 
 	private String type;
-	@SuppressWarnings("unused")
-	private boolean status;
-	private int vLanIds;
 	private String ports;
 	private String powerSource;
+	private boolean status;
+	private int vLanIds;
 	private transient ControllerPowerPut powerPut = new ControllerPowerPut();
 
 	public Component(String type) {
@@ -34,6 +33,10 @@ public class Component {
 
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+	
+	public boolean getStatus() {
+	  return this.status;
 	}
 
 	public void setvLanId(int vLanId) {

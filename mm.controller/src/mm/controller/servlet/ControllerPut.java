@@ -56,7 +56,7 @@ public class ControllerPut {
 		}
 
 	}
-
+	
 	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -182,7 +182,7 @@ public class ControllerPut {
 				String s = r.readEntity(String.class);
 				responseString = responseString + s;
 				return Response.status(500).entity(responseString).build();
-			}
+			}  
 
 		} else {
 			responseString = "404, Node not found! Node: " + data;

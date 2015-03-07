@@ -14,31 +14,31 @@ public class ControllerDelete {
 	/**
 	 * Deletes an experiment.
 	 * <p>
-	 * Deletes an experiment with the given ID, the ID is part of the URI
-	 * URI: <code>baseuri:port/mm.controller/rest/delete/exp/{id}</code> 
+	 * Deletes an experiment with the given ID, the message body contains the 
+	 * URI: <code>baseuri:port/mm.controller/rest/delete/exp</code> 
 	 * The message body contains a human readable form of the status code
 	 * <p>
 	 * Possible HTTP status codes:
 	 * 
 	 * <li> 200: Returned if the experiment with the given ID was removed
-	 * <li> 401: Returned if there was not experiment with the given ID
+	 * <li> 404: Returned if there was not experiment with the given ID
 	 * @param id Identifier of the Experiment to delete
 	 * @return a Response Object
 	 */
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/exp/{id}")
-	public Response deleteExperiment(@PathParam("id") String id){
+	@Path("/exp")
+	public Response deleteExperiment(String id){
 		Response response;
 		String responseString;
-		
+		System.out.println(id);
 		if(ControllerData.removeExp(id)){
 			responseString = "Experiment with ID '" + id + "' was removed";
 			response = Response.status(200).entity(responseString).build();
 			return response;
 		} else {
 			responseString = "Experiment with ID '" + id + "' was not found";
-			response = Response.status(401).entity(responseString).build();
+			response = Response.status(404).entity(responseString).build();
 			return response;
 		}
 		

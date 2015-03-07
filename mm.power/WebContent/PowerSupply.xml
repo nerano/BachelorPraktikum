@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Supplys>
+	<id>AeHome1</id>
+	<host>TESTFAILHOST</host>
+	<type>AeHome</type>
+	<id>AeHome2</id>
+	<host>TESTFAILHOST</host>
+	<type>AeHome</type>
+	<id>AeHome3</id>
+	<host>TESTFAILHOST</host>
+	<type>AeHome</type>
+</Supplys>
