@@ -1,9 +1,14 @@
 package mm.controller.main;
 
+import java.io.File;
 import java.util.HashMap;
 
+import javax.servlet.http.*;
+import javax.servlet.GenericServlet;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.ws.rs.core.Context;
 
 import mm.controller.modeling.Component;
 import mm.controller.modeling.Experiment;
@@ -16,6 +21,8 @@ import mm.controller.parser.XmlParser;
 public class Initialize implements ServletContextListener
     {
            
+    @Context
+    private ServletContext context; 
     
     public ControllerData controllerData;
     
@@ -32,12 +39,24 @@ public class Initialize implements ServletContextListener
        
        POWER_TO_COMPONENT = new HashMap<String, Component>();
        //TODO add all parsed Nodes to allNodes
+       
+       
+       
+       String path = context.getServletContext().getRealPath("/");
+       System.out.println(path);
+       
        ControllerData.setAllNodes(parser.parseXml("C:/Users/Sebastian/git/BachelorPraktikum/nodesExample.xml"));
-
+       
        addExpExample();
        
     }
 
+    public String getPath(@Context ServletContext servletcontext) {
+     
+      //File f = new File(getServletContext().getRealPath("alerts/rtp_bcklg_mail.html"));
+      //return servletcontext.getRealPath("nodesExample.xml");
+      return null;
+    }
     
     public void contextDestroyed(ServletContextEvent arg0) 
     {

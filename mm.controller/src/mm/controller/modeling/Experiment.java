@@ -18,16 +18,16 @@ public class Experiment implements Cloneable {
 	private LinkedList<VLan> vlans;
 
 	private String user;
-	private boolean running;
+	private String status;
 	
 	
 	
-	public boolean isRunning() {
-		return running;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setRunning(boolean running) {
-		this.running = running;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getUser(){

@@ -50,7 +50,7 @@ public class ControllerGet {
 	@Path("/nodes")
 	public Response getAllNodes() {
 
-		Gson gson = new GsonBuilder()/**.setExclusionStrategies (new NoStatusNodeStrat()) **/
+		Gson gson = new GsonBuilder().setExclusionStrategies (new NoStatusNodeStrat())  
 				 .setPrettyPrinting().create();
 		// TODO TESTEN
 		LinkedList<NodeObjects> list = ControllerData.getAllNodesAsList();
