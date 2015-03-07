@@ -1,4 +1,4 @@
-package mm.server;
+package mm.server.rapi;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;

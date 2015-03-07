@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
-	<classpathentry kind="lib" path="D:/TUDarmstadt/Material/Bachelor Praktikum/Libraries/org.json-20120521.jar"/>
+	<classpathentry kind="lib" path="/home/benedikt/Dokumente/eclipse/org.json-20120521.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
