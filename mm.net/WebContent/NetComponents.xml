@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<NetComponents>
+	
+	<id>NetGear1</id>
+	<host>netgearGS</host>
+	<type>NetGearGS108Tv2</type>
+	
+	<id>NetGear2</id>
+	<host>TESTFAILHOST2</host>
+	<type>NetGearGS108Tv2</type>
+	
+	<id>NetGear3</id>
+	<host>TESTFAILHOST3</host>
+	<type>NetGearGS108Tv2</type>
+
+</NetComponents>
