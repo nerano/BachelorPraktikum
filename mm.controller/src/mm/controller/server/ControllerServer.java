@@ -49,6 +49,18 @@ public class ControllerServer {
   }
   
   /**
+   * This method will return a list of all templates of instances.
+   * @return the list of all templates of instances.
+   */
+  @GET
+  @Path("template")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getTemplate() {
+    target = client.target(url);
+    return target.path("template").request().get(String.class); 
+  }
+  
+  /**
    * This method will return a list of all attributes of a given instance.
    * @param instance the name of the instance which attributes will be shown.
    * @return the list of all attributes of an instances.

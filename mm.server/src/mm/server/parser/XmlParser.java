@@ -69,7 +69,16 @@ public class XmlParser {
         }
         id = node.getTextContent();
       } else {
-        vm.setString(node.getNodeName(), node.getTextContent());
+        switch (node.getTextContent()) {
+          case
+            "true" : vm.setBoolean(node.getNodeName(), true);
+            break;
+          case
+            "false" : vm.setBoolean(node.getNodeName(), false);
+            break;
+          default: vm.setString(node.getNodeName(), node.getTextContent());
+            break;
+        }
       }
       counter++;
     }
@@ -81,13 +90,14 @@ public class XmlParser {
   /**
    * Updates the HashMap of instances.
    * @param file the path of the XML file.
+   * @return the updated HashMap of instances.
    */
-  public void update(String file) {
+  public HashMap<String, Instances> update(String file) {
     try {
       doc = docBuilder.parse(file);
     } catch (SAXException | IOException e) {
       e.printStackTrace();
     }
-    this.parse();
+    return this.parse();
   }
 }

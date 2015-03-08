@@ -7,7 +7,7 @@
 	<disk_template>plain</disk_template>
 	<conflicts_check>false</conflicts_check>
 	<ip_check>false</ip_check>
-	<nic_link>bro0</nic_link>
+	<nic_link>br0</nic_link>
 	<nic_mode>bridged</nic_mode>
 	<nic_ip>10.10.11.3</nic_ip>
 	<disks_size>5120</disks_size>
@@ -22,7 +22,7 @@
 	<disk_template>plain</disk_template>
 	<conflicts_check>false</conflicts_check>
 	<ip_check>false</ip_check>
-	<nic_link>bro0</nic_link>
+	<nic_link>br0</nic_link>
 	<nic_mode>bridged</nic_mode>
 	<nic_ip>10.10.11.2</nic_ip>
 	<disks_size>5120</disks_size>
@@ -37,7 +37,7 @@
 	<disk_template>plain</disk_template>
 	<conflicts_check>false</conflicts_check>
 	<ip_check>false</ip_check>
-	<nic_link>bro0</nic_link>
+	<nic_link>br0</nic_link>
 	<nic_mode>bridged</nic_mode>
 	<nic_ip>10.10.11.4</nic_ip>
 	<disks_size>5120</disks_size>

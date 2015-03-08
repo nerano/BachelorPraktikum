@@ -120,10 +120,11 @@ public class Ganeti {
    * @param param is the String with all parameters to create an instance.
    */
   public void create(String param) {
+    System.out.println(param);
     target = client.target(url);
     try {
       builder = target.path("instances").request().header("Content-Type", "application/json");
-      builder.accept("application/json").post(Entity.json(param));      
+      System.out.println(builder.accept("application/json").post(Entity.json(param)));      
     } catch (Exception e) {
       e.printStackTrace();
     }

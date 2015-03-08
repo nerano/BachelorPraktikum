@@ -55,8 +55,11 @@ public class Instances {
           nic.add(nics);
           break;
         case
-          "disks_size": disks.put("size", value);
+          "disks_size": disks.put("size", Integer.parseInt(value));
           disk.add(disks);
+          break;
+        case
+          "__version__": json.put(key, Integer.parseInt(value));
           break;
         default:
           json.put(key, value);
@@ -74,6 +77,14 @@ public class Instances {
     try {
       json.put("nics", nic);
       json.put("disks", disk);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  public void setBoolean(String key, boolean value) {
+    try {
+      json.put(key, value);
     } catch (JSONException e) {
       e.printStackTrace();
     }

@@ -11,8 +11,13 @@ public class TestParser {
   
   public static void main(String[] args) {
     TestParser tp = new TestParser();
-    //System.out.println(tp.map.toString());
+    String name = "test";
+    System.out.println(tp.map.keySet().toString());
     System.out.println(tp.map.get("Instanz1").toString());
+    String create = tp.map.get("Instanz1").toString();
+    create = create.substring(0, create.length() - 1);
+    create = create.concat(",\"instance_name\":\"" + name + "\"}");
+    System.out.println(create);
     System.out.println(tp.map.get("Instanz3").toString());
     System.out.println(tp.map.get("Instanz2").toString());
   }
