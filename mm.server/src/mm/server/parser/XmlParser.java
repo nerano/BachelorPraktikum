@@ -13,6 +13,7 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
 
 /**
  * This class parses a XML file of configured instances and saves them into a HashMap.
@@ -26,6 +27,7 @@ public class XmlParser {
    */
   private DocumentBuilder docBuilder;
   private Document doc;
+  private DOMSource source;
     
   /**
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
@@ -42,6 +44,7 @@ public class XmlParser {
     } catch (ParserConfigurationException | SAXException | IOException e) {
       e.printStackTrace();
     }
+    this.source = new DOMSource(this.doc);
   }
   
   /**

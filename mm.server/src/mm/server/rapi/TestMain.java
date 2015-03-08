@@ -21,19 +21,10 @@ public class TestMain {
     String reboot = "{\"type\":\"soft\","
         + "\"ignore_secondaries\":1}";*/
     Ganeti ga = new Ganeti();
-    RestInterface ri = new RestInterface();
-    JSONObject json = new JSONObject();
-    try {
-      json.put("name", "benvm.seemoo.tu-darmstadt.de");
-      json.put("template", "Instanz1");
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
     //System.out.println(ga.getInstances());
     //System.out.println(ga.getInstanceInfo("benvm.seemoo.tu-darmstadt.de"));
     //System.out.println(ga.getInstanceInfoParam("benvm.seemoo.tu-darmstadt.de","always_failover"));
     //System.out.println(ga.getInstanceInfoParam("benvm.seemoo.tu-darmstadt.de","status"));
-    ri.createInstance(json.toString());
     //ga.startup("benvm.seemoo.tu-darmstadt.de","");
     //ga.shutdown("testvm.seemoo.tu-darmstadt.de","");
     //ga.rename("test123.seemoo.tu-darmstadt.de", "benvm.seemoo.tu-darmstadt.de");

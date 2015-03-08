@@ -22,14 +22,15 @@ public class TestMainControllerServer {
         + "\"name_check\":false,"
         + "\"ip_check\":false}";*/
     JSONObject json = new JSONObject();
-    json.put("name", "benvm.seemoo.tu-darmstadt.de");
+    json.put("name", "benvm2.seemoo.tu-darmstadt.de");
     json.put("template", "Instanz1");
     //System.out.println(conser.getInstances());
-    conser.createInstance(json.toString());
+    System.out.println(conser.getTemplate());
+    //conser.createInstance(json.toString());
     //conser.startInstance("testvm.seemoo.tu-darmstadt.de","");
     //conser.stopInstance("testvm.seemoo.tu-darmstadt.de","");
     //conser.renameInstance("testController2.seemoo.tu-darmstadt.de", newName);
-    //conser.deleteInstance("testController.seemoo.tu-darmstadt.de");
+    //conser.deleteInstance("benvm2.seemoo.tu-darmstadt.de");
     //conser.rebootInstance("testController2.seemoo.tu-darmstadt.de", "");
     //conser.deleteInstance("unittestcontroller.seemoo.tu-darmstadt.de");
   }

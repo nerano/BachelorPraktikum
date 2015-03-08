@@ -1,7 +1,7 @@
 package mm.server.rapi;
 
 import mm.server.instance.Instances;
-import mm.server.parser.XmlParser;
+import mm.server.main.ServerData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,9 +25,17 @@ import javax.ws.rs.core.MediaType;
 @Path("/ganeti")
 public class RestInterface {
 
-  Ganeti ga = new Ganeti();
-  XmlParser parser = new XmlParser("/home/benedikt/git/BachelorPraktikum/xml/VM.xml");
-  HashMap<String, Instances> map = parser.parse();
+  private Ganeti ga = new Ganeti();
+  private HashMap<String, Instances> map = ServerData.getServerList();
+  
+  public RestInterface() {
+    
+  }
+  
+  public RestInterface(HashMap<String, Instances> instanceMap) {
+    map = instanceMap;
+    System.out.println(map.keySet().toString());
+  }
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)

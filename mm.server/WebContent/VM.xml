@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Instances>
+	<id>Instanz1</id>
+	<__version__>1</__version__>
+	<name_check>false</name_check>
+	<pnode>pxhost01.seemoo.tu-darmstadt.de</pnode>
+	<disk_template>plain</disk_template>
+	<conflicts_check>false</conflicts_check>
+	<ip_check>false</ip_check>
+	<nic_link>br0</nic_link>
+	<nic_mode>bridged</nic_mode>
+	<nic_ip>10.10.11.3</nic_ip>
+	<disks_size>5120</disks_size>
+	<os_type>debootstrap+wheezy</os_type>
+	<mode>create</mode>
+	<start>false</start>
+
+	<id>Instanz2</id>
+	<__version__>1</__version__>
+	<name_check>false</name_check>
+	<pnode>pxhost01.seemoo.tu-darmstadt.de</pnode>
+	<disk_template>plain</disk_template>
+	<conflicts_check>false</conflicts_check>
+	<ip_check>false</ip_check>
+	<nic_link>br0</nic_link>
+	<nic_mode>bridged</nic_mode>
+	<nic_ip>10.10.11.2</nic_ip>
+	<disks_size>5120</disks_size>
+	<os_type>debootstrap+wheezy</os_type>
+	<mode>create</mode>
+	<start>false</start>
+
+	<id>Instanz3</id>
+	<__version__>1</__version__>
+	<name_check>false</name_check>
+	<pnode>pxhost01.seemoo.tu-darmstadt.de</pnode>
+	<disk_template>plain</disk_template>
+	<conflicts_check>false</conflicts_check>
+	<ip_check>false</ip_check>
+	<nic_link>br0</nic_link>
+	<nic_mode>bridged</nic_mode>
+	<nic_ip>10.10.11.4</nic_ip>
+	<disks_size>5120</disks_size>
+	<os_type>debootstrap+wheezy</os_type>
+	<mode>create</mode>
+	<start>false</start>
+</Instances>
