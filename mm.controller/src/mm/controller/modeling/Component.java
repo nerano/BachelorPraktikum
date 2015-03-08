@@ -108,5 +108,27 @@ public class Component {
 		return r;
 
 	}
+	
+	
+	public String toString() {
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("Type: '").append(type).append("'\n");
+		sb.append("PowerSource: '").append(powerSource).append("'\n");
+		sb.append("Ports: '").append(ports).append("'\n");
+		
+		return sb.toString();
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

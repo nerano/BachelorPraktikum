@@ -26,37 +26,33 @@ public class Initialize implements ServletContextListener
     
     public ControllerData controllerData;
     
-    //public static LinkedList<NodeObjects> ALL_NODES;
     public static HashMap<String, Component> POWER_TO_COMPONENT;
     public static HashMap<Component, String> COMPONENT_TO_POWER;
    
     /**
     * !-- Initialize everything for the Controller here --!
     */
-    public void contextInitialized(ServletContextEvent arg0) 
+    public void contextInitialized(ServletContextEvent contextEvent) 
     {   
        XmlParser parser = new XmlParser();
        
        POWER_TO_COMPONENT = new HashMap<String, Component>();
        //TODO add all parsed Nodes to allNodes
        
-       
-       
-       String path = context.getServletContext().getRealPath("/");
+       String path = contextEvent.getServletContext().getRealPath("/nodesExample.xml");
        System.out.println(path);
        
-       ControllerData.setAllNodes(parser.parseXml("C:/Users/Sebastian/git/BachelorPraktikum/nodesExample.xml"));
+       parser.parseXml(path);
+       
+       ControllerData.setAllNodes(parser.getNodeObjects());
+       
+       System.out.println(ControllerData.getNodeById("01"));
+       System.out.println(ControllerData.getNodeById("04"));
        
        addExpExample();
        
     }
 
-    public String getPath(@Context ServletContext servletcontext) {
-     
-      //File f = new File(getServletContext().getRealPath("alerts/rtp_bcklg_mail.html"));
-      //return servletcontext.getRealPath("nodesExample.xml");
-      return null;
-    }
     
     public void contextDestroyed(ServletContextEvent arg0) 
     {

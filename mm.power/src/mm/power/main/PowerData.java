@@ -8,7 +8,7 @@ public class PowerData {
 
   private static HashMap<String, PowerSupply> POWERSUPPLY_MAP = new HashMap<String, PowerSupply>();
 
-  public PowerData(HashMap<String, PowerSupply> powerList) {
+   PowerData(HashMap<String, PowerSupply> powerList) {
     POWERSUPPLY_MAP = powerList;
   }
 
