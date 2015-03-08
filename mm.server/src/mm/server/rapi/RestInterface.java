@@ -1,4 +1,4 @@
-package mm.server;
+package mm.server.rapi;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;

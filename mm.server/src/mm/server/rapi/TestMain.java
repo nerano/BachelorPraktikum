@@ -1,4 +1,4 @@
-package mm.server;
+package mm.server.rapi;
 
 public class TestMain {
   
