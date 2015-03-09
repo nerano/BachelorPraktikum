@@ -114,5 +114,12 @@ public class ControllerPowerGet {
 		return UriBuilder.fromUri("http://localhost:8080/mm.power/rest/")
 				.build();
 	}
+	
+	
+	
+	
+	
+	
+	
 
 }

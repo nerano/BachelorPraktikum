@@ -1,6 +1,7 @@
 package mm.controller.servlet;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -8,8 +9,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+
+import org.glassfish.jersey.client.ClientConfig;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -174,17 +182,5 @@ public class ControllerGet {
 		return Response.status(200).entity(responseString).build();
 	}
 
-	/** @GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public String getJSON() {
-
-		ControllerPowerGet powerget = new ControllerPowerGet();
-
-		LinkedList<NodeObjects> test;
-		test = powerget.getAll();
-		System.out.println(test.toString());
-		return test.toString();
-
-	}**/
 
 }

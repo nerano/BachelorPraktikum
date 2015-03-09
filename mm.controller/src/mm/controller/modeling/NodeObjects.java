@@ -77,7 +77,7 @@ public class NodeObjects {
 			if (r.getStatus() != 200) {
 				bool = false;
 				sb.append("Error on " + component.getType() + "\n");
-				sb.append((String) r.getEntity()).append("\n");
+				sb.append(r.readEntity(String.class)).append("\n");
 			}
 		}
 		if (bool) {

@@ -226,6 +226,7 @@ public class ControllerPut {
 		if (node != null && ControllerData.exists(node)) {
 
 			Response r = node.turnOff(comp);
+			System.out.println("ControllerPUT status : " + r.getStatus());
 
 			if (r.getStatus() == 200) {
 				responseString = "Component in the Node turned off";
@@ -233,7 +234,13 @@ public class ControllerPut {
 			} else {
 
 				responseString = "WARNING: Component was not turned off \n";
-				responseString += (String) r.getEntity();
+				
+				responseString += r.readEntity(String.class);
+				
+				System.out.println("ControllerPut Status " + r.getStatus() 
+            + " \n Controllerput responseString " + responseString);
+				
+				
 				return Response.status(500).entity(responseString).build();
 			}
 

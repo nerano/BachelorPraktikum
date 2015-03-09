@@ -76,6 +76,9 @@ public class ControllerPowerPut {
    */
 	public Response turnOff(String parameter) {
 		
+	  
+	  
+	  
 		// String testString = "TESTAEHOME#1;1;end";
 		
 		Response response = putTarget.path("turnOff").request().accept(MediaType.TEXT_PLAIN)
@@ -84,7 +87,9 @@ public class ControllerPowerPut {
 																						Response.class);	
 	
 		
-		System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
+		System.out.println("ControllerPowerPut status " + response.getStatus());
+		
+		// System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
 
 		return response;
 	
