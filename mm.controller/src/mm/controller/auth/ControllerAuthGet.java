@@ -30,6 +30,18 @@ public class ControllerAuthGet {
     return target.path("createSession").path(user).path(pw).request().get();
   }
   
+  public boolean isValid(String sessionId) {
+    boolean bool = false;
+    
+    Response r = target.path(sessionId).request().get(Response.class);
+    
+    if(r.getStatus() == 200) {
+      bool = true;
+    }
+    
+    return bool;
+  }
+  
   public static URI getBaseUri() {
     return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/session").build();
   }
