@@ -145,7 +145,7 @@ public class ControllerGet {
 			return response;
 		}
 
-		Gson gson = new GsonBuilder().setExclusionStrategies(new NoStatusNodeStrat())
+		Gson gson = new GsonBuilder()/* .setExclusionStrategies(new NoStatusNodeStrat()) */
 									 .setPrettyPrinting().create();
 
 		responseString = gson.toJson(ControllerData.getExpById(id));

@@ -37,7 +37,10 @@ public class ControllerData {
 	}
 
 	public static void addNode(NodeObjects node){
-		ALL_NODES.put(node.getId(), node);
+		
+	    if(ALL_NODES.get(node.getId()) == null) {
+	        ALL_NODES.put(node.getId(), node);
+	    }
 		
 	}
 	
@@ -52,6 +55,7 @@ public class ControllerData {
 		return returnList;
 		
 	}
+	
 	public static void addPort(String port, Component component){
 		PORT_TO_COMPONENT.put(port, component);
 	}
@@ -88,7 +92,7 @@ public class ControllerData {
 		}
 		return exp;
 	}
-
+	
 	/**
 	 * Adds a experiment to the global data.
 	 * 
@@ -96,7 +100,10 @@ public class ControllerData {
 	 *            experiment to add
 	 */
 	static public void addExp(Experiment exp) {
-		EXPERIMENT_LIST.add(exp);
+		
+	    if (!ControllerData.exists(exp)) {
+	        EXPERIMENT_LIST.add(exp);
+	    }
 	}
 
 	/**

@@ -1,30 +1,42 @@
 package mm.net.main;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import mm.net.modeling.NetComponent;
 import mm.net.modeling.VLan;
+import mm.net.parser.XmlParser;
 
 
 public class Initialize implements ServletContextListener
     {
-           
     
     public static VLan vlan1;
     public static VLan vlan2;
     public static VLan vlan3;
 
-    public NetData netData;
    /**
     * !-- Initialize everything for the NetService here --!
     */
-    public void contextInitialized(ServletContextEvent arg0) 
+    public void contextInitialized(ServletContextEvent contextEvent) 
     {
-       netData = new NetData();  
-      
-       addExpExample();
+     
+    	XmlParser parser = new XmlParser();
+    	   
+        String path = contextEvent.getServletContext().getRealPath("/NetComponents.xml");
+        System.out.println(path);
+        
+        parser.parseXml(path);
+        
+        HashMap<String, NetComponent> map = parser.getNetComponents();
+        System.out.println(map.get("NetGear1").toString());
+        
+        new NetData(map);
+    	
+        addExpExample();
     }
 
 

@@ -58,8 +58,7 @@ public class ControllerNetGet {
 
 		vlanString = target.path(parameter).request().get(String.class);
 
-		Type type = new TypeToken<LinkedList<VLan>>() {
-		}.getType();
+		Type type = new TypeToken<LinkedList<VLan>>() {}.getType();
 
 		returnList = gson.fromJson(vlanString, type);
 
@@ -77,8 +76,7 @@ public class ControllerNetGet {
 
 		vlanString = target.path(parameter).request().get(String.class);
 
-		Type type = new TypeToken<LinkedList<VLan>>() {
-		}.getType();
+		Type type = new TypeToken<LinkedList<VLan>>() {}.getType();
 
 		returnList = gson.fromJson(vlanString, type);
 

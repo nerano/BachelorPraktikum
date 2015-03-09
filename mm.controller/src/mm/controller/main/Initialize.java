@@ -2,6 +2,8 @@ package mm.controller.main;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.servlet.http.*;
 import javax.servlet.GenericServlet;
@@ -26,8 +28,8 @@ public class Initialize implements ServletContextListener
     
     public ControllerData controllerData;
     
-    public static HashMap<String, Component> POWER_TO_COMPONENT;
-    public static HashMap<Component, String> COMPONENT_TO_POWER;
+    // public static HashMap<String, Component> POWER_TO_COMPONENT;
+    // public static HashMap<Component, String> COMPONENT_TO_POWER;
    
     /**
     * !-- Initialize everything for the Controller here --!
@@ -36,7 +38,7 @@ public class Initialize implements ServletContextListener
     {   
        XmlParser parser = new XmlParser();
        
-       POWER_TO_COMPONENT = new HashMap<String, Component>();
+      //  POWER_TO_COMPONENT = new HashMap<String, Component>();
        //TODO add all parsed Nodes to allNodes
        
        String path = contextEvent.getServletContext().getRealPath("/nodesExample.xml");
@@ -49,8 +51,14 @@ public class Initialize implements ServletContextListener
        System.out.println(ControllerData.getNodeById("01"));
        System.out.println(ControllerData.getNodeById("04"));
        
+      
+       initPortToComponent();
+       
        addExpExample();
        
+       System.out.println("HASHMAP :" + ControllerData.getComponentByPort("NetComponent;1"));
+    
+    
     }
 
     
@@ -67,9 +75,27 @@ public class Initialize implements ServletContextListener
         
     }
     
+    
+    public static void initPortToComponent() {
+        
+        String port;
+        LinkedList<Component> componentList;
+        LinkedList<NodeObjects> nodeList = ControllerData.getAllNodesAsList();
+       
+        for (NodeObjects nodeObject : nodeList) {
+           componentList = nodeObject.getComponents();
+            for (Component component : componentList) {
+                port = component.getPort();
+                ControllerData.addPort(port, component);
+            }
+        }
+        
+        
+    }
+    
     public static void exp1(){
         
-       String porta1 = "NetComponentA.1";
+    /**    String porta1 = "NetComponentA.1";
  	   String porta2 = "NetComponentA.2";
  	   
  	   String portf7 = "NetzKomponenteF.7";
@@ -90,7 +116,7 @@ public class Initialize implements ServletContextListener
         
         c3.setvLanId(0);
         c4.setvLanId(0); **/
-        
+     /**   
         c1.setPowerSource(powerSource1);
         c2.setPowerSource(powerSource2);
         c3.setPowerSource(powerSource3);
@@ -115,11 +141,11 @@ public class Initialize implements ServletContextListener
         node2.setBuilding("Haus 2");
         
         node1.setRoom("Raum Rechts");
-        node2.setRoom("Raum Links");
+        node2.setRoom("Raum Links"); **/
         
         Experiment exp = new Experiment("EXPERIMENT123");
-        exp.addNode(node1);
-        exp.addNode(node2);
+        exp.addNode(ControllerData.getNodeById("Node A"));
+        exp.addNode(ControllerData.getNodeById("Node B"));
         
         VLan vlan1 = new VLan(125);
         VLan vlan2 = new VLan(124);
@@ -130,13 +156,13 @@ public class Initialize implements ServletContextListener
         
         ControllerData.addExp(exp);
 
-       ControllerData.addPort(porta1, c1);
+      /**  ControllerData.addPort(porta1, c1);
        ControllerData.addPort(porta2, c2);
        ControllerData.addPort(portf7, c3);
        ControllerData.addPort(portf8, c4);
-    
- 	   ControllerData.addNode(node1);
- 	   ControllerData.addNode(node2);
+     **/
+ /** 	   ControllerData.addNode(node1);
+ 	   ControllerData.addNode(node2); **/
     
     }
     

@@ -25,7 +25,7 @@ public class Initialize implements ServletContextListener {
     
     HashMap<String, PowerSupply> map = parser.getPowerSupply();
     new PowerData(map);
-
+    
     System.out.println(PowerData.getById("AeHome1").toString());
     System.out.println(PowerData.getById("AeHome2").toString());
     System.out.println(PowerData.getById("AeHome3").toString());

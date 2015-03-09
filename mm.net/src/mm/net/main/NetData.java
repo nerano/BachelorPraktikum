@@ -3,20 +3,17 @@ package mm.net.main;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import mm.net.modeling.NetComponent;
 import mm.net.modeling.VLan;
 
 public class NetData {
-	private static LinkedList<VLan> VLAN_LIST;
 	
-	private HashMap<String, NetComponent> NETCOMPONENT_LIST = new HashMap<String, NetComponent>();
+	private static LinkedList<VLan> VLAN_LIST = new LinkedList<VLan>();
+	private static HashMap<String, NetComponent> NETCOMPONENT_LIST = new HashMap<String, NetComponent>();
+	// private static LinkedList<Config> CONFIG_LIST = new LinkedList<Config>();
+	protected NetData(HashMap<String, NetComponent> list ) {
+		NETCOMPONENT_LIST = list;
 
-	public NetData() {
-		VLAN_LIST = new LinkedList<VLan>();
-
-	}
-
-	public NetData(LinkedList<VLan> list) {
-		VLAN_LIST = list;
 	}
 
 	public LinkedList<VLan> getVLanList() {
