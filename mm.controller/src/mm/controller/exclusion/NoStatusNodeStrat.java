@@ -18,10 +18,6 @@ public class NoStatusNodeStrat implements ExclusionStrategy {
 
     public boolean shouldSkipField(FieldAttributes f) {
 
-    	
-    	System.out.println(f);
-    	
-   
         return 	(f.getDeclaringClass() == Component.class && f.getName().equals("status")) ||
         		(f.getDeclaringClass() == Component.class && f.getName().equals("vLanId")) ||
         		(f.getDeclaringClass() == Experiment.class &&f.getName().equals("vlans"));

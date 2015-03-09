@@ -15,7 +15,8 @@ public class NodeObjects {
 	private String room;
 	private String latitude;
 	private String longitude;
-
+	private boolean status = false;
+	
 	public NodeObjects() {
 	}
 

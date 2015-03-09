@@ -1,37 +1,13 @@
 package mm.net.modeling;
 
-public class NetComponent {
+import javax.ws.rs.core.Response;
 
-    private String Id;
-  
-    private static final int port = 8;
+public interface NetComponent {
 
-    private String ip;
-    
-    public String getIp() {
-		return ip;
-	}
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-	String getId() {
-        return Id;
-    }
-    public void setId(String id) {
-        Id = id;
-    }
-    public static int getPort() {
-        return port;
-    }
-
-
-    public void getPortByVlan(int id){
-        
-        
-        return;
-    }
-
-
-
+	public Response start();
+	public Response stop();
+    public Response setVLan(String ports, int vlanId, String pvid);
+	public Response setVLan(String config);
+	public Response getPVID(int port);
 
 }
