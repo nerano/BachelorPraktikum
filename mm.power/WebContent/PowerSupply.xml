@@ -2,9 +2,9 @@
 <Supplys>
 	
 	<id>AeHome1</id>
-	<host>TESTFAILHOST1</host>
+	<host>aehome1</host>
 	<type>AeHome</type>
-	
+		
 	<id>AeHome2</id>
 	<host>TESTFAILHOST2</host>
 	<type>AeHome</type>
