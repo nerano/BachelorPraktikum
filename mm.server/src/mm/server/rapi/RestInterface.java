@@ -2,10 +2,14 @@ package mm.server.rapi;
 
 import mm.server.instance.Instances;
 import mm.server.main.ServerData;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -48,7 +52,22 @@ public class RestInterface {
   @Path("template")
   @Produces(MediaType.APPLICATION_JSON)
   public String getTemplate() {
-    return map.keySet().toString();
+    JSONObject json;
+    List<JSONObject> ret = new ArrayList<JSONObject>();
+    String instance = "";
+    String[] keys = map.keySet().toArray(new String[map.size()]);
+    for ( int i = 0; i < map.size(); i++) {
+      System.out.println("KEYS " + keys[i]);
+      instance = map.get(keys[i]).toString();
+      try {
+        json = new JSONObject(instance);
+        json.put("id", keys[i]);
+        ret.add(json);
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    return ret.toString();
   }
   
   @GET

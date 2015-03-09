@@ -40,7 +40,6 @@ public class Initialize implements ServletContextListener
        //TODO add all parsed Nodes to allNodes
        
        String path = contextEvent.getServletContext().getRealPath("/nodesExample.xml");
-       System.out.println(path);
        
        parser.parseXml(path);
        

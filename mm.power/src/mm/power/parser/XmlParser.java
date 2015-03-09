@@ -1,9 +1,6 @@
 package mm.power.parser;
 
-import mm.power.exceptions.EntryDoesNotExistException;
-import mm.power.exceptions.TransferNotCompleteException;
 import mm.power.implementation.AEHome;
-import mm.power.implementation.SteckdosePro;
 import mm.power.modeling.PowerSupply;
 
 import org.w3c.dom.Document;
@@ -17,8 +14,6 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 
 public class XmlParser {
@@ -29,8 +24,7 @@ public class XmlParser {
    */
   private DocumentBuilder docBuilder;
   private Document doc;
-  private TransformerFactory factory = TransformerFactory.newInstance();
-  private Transformer transformer;
+  @SuppressWarnings("unused")
   private DOMSource source;
     
   /**
@@ -77,7 +71,7 @@ public class XmlParser {
   }
   
   /**
-   * 
+   * This Method.
    * @return
    */
   public HashMap<String, PowerSupply> getPowerSupply() {

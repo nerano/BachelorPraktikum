@@ -2,6 +2,8 @@ package mm.server.parser;
 
 import mm.server.instance.Instances;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -9,6 +11,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,6 +31,7 @@ public class XmlParser {
   private DocumentBuilder docBuilder;
   private Document doc;
   private DOMSource source;
+  private HashMap<String, Instances> map;
     
   /**
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
@@ -53,7 +57,7 @@ public class XmlParser {
    */
   public HashMap<String,Instances> parse() {
     NodeList nodeList = doc.getElementsByTagName("*");
-    HashMap<String, Instances> map = new HashMap<String, Instances>();
+    map = new HashMap<String, Instances>();
     Instances vm = new Instances();
     Node node;
     int counter = 1;
