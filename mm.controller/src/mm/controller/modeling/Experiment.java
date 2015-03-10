@@ -19,9 +19,22 @@ public class Experiment implements Cloneable {
 	 * List of VLans in the Experiment
 	 */
 	private LinkedList<VLan> vlans;
+	private LinkedList<WPort> wports;
+	
+	//TODO VMs
+	
+	
 
 	private String user;
+	
+	/**
+	 * running 
+	 * stopped
+	 * error
+	 * paused
+	 */
 	private String status;
+	
 	
 	
 	

@@ -29,7 +29,18 @@ public class ControllerDelete {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/exp")
 	public Response deleteExperiment(String id){
-		Response response;
+		
+	  //TODO Experiment löschen
+    
+    //TODO VLans löschen
+    //TODO Strom aus (???)
+    //TODO VMs löschen
+    //TODO exp
+	  
+	  
+	  
+	  
+	  Response response;
 		String responseString;
 		System.out.println(id);
 		if(ControllerData.removeExp(id)){

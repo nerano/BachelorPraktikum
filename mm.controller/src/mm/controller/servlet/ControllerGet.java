@@ -28,6 +28,7 @@ import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.PowerSource;
 import mm.controller.modeling.VLan;
+import mm.controller.modeling.WPort;
 import mm.controller.net.ControllerNetGet;
 import mm.controller.power.ControllerPowerGet;
 
@@ -67,6 +68,25 @@ public class ControllerGet {
 		// responseString = ControllerData.getAllNodesAsList().toString();
 		return Response.status(200).entity(responseString).build();
 	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@GET
+	@Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+	@Path("ports")
+	public Response getPorts() {
+	  
+	  LinkedList<WPort> list = ControllerData.getAllWPorts();
+	  
+	  String responseString = gson.toJson(list);
+	  
+	  return Response.ok(responseString).build();
+	  
+	}
+	
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)

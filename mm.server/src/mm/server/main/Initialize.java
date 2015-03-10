@@ -12,7 +12,7 @@ public class Initialize implements ServletContextListener {
 
 
   /**
-   * !-- Initialize everything for the PowerService here --!.
+   * !-- Initialize everything for the ServerService here --!.
    */
   public void contextInitialized(ServletContextEvent contextEvent) {
     String path = contextEvent.getServletContext().getRealPath("/VM.xml");

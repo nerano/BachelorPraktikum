@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import mm.controller.modeling.Component;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
+import mm.controller.modeling.WPort;
 
 /**
  * Holds a static List with all experiments. Works as the central data point for
@@ -19,7 +20,10 @@ public class ControllerData {
 	private static HashMap<String, Component> PORT_TO_COMPONENT = new HashMap<String, Component>();
 	/* !-- Global HashMap of all known Nodes--! */
 	private static HashMap<String, NodeObjects> ALL_NODES = new HashMap<String, NodeObjects>();
-
+	/* !-- Global List of Ports --!*/
+	private static LinkedList<WPort> ALL_WPORTS = new LinkedList<WPort>();
+	
+	
 	public static Component getComponentByPort(String port) {
 		return PORT_TO_COMPONENT.get(port);
 	}
@@ -35,7 +39,16 @@ public class ControllerData {
 		PORT_TO_COMPONENT = new HashMap<String, Component>();
 
 	}
+	
+	public static LinkedList<WPort> getAllWPorts() {
+	  return ALL_WPORTS;
+	}
 
+	public static void setWPorts(LinkedList<WPort> list) {
+	  ALL_WPORTS = list;
+	}
+	
+	
 	public static void addNode(NodeObjects node){
 		
 	    if(ALL_NODES.get(node.getId()) == null) {

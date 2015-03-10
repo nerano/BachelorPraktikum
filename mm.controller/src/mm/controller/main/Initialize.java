@@ -1,12 +1,7 @@
 package mm.controller.main;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.servlet.http.*;
-import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -16,6 +11,7 @@ import mm.controller.modeling.Component;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.VLan;
+import mm.controller.modeling.WPort;
 import mm.controller.parser.XmlParser;
 
 
@@ -142,18 +138,34 @@ public class Initialize implements ServletContextListener
         node1.setRoom("Raum Rechts");
         node2.setRoom("Raum Links"); **/
         
+      
+        WPort port1 = new WPort("testport", "netgear1;1", "building1", "room1");
+        WPort port2 = new WPort("testport2", "netgear1;2", "building2", "room2");
+      
+        LinkedList<WPort> portList = new LinkedList<WPort>();
+        portList.add(port1);
+        portList.add(port2);
+      
+        ControllerData.setWPorts(portList);
+        
+      
+      
         Experiment exp = new Experiment("EXPERIMENT123");
         exp.addNode(ControllerData.getNodeById("Node A"));
         exp.addNode(ControllerData.getNodeById("Node B"));
         
-        VLan vlan1 = new VLan(125);
-        VLan vlan2 = new VLan(124);
+        VLan vlan1 = new VLan(125, "expVlan125");
+        VLan vlan2 = new VLan(124, "expVLan123");
         
         exp.addVLan(vlan1);
         exp.addVLan(vlan2);
         
+        exp.setStatus("stopped");
+        
         
         ControllerData.addExp(exp);
+        
+        
 
       /**  ControllerData.addPort(porta1, c1);
        ControllerData.addPort(porta2, c2);

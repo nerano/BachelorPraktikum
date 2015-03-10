@@ -20,8 +20,13 @@ public class ControllerPut {
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+	
+	
+	
 	/**
 	 * Creates a new Experiment.
+	 * 
+	 * URI <code> baseuri:port/mm.controller/rest/put/exp </code>
 	 * 
 	 * Used for creating a new Experiment and adding it to the ExperimentData,
 	 * expects a Experiment with ID and a list of nodes in JSON format.
@@ -42,7 +47,15 @@ public class ControllerPut {
 	@Path("/exp")
 	public Response addNewExperiment(String exp) {
 
-		Experiment experiment = gson.fromJson(exp, Experiment.class);
+		//TODO Lege Experiment an
+	  //TODO Knoten hinzufügen
+	  //TODO Ports hinzufügen
+	  //TODO VMs hinzufügen
+	  
+	  //TODO VLANS setzen
+	  //TODO VMs anlegen
+	  
+	  Experiment experiment = gson.fromJson(exp, Experiment.class);
 		String responseString;
 		String id = experiment.getId();
 
@@ -205,6 +218,29 @@ public class ControllerPut {
 			return Response.status(404).entity(responseString).build();
 		}
 
+	}
+	
+	
+	public Response stopExp(String exp) {
+	  
+	  //TODO alle knoten aus
+	  //TODO VMs stoppen
+
+	  return null;
+	
+	}
+	
+	
+	
+	
+	public Response startExp(String exp) {
+	  //TODO Experiment starten
+	  
+	  //TODO Setze VLans auf letzten Switch
+	  //TODO Strom an
+	  //TODO Starte VM
+	  
+	  return Response.ok().build();
 	}
 
 	/**

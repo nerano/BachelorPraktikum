@@ -4,24 +4,18 @@ import java.util.LinkedList;
 
 public class VLan {
 
-	private final int id;
-	private LinkedList<String> portList;
+  private String name;
+	private int id;
+	private LinkedList<String> portList = new LinkedList<String>();
 
-	public VLan(int id) {
-
+	public VLan(int id, String name) {
+	  this.name = name;
 		this.id = id;
 
 	}
 
 	public void addPorts(LinkedList<String> list) {
-
-		if (portList == null) {
-			portList = new LinkedList<String>();
 			portList.addAll(list);
-		} else {
-			portList.addAll(list);
-		}
-
 	}
 
 	public LinkedList<String> getPortList() {

@@ -54,7 +54,7 @@ public class ControllerServer {
    */
   @GET
   @Path("template")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
   public String getTemplate() {
     target = client.target(url);
     return target.path("template").request().get(String.class); 
