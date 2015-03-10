@@ -37,7 +37,7 @@ public class ControllerPut {
 	 *         already exists
 	 */
 	@PUT
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/exp")
 	public Response addNewExperiment(String exp) {
@@ -57,8 +57,25 @@ public class ControllerPut {
 
 	}
 	
+	/**
+     * Turns all the components from a given node off.
+     * <p>
+     * Address of this method: baseuri:port/mm.controller/rest/put/turnOn The node
+     * to turn off has to be identified in the message body.
+     * <p>
+     * Possible HTTP status codes:
+     * 
+     * <li>200: All components of the node were turned off. No further data.
+     * <li>404: The node was not found. Additional Data in the message body.
+     * <li>500: Overwrites a 404 status code. Something else happened and the
+     * node could not be turned off. Additional data in the message body.
+     * 
+     * @param data
+     *            Identifier for the node in the message body.
+     * @return  Response Object with a status code and a possible message body.
+     */
 	@PUT
-	@Consumes(MediaType.TEXT_PLAIN)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/turnOff")
 	public Response turnNodeOff(String data) {
@@ -90,7 +107,7 @@ public class ControllerPut {
 	/**
 	 * Turns all the components from a given node on.
 	 * <p>
-	 * Address of this method: baseuri:port/mm.controller/rest/turnOn The node
+	 * Address of this method: baseuri:port/mm.controller/rest/put/turnOn The node
 	 * to turn on has to be identified in the message body.
 	 * <p>
 	 * Possible HTTP status codes:
@@ -98,14 +115,14 @@ public class ControllerPut {
 	 * <li>200: All components of the node were turned on. No further data.
 	 * <li>404: The node was not found. Additional Data in the message body.
 	 * <li>500: Overwrites a 404 status code. Something else happened and the
-	 * node could not be turned off. Additional data in the message body.
+	 * node could not be turned on. Additional data in the message body.
 	 * 
 	 * @param data
 	 *            Identifier for the node in the message body.
 	 * @return  Response Object with a status code and a possible message body.
 	 */
 	@PUT
-	@Consumes(MediaType.TEXT_PLAIN)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/turnOn")
 	public Response turnNodeOn(String data) {
@@ -122,7 +139,7 @@ public class ControllerPut {
 				return Response.status(200).entity(responseString).build();
 			} else {
 				responseString = "On Node " + data 
-						+ " - "
+						+ " : "
 						+ "WARNING: Not all Components were turned on!  \n";
 				responseString += (String) r.getEntity();
 				return Response.status(500).entity(responseString).build();
@@ -139,7 +156,7 @@ public class ControllerPut {
 	 * Turns the given Component from the given Node on.
 	 * <p>
 	 * Address of this method:
-	 * baseuri:port/mm.controller/rest/turnOn/{component}, where component is a
+	 * baseuri:port/mm.controller/rest/put/turnOn/{component}, where component is a
 	 * String with the type of the component. The node, to which the component
 	 * belongs, has to be specified in the message body.
 	 * <p>
@@ -159,7 +176,7 @@ public class ControllerPut {
 	 * @return a Response Object with a status code and a possible message body.
 	 */
 	@PUT
-	@Consumes(MediaType.TEXT_PLAIN)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/turnOn/{comp}")
 	public Response turnCompOn(String data, @PathParam("comp") String comp) {
@@ -179,8 +196,7 @@ public class ControllerPut {
 				responseString = "WARNING: Component '" + comp + "' "
 										+ "was not turned on " 
 										+ "on Node '" + data + "'\n";
-				String s = r.readEntity(String.class);
-				responseString = responseString + s;
+				responseString += (String) r.getEntity();
 				return Response.status(500).entity(responseString).build();
 			}  
 
@@ -195,7 +211,7 @@ public class ControllerPut {
 	 * Turns the given Component from the given Node off.
 	 * <p>
 	 * Address of this method:
-	 * baseuri:port/mm.controller/rest/turnOff/{component}, where component is a
+	 * baseuri:port/mm.controller/rest/put/turnOff/{component}, where component is a
 	 * String with the type of the component. The node, to which the component
 	 * belongs, has to be specified in the message body.
 	 * <p>
@@ -215,7 +231,7 @@ public class ControllerPut {
 	 * @return a Response Object with a status code and a possible message body.
 	 */
 	@PUT
-	@Consumes(MediaType.TEXT_PLAIN)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/turnOff/{comp}")
 	public Response turnCompOff(String data, @PathParam("comp") String comp) {
@@ -235,7 +251,7 @@ public class ControllerPut {
 
 				responseString = "WARNING: Component was not turned off \n";
 				
-				responseString += r.readEntity(String.class);
+				responseString += (String) r.getEntity();
 				
 				System.out.println("ControllerPut Status " + r.getStatus() 
             + " \n Controllerput responseString " + responseString);

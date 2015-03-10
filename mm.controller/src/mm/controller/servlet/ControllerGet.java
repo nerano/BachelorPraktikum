@@ -67,6 +67,21 @@ public class ControllerGet {
 		// responseString = ControllerData.getAllNodesAsList().toString();
 		return Response.status(200).entity(responseString).build();
 	}
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/status/{exp}")
+	public Response getNodePowerStatus(@PathParam("exp") String exp) throws UnsupportedEncodingException {
+	    
+	    Experiment experiment = ControllerData.getExpById(exp);
+	    
+	    LinkedList<PowerSource> psrc = experiment.status();
+	    
+	    experiment.updateNodeStatusPower(psrc);
+	    
+	    return Response.ok(gson.toJson(experiment)).build();
+	}
+	
 	/**
 	 * 
 	 * @param id

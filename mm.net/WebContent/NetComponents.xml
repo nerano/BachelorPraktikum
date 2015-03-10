@@ -3,6 +3,7 @@
 	
 	<id>NetGear1</id>
 	<host>netgearGS</host>
+	<trunk>1|8</trunk>
 	<type>NetGearGS108Tv2</type>
 	
 	<id>NetGear2</id>

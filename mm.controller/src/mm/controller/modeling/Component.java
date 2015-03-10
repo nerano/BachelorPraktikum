@@ -78,9 +78,9 @@ public class Component {
 
 		buffer.append("end");
 
-		Response r = powerPut.turnOn(buffer.toString());
+		Response response = powerPut.turnOn(buffer.toString());
 		
-		return r;
+		return response;
 
 	}
 	
@@ -103,9 +103,9 @@ public class Component {
 
 		buffer.append("end");
 
-		Response r = powerPut.turnOff(buffer.toString());
+		Response response = powerPut.turnOff(buffer.toString());
 
-		return r;
+		return response;
 
 	}
 	

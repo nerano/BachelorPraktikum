@@ -31,7 +31,7 @@ public class Main {
       
       String parameter = "Node A";
       
-      Response r = putTarget.path("turnOff").path("APU").request().accept(MediaType.TEXT_PLAIN)
+      Response r = putTarget.path("turnOn").request().accept(MediaType.TEXT_PLAIN)
                   
                   .put(
                         Entity.entity(parameter, MediaType.TEXT_PLAIN), Response.class);

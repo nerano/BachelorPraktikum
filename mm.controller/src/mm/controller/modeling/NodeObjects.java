@@ -65,19 +65,19 @@ public class NodeObjects {
 	 * Turns off all components of this node.
 	 * <p>
 	 * 
-	 * @return a Response Object with a HTTP status code and on an error case a
+	 * @return a Outbound Response Object with a HTTP status code and on an error case a
 	 *         message body.
 	 */
 	public Response turnOff() {
 		StringBuffer sb = new StringBuffer();
 		boolean bool = true;
 		for (Component component : components) {
-			Response r = component.turnOff();
+			Response response = component.turnOff();
 
-			if (r.getStatus() != 200) {
+			if (response.getStatus() != 200) {
 				bool = false;
 				sb.append("Error on " + component.getType() + "\n");
-				sb.append(r.readEntity(String.class)).append("\n");
+				sb.append(response.readEntity(String.class)).append("\n");
 			}
 		}
 		if (bool) {
@@ -91,19 +91,19 @@ public class NodeObjects {
 	 * Turns on all components of this node.
 	 * <p>
 	 * 
-	 * @return a Response Object with a HTTP status code and on an error case a
+	 * @return a Outbund Response Object with a HTTP status code and on an error case a
 	 *         message body.
 	 */
 	public Response turnOn() {
 		StringBuffer sb = new StringBuffer();
 		boolean bool = true;
 		for (Component component : components) {
-			Response r = component.turnOn();
+			Response response = component.turnOn();
 
-			if (r.getStatus() != 200) {
+			if (response.getStatus() != 200) {
 				bool = false;
 				sb.append("Error on " + component.getType() + "\n");
-				sb.append((String) r.getEntity()).append("\n");
+				sb.append(response.readEntity(String.class)).append("\n");
 			}
 		}
 		if (bool) {
@@ -125,8 +125,8 @@ public class NodeObjects {
 
 		for (Component component : components) {
 			if (component.getType().equals(comp)) {
-				Response r = component.turnOn();
-				return r;
+				Response response = component.turnOn();
+				return response;
 			}
 		}
 		return Response.status(404).entity("404, Component not found").build();
@@ -144,8 +144,8 @@ public class NodeObjects {
 
 		for (Component component : components) {
 			if (component.getType().equals(comp)) {
-				Response r = component.turnOff();
-				return r;
+				Response response = component.turnOff();
+				return response;
 			}
 		}
 		return Response.status(404).entity("404, Component not found").build();

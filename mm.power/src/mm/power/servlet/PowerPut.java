@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -46,6 +47,7 @@ public class PowerPut {
    */
   @PUT
   @Consumes(MediaType.TEXT_PLAIN)
+  @Produces(MediaType.TEXT_PLAIN)
   @Path("/turnOn")
   public Response turnOn(String incoming) {
     try {
@@ -62,8 +64,7 @@ public class PowerPut {
 
       int[] sockets = new int[size];
 
-      if (!(parts[parts.length - 1].equals("end")) || parts.length < 3
-          || (parts.length - 1) % 2 != 0) {
+      if (!(parts[parts.length - 1].equals("end")) || parts.length < 3 || (parts.length - 1) % 2 != 0) {
         String responseString = "Transfer not complete or wrong format in PowerPut turnOn. Message : "
             + incoming;
         return Response.status(500).entity(responseString).build();
@@ -96,6 +97,8 @@ public class PowerPut {
             buffer.append(string).append("\n");
             responseStatus = 500;
 
+          } else {
+              responseStatus = 200;
           }
         }
       }

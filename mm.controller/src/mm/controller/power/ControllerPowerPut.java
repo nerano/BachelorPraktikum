@@ -39,7 +39,7 @@ public class ControllerPowerPut {
 	 *   A 500 ResponseCode overwrites a 404 code.
 	 *   
 	 * @param parameter A String with all PowerSources to turn on, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
-	 * @return a Response Object with a status code and message body
+	 * @return an Outbound Response Object with a status code and message body
 	 */
 	public Response turnOn(String parameter) {
 	
@@ -52,8 +52,12 @@ public class ControllerPowerPut {
 	
 		//System.out.println(parameter);
 		// System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
-		
-		return response;
+		System.out.println("ControllerPowerPut status " + response.getStatus());
+		String responseString = response.readEntity(String.class);
+        
+        Response returnR = Response.status(response.getStatus()).entity(responseString).build();
+        
+		return returnR;
 	}
 	/**
    * Turns off a set of PowerSources. 
@@ -72,7 +76,7 @@ public class ControllerPowerPut {
    *   A 500 ResponseCode overwrites a 404 code.
    *   
    * @param parameter A String with all PowerSources to turn off, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
-   * @return a Response Object with a status code and message body
+   * @return an Outbound Response Object with a status code and message body
    */
 	public Response turnOff(String parameter) {
 		
@@ -89,9 +93,14 @@ public class ControllerPowerPut {
 		
 		System.out.println("ControllerPowerPut status " + response.getStatus());
 		
+		String responseString = response.readEntity(String.class);
+		
+		Response returnR = Response.status(response.getStatus()).entity(responseString).build();
+		
+		
 		// System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
 
-		return response;
+		return returnR;
 	
 	}
 

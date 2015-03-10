@@ -1,6 +1,9 @@
 package mm.controller.modeling;
 
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
+
+import mm.controller.power.ControllerPowerGet;
 
 public class Experiment implements Cloneable {
 
@@ -73,6 +76,13 @@ public class Experiment implements Cloneable {
 
 	}
 
+	public LinkedList<PowerSource> status() throws UnsupportedEncodingException {
+	    
+	   return ControllerPowerGet.status(nodes);
+	    
+	}
+	
+	
 	public void updateNodeStatusPower(LinkedList<PowerSource> statusList) {
 
 		for (NodeObjects nodeObject : nodes) {

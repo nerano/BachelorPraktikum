@@ -24,11 +24,11 @@ import com.google.gson.reflect.TypeToken;
 
 public class ControllerPowerGet {
 
-	private ClientConfig config = new ClientConfig();
-	private Client client = ClientBuilder.newClient(config);
-	private WebTarget powerTarget = client.target(getBaseUri());
+	private static ClientConfig config = new ClientConfig();
+	private static Client client = ClientBuilder.newClient(config);
+	private static WebTarget powerTarget = client.target(getBaseUri());
 
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public LinkedList<PowerSource> status(NodeObjects node)
 			throws UnsupportedEncodingException {
@@ -46,7 +46,7 @@ public class ControllerPowerGet {
 		return status(list);
 	}
 
-	public LinkedList<PowerSource> status(LinkedList<NodeObjects> nodes)
+	public static LinkedList<PowerSource> status(LinkedList<NodeObjects> nodes)
 			throws UnsupportedEncodingException {
 
 		LinkedList<PowerSource> returnList = new LinkedList<PowerSource>();
@@ -64,7 +64,7 @@ public class ControllerPowerGet {
 
 	}
 
-	private String turnNodeListToStatusString(LinkedList<NodeObjects> list)
+	private static String turnNodeListToStatusString(LinkedList<NodeObjects> list)
 			throws UnsupportedEncodingException {
 
 		StringBuffer buffer = new StringBuffer();

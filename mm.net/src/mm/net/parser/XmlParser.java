@@ -92,7 +92,7 @@ public class XmlParser {
       node = nodeList.item(counter);
       if (node.getNodeName().equals("id")) {
         switch (type) {
-          case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host)); break;
+          case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, 1)); break;
           default: break;
         }
         id = node.getTextContent();
@@ -108,7 +108,7 @@ public class XmlParser {
     }
     
     switch (type) {
-    case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host)); break;
+    case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, 1)); break;
     default: break;
     }
     return map;

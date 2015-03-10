@@ -6,6 +6,9 @@ import mm.server.main.ServerData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/ganeti")
 public class RestInterface {
 
+  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private Ganeti ga = new Ganeti();
   private HashMap<String, Instances> map = ServerData.getServerList();
   
@@ -67,7 +71,8 @@ public class RestInterface {
         e.printStackTrace();
       }
     }
-    return ret.toString();
+    
+    return gson.toJson(ret);
   }
   
   @GET
