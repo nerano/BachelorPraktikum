@@ -2,7 +2,6 @@ package mm.net.implementation;
 
 import mm.net.modeling.NetComponent;
 
-import java.awt.List;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -30,30 +29,42 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class NetGearGS108Tv2 implements NetComponent {
 
+    private Target              target;
     private String              host;
     private String              identifier;
     private String              community      = "private";
     private Snmp                snmp           = null;
     private int                 retries        = 2;
     private int                 timeout        = 1500;
-    private Target              target;
     private LinkedList<Integer> trunks         = new LinkedList<Integer>();
     private String              UNTAGGED_PORTS = "";
 
     /**
      * 
      * @param identifier
+     *            unique id
      * @param add
+     *            IP or hostname
+     * @param trunks
+     *            list of trunkports
      */
     public NetGearGS108Tv2(String identifier, String add, LinkedList<Integer> trunks) {
 
         this.identifier = identifier;
         host = "udp:" + add + "/161";
 
-        createTarget();
-        createUntaggedPorts();
+        init();
     }
 
+    /**
+     * 
+     * @param identifier
+     *            unique id
+     * @param add
+     *            IP or hostname
+     * @param trunk
+     *            trunkport
+     */
     public NetGearGS108Tv2(String identifier, String add, int trunk) {
 
         this.identifier = identifier;
@@ -61,22 +72,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
         this.trunks.add(trunk);
 
-        createTarget();
-        createUntaggedPorts();
-    }
-
-    private void createUntaggedPorts() {
-
-        for (int i = 1; i <= 8; i++) {
-            if (trunks.contains(i)) {
-                UNTAGGED_PORTS += "0";
-            } else {
-                UNTAGGED_PORTS += "1";
-            }
-        }
-
-        UNTAGGED_PORTS = String.format("%02x", Integer.parseInt(UNTAGGED_PORTS, 2));
-
+        init();
     }
 
     /**
@@ -139,7 +135,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
         ResponseEvent responseEvent = set(rowStatus, variable);
 
-        return setHandler(responseEvent, "destroyVLan");
+        return setHandler(responseEvent, "destroyVLan '" + vlanId + "'");
 
     }
 
@@ -267,10 +263,10 @@ public class NetGearGS108Tv2 implements NetComponent {
         list.add(port);
         return setVLan(list, global, vlanId, name);
     }
-    
+
     /**
      * 
-     * @param ports 
+     * @param ports
      * @param global
      * @param vlanId
      * @param name
@@ -299,43 +295,41 @@ public class NetGearGS108Tv2 implements NetComponent {
         }
 
         egressPorts = String.format("%02x", Integer.parseInt(egressPorts, 2));
-       
+
         Response response = setRowStatus(vlanId, 5);
-        if(response.getStatus() != 200) {
+        if (response.getStatus() != 200) {
             destroyVLan(vlanId);
             return response;
         }
-        
+
         response = setStaticName(vlanId, name);
-        if(response.getStatus() != 200) {
+        if (response.getStatus() != 200) {
             destroyVLan(vlanId);
             return response;
         }
-       
+
         response = setEgressPorts(vlanId, egressPorts);
-        if(response.getStatus() != 200) {
+        if (response.getStatus() != 200) {
             destroyVLan(vlanId);
             return response;
         }
-        
+
         response = setUntaggedPorts(vlanId, UNTAGGED_PORTS);
-        if(response.getStatus() != 200) {
+        if (response.getStatus() != 200) {
             destroyVLan(vlanId);
             return response;
         }
         for (Integer port : ports) {
             if (!trunks.contains(port)) {
                 response = setPVID(port, vlanId);
-                if(response.getStatus() != 200) {
+                if (response.getStatus() != 200) {
                     destroyVLan(vlanId);
                     return response;
                 }
             }
 
         }
-        
         return Response.ok().build();
-
     }
 
     /**
@@ -351,7 +345,7 @@ public class NetGearGS108Tv2 implements NetComponent {
      * 6:destroy(6) <br>
      * </code>
      * 
-     * @param vlanId  
+     * @param vlanId
      * @param rowStatus
      * @return
      */
@@ -393,14 +387,16 @@ public class NetGearGS108Tv2 implements NetComponent {
             ResponseEvent event = get(untaggedPorts);
 
             if (event != null && event.getResponse() != null) {
-
-                // TODO noSuchObject handling
                 String varString = event.getResponse().get(0).getVariable().toString();
+
+                if (varString.equals("noSuchObject") || varString.equals("noSuchInstance")) {
+
+                    return Response.status(500).entity(varString).build();
+                }
+
                 varString = varString.substring(0, 2);
                 varString = new BigInteger(varString, 16).toString(2);
-
-                String output = String.format("%8s", varString).replace(
-                        ' ', '0');
+                String output = String.format("%8s", varString).replace(' ', '0');
                 return Response.ok(output).build();
             } else {
                 return errorHandler("getUntaggedPorts",
@@ -429,8 +425,13 @@ public class NetGearGS108Tv2 implements NetComponent {
             ResponseEvent event = get(pvidOID);
 
             if (event != null && event.getResponse() != null) {
-                // TODO noSUchObject handling
                 String pvid = event.getResponse().get(0).getVariable().toString();
+
+                if (pvid.equals("noSuchObject") || pvid.equals("noSuchInstance")) {
+
+                    return Response.status(500).entity(pvid).build();
+                }
+
                 return Response.ok(pvid).build();
             } else {
                 return errorHandler("getPVID",
@@ -474,9 +475,7 @@ public class NetGearGS108Tv2 implements NetComponent {
                 } else {
                     varString = varString.substring(0, 2);
                     varString = new BigInteger(varString, 16).toString(2);
-
-                    String output = String.format("%8s", varString).replace(
-                            ' ', '0');
+                    String output = String.format("%8s", varString).replace(' ', '0');
                     return Response.ok(output).build();
                 }
             } else {
@@ -505,7 +504,7 @@ public class NetGearGS108Tv2 implements NetComponent {
      * 
      * @param vlanId
      *            VLan ID to query
-     * @return a Response Object with status code and message body.
+     * @return a Outbound Response Object with status code and message body.
      */
     public Response getStaticName(int vlanId) {
         try {
@@ -514,13 +513,13 @@ public class NetGearGS108Tv2 implements NetComponent {
             ResponseEvent event = get(staticName);
 
             if (event != null && event.getResponse() != null) {
-                // TODO DAS IST KEIN GUTES ERRORHANDLING DA DAS EVENT BEI
-                // TIMEOUT NICHT NULL IST
-                // TODO noSuchObject handlin
-                if (event.getResponse() == null) {
-                    System.out.println("HALLO DAS IST NULL");
-                }
                 String varString = event.getResponse().get(0).getVariable().toString();
+
+                if (varString.equals("noSuchObject") || varString.equals("noSuchInstance")) {
+
+                    return Response.status(500).entity(varString).build();
+                }
+
                 return Response.ok(varString).build();
             } else {
                 return errorHandler("getStaticName",
@@ -560,6 +559,13 @@ public class NetGearGS108Tv2 implements NetComponent {
 
     }
 
+    /**
+     * Sets a single variable affiliated with the oidString.
+     * 
+     * @param oidString
+     * @param variable
+     * @return
+     */
     private ResponseEvent set(String oidString, Variable variable) {
 
         String[] oids = { oidString };
@@ -567,6 +573,14 @@ public class NetGearGS108Tv2 implements NetComponent {
         return set(oids, vars);
     }
 
+    /**
+     * Sets the given variables with their affiliated oidStrings. The order in
+     * both arrays must be the same.
+     * 
+     * @param oidStrings
+     * @param variables
+     * @return
+     */
     private ResponseEvent set(String[] oidStrings, Variable[] variables) {
         OID oid;
         Variable var;
@@ -592,29 +606,6 @@ public class NetGearGS108Tv2 implements NetComponent {
 
         return response;
 
-    }
-
-    /**
-     * Returns a Response Object with the location of the error (where input)
-     * and the error(error String). Adds some format and method of the object,
-     * which caused the error.
-     * 
-     * @param where
-     *            which method caused the error
-     * @param error
-     *            what was the error
-     * @return Response Object with status code 500
-     */
-    private Response errorHandler(String where, String error) {
-
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("Error occured in mm.net in ").append(where).append(" on:\n");
-        sb.append(this.toString());
-        sb.append("Error: \n").append(error).append("\n")
-                .append("End of error. \n");
-
-        return Response.status(500).entity(sb.toString()).build();
     }
 
     /**
@@ -652,6 +643,29 @@ public class NetGearGS108Tv2 implements NetComponent {
     }
 
     /**
+     * Returns a Response Object with the location of the error (where input)
+     * and the error(error String). Adds some format and method of the object,
+     * which caused the error.
+     * 
+     * @param where
+     *            which method caused the error
+     * @param error
+     *            what was the error
+     * @return Response Object with status code 500
+     */
+    private Response errorHandler(String where, String error) {
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("Error occured in mm.net in ").append(where).append(" on:\n");
+        sb.append(this.toString());
+        sb.append("Error: \n").append(error).append("\n")
+                .append("End of error. \n");
+
+        return Response.status(500).entity(sb.toString()).build();
+    }
+
+    /**
      * 
      * @param where
      * @param e
@@ -669,6 +683,24 @@ public class NetGearGS108Tv2 implements NetComponent {
         sb.append("Error: \n").append(sw.toString()).append("\n").append("End of error. \n");
 
         return Response.status(500).entity(sb.toString()).build();
+    }
+
+    private void init() {
+        createTarget();
+        createUntaggedPorts();
+    }
+
+    private void createUntaggedPorts() {
+
+        for (int i = 1; i <= 8; i++) {
+            if (trunks.contains(i)) {
+                UNTAGGED_PORTS += "0";
+            } else {
+                UNTAGGED_PORTS += "1";
+            }
+        }
+
+        UNTAGGED_PORTS = String.format("%02x", Integer.parseInt(UNTAGGED_PORTS, 2));
     }
 
     /**

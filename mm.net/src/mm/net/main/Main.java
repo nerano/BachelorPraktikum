@@ -32,7 +32,6 @@ public class Main {
         System.out.println("Body: " + (String) r.getEntity());
         
         System.out.println();
-        
         System.out.println("DESTROY VLAN");
         
         
@@ -46,17 +45,22 @@ public class Main {
         
         System.out.println("SETVLAN VLAN");
         
-        r =  netgear.setVLan(3, true, 110, "testSetVlan6");
+        LinkedList<Integer> liste = new LinkedList<Integer>();
+        liste.add(5);
+        liste.add(6);
         
-     //System.out.println("Statuscode: " + r.getStatus());
-      // System.out.println("Body: " + (String) r.getEntity()); 
+        
+        r =  netgear.setVLan(liste, false, 110, "testSetVlan10");
+        
+        //System.out.println("Statuscode: " + r.getStatus());
+        // System.out.println("Body: " + (String) r.getEntity()); 
        
-       
+        System.out.println("Statuscode: " + r.getStatus());
+        System.out.println("Body: " + (String) r.getEntity()); 
+        
+        System.out.println();
+        
         System.out.println(netgear.toString(110));
-       
-       
-       
-       
        
         netgear.stop();
     
