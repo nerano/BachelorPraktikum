@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import javax.ws.rs.core.Response;
@@ -37,7 +38,7 @@ public class NetGearGS108Tv2 implements NetComponent {
   private int                 retries        = 2;
   private int                 timeout        = 1500;
   private LinkedList<Integer> trunks         = new LinkedList<Integer>();
-  private String              UNTAGGED_PORTS = "01111111";
+  private String              UNTAGGED_PORTS = "";
 
   /**
    * 
@@ -113,6 +114,95 @@ public class NetGearGS108Tv2 implements NetComponent {
       return errorHandler("stop()", e);
     }
     return Response.ok().build();
+  }
+  
+  
+  
+  public Response testGet() {
+      
+      String[] oids = {".1.3.6.1.2.1.17.7.1.4.3.1.2.111", ".1.3.6.1.2.1.17.7.1.4.3.1.4.111"};
+      
+      ResponseEvent event = get(oids);
+      
+      
+      System.out.println(event.getResponse().get(0).getVariable().toString());
+      System.out.println(event.getResponse().get(1).getVariable().toString());
+      
+      String[] test = {"a", "b"};
+      
+      return Response.ok(test).build();
+  
+  
+  }
+  
+  
+  /**
+   * 
+   * @param port
+   * @param vlanId
+   * @param trunk
+   * @return
+   */
+  public Response addPort(int port, int vlanId, boolean trunk) {
+      
+      int[] ports = {port};
+      boolean[] trunks = {trunk};
+      
+      return addPorts(ports, vlanId, trunks);
+      
+  }
+  
+  /**
+   * 
+   * @param ports
+   * @param vlanId
+   * @param trunk
+   * @return
+   */
+  public Response addPorts(int[] ports, int vlanId, boolean[] trunk) {
+      
+      destroyVLan(vlanId);
+      
+      
+      Response response = getEgressAndUntaggedPorts(vlanId);
+      
+      System.out.println("addPorts Status getEgress: " + response.getStatus());
+      
+      if(response.getStatus() != 200) {
+          return errorHandler("addPorts", "could not get egressPorts/Untagged because of: \n" 
+                                  + Arrays.toString((String[]) response.getEntity()));
+      }
+      
+     String currentEgress = ((String[]) response.getEntity())[0];
+     String currentUntagged = ((String[]) response.getEntity())[1];
+     String newEgress = currentEgress;
+     String newUntagged = currentUntagged;
+      
+    for (int i = 0; i < ports.length; i++) {
+        
+        StringBuilder newEgressBuilder = new StringBuilder(newEgress);
+        newEgressBuilder.setCharAt(ports[i]-1, '1');
+        
+        newEgress = newEgressBuilder.toString();
+        
+        if(trunk[i]) {
+           
+            StringBuilder newUntaggedBuilder = new StringBuilder(newUntagged);
+            newUntaggedBuilder.setCharAt(ports[i]-1, '0');
+            
+            newUntagged = newUntaggedBuilder.toString();
+        } else {
+            setPVID(ports[i], vlanId);
+        }
+      
+        response = setEgressPorts(vlanId, newEgress);
+       //TODO fehlerbehandlung
+        response = setUntaggedPorts(vlanId, newUntagged);
+        
+        
+    }
+      return Response.ok().build();
+      
   }
 
   /**
@@ -443,6 +533,50 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   }
 
+  public Response getEgressAndUntaggedPorts(int vlanId) {
+      
+      try {
+          String egressPortsOID = ".1.3.6.1.2.1.17.7.1.4.3.1.2." + vlanId;
+          String untaggedPortsOID = ".1.3.6.1.2.1.17.7.1.4.3.1.4." + vlanId;
+          
+          String[] getArray = {egressPortsOID, untaggedPortsOID};
+          
+          ResponseEvent event = get(getArray);
+          
+          if (event != null && event.getResponse() != null) {
+
+            String egressPorts = event.getResponse().get(0).getVariable().toString();
+            String untaggedPorts = event.getResponse().get(1).getVariable().toString();
+            
+            String[] returnArray = {egressPorts, untaggedPorts};
+            
+            if (egressPorts.equals("noSuchObject") || egressPorts.equals("noSuchInstance")) {
+                
+              return Response.status(500).entity(returnArray).build();
+
+            } else {
+              
+              for(int i = 0; i < 2; i++) {  
+              returnArray[i] = returnArray[i].substring(0, 2);
+              returnArray[i] = new BigInteger(returnArray[i], 16).toString(2);
+              returnArray[i] = String.format("%8s", returnArray[i]).replace(' ', '0');
+              }
+              return Response.ok(returnArray).build();
+            }
+          } else {
+            return errorHandler("getEgressAndUntaggedPorts",
+                "SNMP-GET timed out or IOException");
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+          return errorHandler("getEgressAndUntaggedPorts", e);
+        }
+      
+      
+  }
+  
+  
+  
   /**
    * Returns the egress (outgoing) ports for this VLan.
    * 
@@ -461,13 +595,13 @@ public class NetGearGS108Tv2 implements NetComponent {
 
       ResponseEvent event = get(egressPorts);
 
+      
       if (event != null && event.getResponse() != null) {
 
         String varString = event.getResponse().get(0).getVariable()
             .toString();
 
-        if (varString.equals("noSuchObject")
-            || varString.equals("noSuchInstance")) {
+        if (varString.equals("noSuchObject") || varString.equals("noSuchInstance")) {
 
           return Response.status(500).entity(varString).build();
 
@@ -688,7 +822,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   private void init() {
     createTarget();
-    //createUntaggedPorts();
+    createUntaggedPorts();
   }
 
   private void createUntaggedPorts() {
@@ -701,7 +835,7 @@ public class NetGearGS108Tv2 implements NetComponent {
       }
     }
 
-    UNTAGGED_PORTS = String.format("%02x", Integer.parseInt(UNTAGGED_PORTS, 2));
+    UNTAGGED_PORTS = String.format("%02x", Integer.parseInt(UNTAGGED_PORTS, 2)); 
   }
 
   /**
@@ -709,6 +843,7 @@ public class NetGearGS108Tv2 implements NetComponent {
    */
   private void createTarget() {
 
+    System.out.println("Creating SNMP Target for : " + this.identifier);
     Address targetAddress = GenericAddress.parse(host);
     CommunityTarget tar = new CommunityTarget();
 
@@ -719,7 +854,7 @@ public class NetGearGS108Tv2 implements NetComponent {
     tar.setTimeout(timeout);
     tar.setVersion(SnmpConstants.version2c);
     target = tar;
-    System.out.println(target.toString());
+    System.out.println(target.toString()); 
 
   }
 

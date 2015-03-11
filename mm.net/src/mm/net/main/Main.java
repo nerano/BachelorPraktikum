@@ -11,7 +11,7 @@ public class Main {
   public static void main(String[] args) {
     // TODO Auto-generated method stub
 
-    NetGearGS108Tv2 netgear = new NetGearGS108Tv2("netgear.tisch", "192.168.178.94", 1);
+    NetGearGS108Tv2 netgear = new NetGearGS108Tv2("netgear.tisch", "netgearGS", 1);
     Response response;
 
     netgear.start();
@@ -34,10 +34,10 @@ public class Main {
     System.out.println();
     System.out.println("DESTROY VLAN");
 **/
-    response = netgear.destroyVLan(111);
+    //response = netgear.destroyVLan(111);
 
-    System.out.println("Statuscode: " + response.getStatus());
-    System.out.println("Body: " + (String) response.getEntity());
+   // System.out.println("Statuscode: " + response.getStatus());
+   // System.out.println("Body: " + (String) response.getEntity());
 
     System.out.println();
 
@@ -47,7 +47,9 @@ public class Main {
     liste.add(5); 
     liste.add(6); 
 
-    response = netgear.setVLan(5, false, 111, "testSetVlan");
+    response = netgear.setVLan(5, true, 111, "testSetVlan");
+    
+    
 
     // System.out.println("Statuscode: " + r.getStatus());
     // System.out.println("Body: " + (String) r.getEntity());
@@ -56,8 +58,24 @@ public class Main {
     System.out.println("Body: " + (String) response.getEntity());
 
     System.out.println();
+    
+    
+    response = netgear.getEgressAndUntaggedPorts(111);
+    
+    System.out.println(((String[]) response.getEntity())[0]);
+    System.out.println(((String[]) response.getEntity())[1]);
 
     //System.out.println(netgear.toString(110));
+    
+    
+    int[] ports = {7, 8};
+    boolean[] trunks = {false, true};
+    
+    response = netgear.addPorts(ports, 111, trunks);
+    
+    System.out.println("Addports: ");
+    System.out.println("Statuscode: " + response.getStatus());
+    System.out.println("Body: " + (String) response.getEntity());
 
     netgear.stop();
 

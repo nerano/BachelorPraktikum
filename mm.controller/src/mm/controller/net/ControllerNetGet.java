@@ -9,10 +9,10 @@ import java.util.LinkedList;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import mm.controller.modeling.Experiment;
-
 import mm.controller.modeling.VLan;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -23,9 +23,9 @@ import com.google.gson.reflect.TypeToken;
 
 public class ControllerNetGet {
 
-	private ClientConfig config = new ClientConfig();
-	private Client client = ClientBuilder.newClient(config);
-	private WebTarget target = client.target(getBaseUri());
+	private static ClientConfig config = new ClientConfig();
+	private static Client client = ClientBuilder.newClient(config);
+	private static WebTarget target = client.target(getBaseUri());
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -83,8 +83,20 @@ public class ControllerNetGet {
 		return returnList;
 
 	}
-
-	
+	/**
+	 * Returns a new and free global VLan from the NetService.
+	 * 
+	 * @return  a Outbound Response Object with status and message body
+	 */
+	public static Response getGlobalVlan() {
+	    
+	    Response response = target.path("globalVLan").request().get(Response.class);
+	    
+	    String responseString = response.readEntity(String.class);
+	    
+	    return Response.status(response.getStatus()).entity(responseString).build();
+	    
+	}
 	
 	/* -- PRIVATE METHODS -- */
 	
@@ -110,7 +122,7 @@ public class ControllerNetGet {
 
 	}
 
-	private URI getBaseUri() {
+	private static URI getBaseUri() {
 		return UriBuilder.fromUri("http://localhost:8080/mm.net/rest/get")
 				.build();
 	}

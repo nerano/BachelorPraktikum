@@ -20,7 +20,7 @@ public class ControllerData {
 	private static HashMap<String, Component> PORT_TO_COMPONENT = new HashMap<String, Component>();
 	/* !-- Global HashMap of all known Nodes--! */
 	private static HashMap<String, NodeObjects> ALL_NODES = new HashMap<String, NodeObjects>();
-	/* !-- Global List of Ports --!*/
+	/* !-- Global List of WPorts --!*/
 	private static LinkedList<WPort> ALL_WPORTS = new LinkedList<WPort>();
 	
 	
@@ -38,6 +38,16 @@ public class ControllerData {
 		EXPERIMENT_LIST = expList;
 		PORT_TO_COMPONENT = new HashMap<String, Component>();
 
+	}
+	
+	
+	public static WPort getWportById(String id) {
+	    for (WPort wPort : ALL_WPORTS) {
+            if(wPort.getId().equals(id)){
+                return wPort;
+            }
+        }
+	    return null;
 	}
 	
 	public static LinkedList<WPort> getAllWPorts() {

@@ -4,15 +4,29 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VLan {
-
-  private final int id;
-  private List<String> portList;
+    
+  String name;  
+  private int id;
+  private List<String> portList = new LinkedList<String>();
+  private boolean global;
 
     
-  public VLan(int id){
+  
+  public VLan(int id, boolean global) {
+      
+      this.id = id;
+      this.global = global;
+      
+  }
+  
+  
+  public VLan(int id) {
+      this.id = id;
+  }
+  
+  public VLan(String name, int id, boolean global){
         
     this.id = id;
-    portList = new LinkedList<String>();
   }
     
     
@@ -22,6 +36,11 @@ public class VLan {
         
   }
 
+  
+  public void clear() {
+      this.name = "";
+      this.portList = new LinkedList<String>();
+  }
 
 public List<String> getPortList() {
 	return portList;

@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?xml-model href="test.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<Node>
-	
+
 	
 	<wport>
 		
@@ -17,39 +16,3 @@
 		
 	</wport>
 	
-	
-	
-	
-	
-	<id>Node A</id>
-	
-	<components>
-		<component>WARP</component>
-		<ports>NetComponent;1</ports>
-		<powerSource>AeHome1;1</powerSource>
-		
-		<component>APU</component>
-		<ports>NetComponent;2</ports>
-		<powerSource>AeHome1;2</powerSource>
-	</components>
-	
-	<building>Building 1</building>
-	<room>Room right</room>
-	
-	
-	<id>Node B</id>
-	
-	<components>
-		<component>Komponente X</component>
-		<ports>NetComponentF;7</ports>
-		<powerSource>AeHome1;3</powerSource>
-		
-		<component>Komponente Z</component>
-		<ports>NetComponentF;8</ports>
-		<powerSource>AeHome1;1</powerSource>
-	</components>
-	
-	<building>Building 3</building>	
-	<room>Room left</room>
-
-</Node>

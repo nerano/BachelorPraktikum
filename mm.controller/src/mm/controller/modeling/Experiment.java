@@ -3,10 +3,19 @@ package mm.controller.modeling;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
+import javax.ws.rs.core.Response;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import mm.controller.net.ControllerNetDelete;
+import mm.controller.net.ControllerNetGet;
 import mm.controller.power.ControllerPowerGet;
 
 public class Experiment implements Cloneable {
 
+    
+    private transient Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	/**
 	 * Unique ID of an Experiment
 	 */
@@ -22,10 +31,7 @@ public class Experiment implements Cloneable {
 	private LinkedList<WPort> wports;
 	
 	//TODO VMs
-	
-	
-
-	private String user;
+    private String user;
 	
 	/**
 	 * running 
@@ -36,7 +42,13 @@ public class Experiment implements Cloneable {
 	private String status;
 	
 	
-	
+	public LinkedList<WPort> getWports() {
+        return wports;
+    }
+
+    public void setWports(LinkedList<WPort> wports) {
+        this.wports = wports;
+    }
 	
 	public String getStatus() {
 		return status;
@@ -134,7 +146,7 @@ public class Experiment implements Cloneable {
 		nodes.add(node);
 	}
 
-	public void setList(LinkedList<NodeObjects> list) {
+	public void setNodeList(LinkedList<NodeObjects> list) {
 		this.nodes = list;
 	}
 
@@ -146,7 +158,7 @@ public class Experiment implements Cloneable {
 	@Override
 	public Experiment clone() throws CloneNotSupportedException {
 		Experiment cloned = (Experiment) super.clone();
-		cloned.setList((LinkedList<NodeObjects>) cloned.getList().clone());
+		cloned.setNodeList((LinkedList<NodeObjects>) cloned.getList().clone());
 
 		cloned.setId(new String(cloned.getId()));
 
@@ -220,5 +232,42 @@ public class Experiment implements Cloneable {
 		}
 		return false;
 	}
-
+	
+	public Response destroy() {
+	    System.out.println("Destroying Experiment " + this.id);
+	    
+	    for (VLan vlan : this.vlans) {
+	        ControllerNetDelete.freeGlobalVLan(vlan.getId());
+        }
+	    
+	    
+	    
+	    
+	    return Response.ok().build();
+	    
+	}
+	
+	
+	/**
+	 * Gets a global VLan from the NetService and adds it to the experiment.
+	 * 
+	 * @return  an outbound Response Object.
+	 */
+	public Response getGlobalVlan() {
+	    
+	    Response response = ControllerNetGet.getGlobalVlan();
+	    
+	    if(response.getStatus() == 200) {
+	       VLan vlan = gson.fromJson((String) response.getEntity(), VLan.class);
+	       vlan.setName(this.id + "VLan");
+	       vlans.add(vlan);
+	       System.out.println("Added VLan " + vlan.getId() + " to experiment " + this.id);
+	       return Response.ok().build(); 
+	    } else {
+	        return response;
+	    }
+	    
+	}
+	
+	
 }

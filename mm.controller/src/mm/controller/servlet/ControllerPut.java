@@ -1,5 +1,7 @@
 package mm.controller.servlet;
 
+import java.util.LinkedList;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -11,6 +13,7 @@ import javax.ws.rs.core.Response;
 import mm.controller.main.ControllerData;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
+import mm.controller.modeling.WPort;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,7 +39,7 @@ public class ControllerPut {
 	 * <li>201: Experiment was successfully created. <li>409: Experiment with
 	 * this ID already exists.
 	 * 
-	 * @param exp
+	 * @param data
 	 *            experiment to create in the controller
 	 * @return 201 for successful creation, 409 if experiment with this id
 	 *         already exists
@@ -45,7 +48,7 @@ public class ControllerPut {
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/exp")
-	public Response addNewExperiment(String exp) {
+	public Response addNewExperiment(String data) {
 
 		//TODO Lege Experiment an
 	  //TODO Knoten hinzufügen
@@ -55,19 +58,48 @@ public class ControllerPut {
 	  //TODO VLANS setzen
 	  //TODO VMs anlegen
 	  
-	  Experiment experiment = gson.fromJson(exp, Experiment.class);
+	  Experiment exp = gson.fromJson(data, Experiment.class);
 		String responseString;
-		String id = experiment.getId();
+		String id = exp.getId();
+		
+		System.out.println(data);
 
-		if (exp != null && ControllerData.exists(experiment)) {
-			responseString = "Experiment with this ID already exists";
+		if (data != null && ControllerData.exists(exp)) {
+			responseString = "Experiment with this ID already exists!";
 			return Response.status(409).entity(responseString).build();
 		} else {
-			ControllerData.addExp(experiment);
+		    //TODO USERNAME
+		    Experiment experiment = new Experiment(id);
+	        experiment.setStatus("stopped");
+	        
+	        LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
+	        LinkedList<WPort> wPortList = new LinkedList<WPort>();
+	        
+	        for (NodeObjects node : exp.getList()) {
+	            nodeList.add(ControllerData.getNodeById(node.getId()));
+	        }
+	    
+	        for (WPort wport : exp.getWports()) {
+	            wPortList.add(ControllerData.getWportById(wport.getId()));
+	        } 
+	        
+	        experiment.setNodeList(nodeList);
+	        experiment.setWports(wPortList);
+	        
+	        experiment.getGlobalVlan();
+	        
+	        ControllerData.addExp(experiment);
+	        
+	        exp = null;
+	        
+	        
 			responseString = "New Experiment posted/created with ID : " + id;
+			
+			System.out.println(responseString);
 			return Response.status(201).entity(responseString).build();
 		}
 
+		
 	}
 	
 	/**

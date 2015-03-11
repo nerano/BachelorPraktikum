@@ -8,103 +8,102 @@ import mm.net.modeling.VLan;
 
 public class NetData {
 	
-	private static LinkedList<VLan> VLAN_LIST = new LinkedList<VLan>();
-	private static HashMap<String, NetComponent> NETCOMPONENT_LIST = new HashMap<String, NetComponent>();
+	private static HashMap<String, NetComponent> ALL_NETCOMPONENT = new HashMap<String, NetComponent>();
 	// private static LinkedList<Config> CONFIG_LIST = new LinkedList<Config>();
-	protected NetData(HashMap<String, NetComponent> list ) {
-		NETCOMPONENT_LIST = list;
-
+	
+	private static LinkedList<VLan> GLOBAL_VLAN_LIST;
+	private static LinkedList<VLan> LOCAL_VLAN_LIST;
+	
+	private static LinkedList<VLan> USED_GLOBAL_VLAN_LIST = new LinkedList<VLan>();
+	private static LinkedList<VLan> USED_LOCAL_VLAN_LIST = new LinkedList<VLan>();
+	
+	
+	private static int GLOBAL_VLAN_RANGE_MAX;
+    private static int GLOBAL_VLAN_RANGE_MIN;
+	
+	private static int LOCAL_VLAN_RANGE_MAX;
+    private static int LOCAL_VLAN_RANGE_MIN;
+    
+    private static int POWER_VLAN_ID;
+    private static int MANAGE_VLAN_ID;
+	
+	
+	protected NetData(HashMap<String, NetComponent> list, int[] vlanInfo, 
+	                        LinkedList<VLan> globalVlans, LinkedList<VLan> localVlans) {
+		
+	    ALL_NETCOMPONENT = list;
+		
+		GLOBAL_VLAN_RANGE_MIN = vlanInfo[0];
+		GLOBAL_VLAN_RANGE_MAX = vlanInfo[1];
+	    
+		LOCAL_VLAN_RANGE_MIN = vlanInfo[2];
+	    LOCAL_VLAN_RANGE_MAX = vlanInfo[3];
+	    
+	    POWER_VLAN_ID = vlanInfo[4];
+	    MANAGE_VLAN_ID = vlanInfo[5];
+	    
+	    
+	    GLOBAL_VLAN_LIST = globalVlans;
+	    LOCAL_VLAN_LIST = localVlans;
+		
 	}
 
-	public LinkedList<VLan> getVLanList() {
-		return VLAN_LIST;
+	
+	public static VLan getFreeGlobalVlan() {
+	    
+	    VLan vlan = GLOBAL_VLAN_LIST.getFirst();
+	    GLOBAL_VLAN_LIST.remove(vlan);
+	    USED_GLOBAL_VLAN_LIST.add(vlan);
+	    
+	    System.out.println("NetData allocated VLan " + vlan.getId());
+	    
+	    return vlan;
 	}
-
-	/**
-	 * Returns the VLan with the given ID.
-	 * 
-	 * @param id
-	 *            ID of the requested VLan
-	 * @return VLan with the ID, null if no VLan was found
-	 */
-	static public VLan getById(int id) {
-
-		VLan v = null;
-		for (VLan vlan : VLAN_LIST) {
-			if (vlan.getId() == id) {
-				v = vlan;
-			}
-		}
-		return v;
+	
+	public static boolean freeGlobalVlan(int id) {
+	    for (VLan vLan : USED_GLOBAL_VLAN_LIST) {
+            if(vLan.getId() == id) {
+                USED_GLOBAL_VLAN_LIST.remove(vLan);
+                vLan.clear();
+                GLOBAL_VLAN_LIST.add(vLan);
+                System.out.println("NetData freed VLan " + id);
+                return true;
+            }
+        }
+	 return false;   
 	}
+	
 
-	/**
-	 * Adds a VLan to the global data.
-	 * 
-	 * @param ps
-	 *            VLan to add
-	 */
-	static public void addVLan(VLan vlan) {
-		VLAN_LIST.add(vlan);
+	public static NetComponent getNetComponentById(String id) {
+	    
+	    NetComponent nc = ALL_NETCOMPONENT.get(id);
+	    
+	    return nc;
+	    
 	}
+	
+	public static int getGLOBAL_VLAN_RANGE_MAX() {
+        return GLOBAL_VLAN_RANGE_MAX;
+    }
 
-	/**
-	 * Removes a VLan from the global data.
-	 * 
-	 * @param vlan
-	 *            VLan to remove
-	 * @return bool true if VLan was in the list and was removed, false
-	 *         if VLan was not in the list
-	 */
-	public static boolean removePs(VLan v) {
+    public static int getGLOBAL_VLAN_RANGE_MIN() {
+        return GLOBAL_VLAN_RANGE_MIN;
+    }
 
-		boolean bool = false;
-		for (VLan vlan : VLAN_LIST) {
-			if (vlan == v) {
-				VLAN_LIST.remove(vlan);
-				bool = true;
-			}
-		}
-		return bool;
-	}
+    public static int getLOCAL_VLAN_RANGE_MAX() {
+        return LOCAL_VLAN_RANGE_MAX;
+    }
 
-	/**
-	 * Removes a VLan from the global data
-	 * 
-	 * @param id
-	 *            ID of the VLan to remove
-	 * @return bool true if VLan was in the list and was removed, false
-	 *         if VLan was not in the list
-	 */
-	public static boolean removeVLan(int id) {
-		boolean bool = false;
+    public static int getLOCAL_VLAN_RANGE_MIN() {
+        return LOCAL_VLAN_RANGE_MIN;
+    }
 
-		for (VLan vlan : VLAN_LIST) {
-			if (vlan.getId() == id) {
-				VLAN_LIST.remove(vlan);
-				bool = true;
-			}
-		}
+    public static int getPOWER_VLAN_ID() {
+        return POWER_VLAN_ID;
+    }
 
-		return bool;
-	}
-
-	/**
-	 * Returns if a VLan with a given ID exists in the global data
-	 * 
-	 * @param id
-	 *            VLan ID to look for
-	 * @return false if the VLan does not exist, true if it does
-	 */
-	public static boolean exists(int id) {
-
-		boolean bool = false;
-
-		for (VLan vlan : VLAN_LIST) {
-			if (vlan.getId() == id) {
-				bool = true;
-			}
-		}
-		return bool;
-	}
+    public static int getMANAGE_VLAN_ID() {
+        return MANAGE_VLAN_ID;
+    }
+	
 }

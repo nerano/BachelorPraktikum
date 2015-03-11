@@ -38,6 +38,10 @@ public class WPort {
     //TODO destroy all vlans on this wport
     return null;
   }
+
+public String getId() {
+    return this.id;
+}
   
   
   

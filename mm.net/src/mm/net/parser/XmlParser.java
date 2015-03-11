@@ -75,6 +75,58 @@ public class XmlParser {
     return parse;
   }
   
+  
+  public int[] getVLanInfo() {
+     
+      Node node;
+      int[] vlanInfo = new int[6];
+      NodeList nodeList = doc.getElementsByTagName("*");
+      int counter = 0;
+     
+      
+      while (counter < nodeList.getLength()) {
+          
+          node = nodeList.item(counter);
+          
+          if(node.getNodeName().equals("globalRangeMin")) {
+              System.out.println("Global Range Minimun: " + node.getTextContent());
+              vlanInfo[0] = Integer.parseInt(node.getTextContent());
+          }
+          if(node.getNodeName().equals("globalRangeMax")) {
+              System.out.println("Global Range Maximum: " + node.getTextContent());
+              vlanInfo[1] = Integer.parseInt(node.getTextContent());
+          }
+
+          if (node.getNodeName().equals("localRangeMin")) {
+              System.out.println("Local Range Minimun: " + node.getTextContent());
+              vlanInfo[2] = Integer.parseInt(node.getTextContent());
+          }
+         
+          if(node.getNodeName().equals("localRangeMax")) {
+              System.out.println("Local Range Maximum: " + node.getTextContent());
+              vlanInfo[3] = Integer.parseInt(node.getTextContent());
+          }
+          
+          if(node.getNodeName().equals("power")) {
+              System.out.println("Power VLan: " + node.getTextContent());
+              vlanInfo[4] = Integer.parseInt(node.getTextContent());
+          }
+          
+          if(node.getNodeName().equals("manage")) {
+              System.out.println("Management VLan: " + node.getTextContent());
+              vlanInfo[5] = Integer.parseInt(node.getTextContent());
+          
+          }
+          counter++;
+      }
+      
+      
+      
+      
+      return vlanInfo;
+  }
+  
+  
   /**
    * 
    * @return

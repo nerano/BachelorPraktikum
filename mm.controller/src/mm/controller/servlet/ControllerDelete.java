@@ -2,12 +2,12 @@ package mm.controller.servlet;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import mm.controller.main.ControllerData;
+import mm.controller.modeling.Experiment;
 
 @Path("/delete")
 public class ControllerDelete {
@@ -30,6 +30,8 @@ public class ControllerDelete {
 	@Path("/exp")
 	public Response deleteExperiment(String id){
 		
+	    
+	    System.out.println("DELETE EXPERIMENT: " + id);
 	  //TODO Experiment löschen
     
     //TODO VLans löschen
@@ -37,12 +39,12 @@ public class ControllerDelete {
     //TODO VMs löschen
     //TODO exp
 	  
-	  
+	   Experiment experiment = ControllerData.getExpById(id);
+	   experiment.destroy();
 	  
 	  
 	  Response response;
 		String responseString;
-		System.out.println(id);
 		if(ControllerData.removeExp(id)){
 			responseString = "Experiment with ID '" + id + "' was removed";
 			response = Response.status(200).entity(responseString).build();

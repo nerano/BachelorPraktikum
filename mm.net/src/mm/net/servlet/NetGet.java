@@ -1,10 +1,7 @@
 package mm.net.servlet;
 
-import java.util.LinkedList;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -21,7 +18,7 @@ public class NetGet {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    @GET
+   /**  @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("{id}")
     public Response getVLanById(@PathParam("id") int id) {
@@ -38,8 +35,21 @@ public class NetGet {
         responseString = gson.toJson(vlan);
         return Response.status(200).entity(responseString).build();
 
-    }
+    } **/
 
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/globalVLan")
+    public Response getNewGlobalVlan() {
+        VLan vlan = NetData.getFreeGlobalVlan();
+        if(vlan != null) {
+            return Response.ok(gson.toJson(vlan)).build();
+        }
+       return Response.status(404).entity("No global VLan available").build();
+    }
+    
+    
+    
     /**
      * 
      * @param incoming
@@ -47,7 +57,7 @@ public class NetGet {
      * @return
      * @throws TransferNotCompleteException
      */
-    @GET
+   /** @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     @Path("{incoming}")
@@ -80,5 +90,5 @@ public class NetGet {
         responseString = gson.toJson(returnList);
         return Response.status(200).entity(responseString).build();
 
-    }
+    } **/
 }

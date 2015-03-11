@@ -3,6 +3,7 @@ package mm.net.main;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -19,23 +20,31 @@ public class Initialize implements ServletContextListener
     public static VLan vlan3;
 
    /**
-    * !-- Initialize everything for the NetService here --!
+    * !-- Initialize everything for the NetService here --! 
     */
     public void contextInitialized(ServletContextEvent contextEvent) 
     {
      
     	XmlParser parser = new XmlParser();
-    	   
-        String path = contextEvent.getServletContext().getRealPath("/NetComponents.xml");
-        System.out.println(path);
+    	ServletContext context = contextEvent.getServletContext();
+        String NetComponentPath = context.getRealPath("/NetComponents.xml");
+        String VLanConfigPath = context.getRealPath("/vlan.xml");
+        System.out.println("NetComponent Path: " + NetComponentPath);
         
-        parser.parseXml(path);
+        parser.parseXml(NetComponentPath);
         
-        HashMap<String, NetComponent> map = parser.getNetComponents();
-        System.out.println(map.get("NetGear1").toString());
+        HashMap<String, NetComponent> netComponentMap = parser.getNetComponents();
         
-        new NetData(map);
-    	
+        parser.parseXml(VLanConfigPath);
+        
+        int[] vlanInfo = parser.getVLanInfo();
+        
+        LinkedList<VLan> globalVlans = createGlobalVLans(vlanInfo);
+        LinkedList<VLan> localVlans = createLocalVlans(vlanInfo);
+        
+        new NetData(netComponentMap, vlanInfo, globalVlans, localVlans);
+        
+        
         addExpExample();
     }
 
@@ -45,10 +54,45 @@ public class Initialize implements ServletContextListener
              
     }//end constextDestroyed method
 
+    private static LinkedList<VLan> createGlobalVLans(int[] vlanInfo) {
+        System.out.println("Reading global VLans");
+        
+        LinkedList<VLan> vlanList = new LinkedList<VLan>();
+        
+        int globalMin = vlanInfo[0];
+        int globalMax = vlanInfo[1];
+        
+        for (int i = globalMin; i <= globalMax; i++) {
+            vlanList.add(new VLan(i, true));
+        }
+        
+        System.out.println("Reading global VLans finished");
+        
+        return vlanList;
+    }
+    
+    private static LinkedList<VLan> createLocalVlans(int[] vlanInfo) {
+        
+        System.out.println("Reading Local VLans");
+        
+        LinkedList<VLan> vlanList = new LinkedList<VLan>();
+        
+        int localMin = vlanInfo[2];
+        int localMax = vlanInfo[3];
+        
+        for (int i = localMin; i <= localMax; i++) {
+            vlanList.add(new VLan(i, false));
+        }
+   
+        System.out.println("Reading local VLans finished");
+        
+        return vlanList;
+    }
+    
     
     public static void addExpExample(){
         
-       vlan1 = new VLan(123);
+      /** vlan1 = new VLan(123);
        vlan2 = new VLan(124);
        vlan3 = new VLan(125);
         
@@ -79,7 +123,7 @@ public class Initialize implements ServletContextListener
     
        NetData.addVLan(vlan1);
        NetData.addVLan(vlan2);
-       NetData.addVLan(vlan3);
+       NetData.addVLan(vlan3); **/
     
     
     }
