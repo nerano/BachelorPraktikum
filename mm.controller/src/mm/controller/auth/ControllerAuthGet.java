@@ -49,9 +49,13 @@ public class ControllerAuthGet {
   public static void main(String[] args) {
     ControllerAuthGet auth = new ControllerAuthGet();
     sessionId = auth.authtentification().readEntity(String.class);
-    System.out.println(target.path("isValid").path(sessionId).request().get(String.class));
+    System.out.println(sessionId);
+    System.out.println(target.path("validation").path(sessionId).request().get().readEntity(String.class));
+    System.out.println(target.path("role").path(sessionId).request().get().readEntity(String.class));
     String sessionId2 = auth.authtentification().readEntity(String.class);
-    System.out.println(target.path("isValid").path(sessionId2).request().get(String.class));
+    System.out.println(sessionId2);
+    System.out.println(target.path("validation").path(sessionId2).request().get().readEntity(String.class));
+    System.out.println(target.path("role").path(sessionId2).request().get().readEntity(String.class));
     
     /* Pausiert die Methode für 11 Sekunden um zu testen ob die SessionID invalid wird
     try {
@@ -61,11 +65,11 @@ public class ControllerAuthGet {
       e.printStackTrace();
     }*/
     
-    if (target.path("isValid").path(sessionId2).request().get(String.class).equals("New LogIn!!!")) {
+    if (target.path("validation").path(sessionId2).request().get().readEntity(String.class).equals("New LogIn!!!")) {
       System.out.println("Your session expired. Please log in again: ");
       auth.authtentification();
     }
-    System.out.println(target.path("isValid").path(sessionId).request().get(String.class));
+    System.out.println(target.path("validation").path(sessionId).request().get().readEntity(String.class));
     
     da.closeScanner();
   }

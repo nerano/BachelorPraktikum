@@ -1,5 +1,7 @@
 package mm.controller.auth;
 
+//import com.sun.jersey.api.client.WebResource;
+
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,38 +27,50 @@ import java.io.IOException;
 import java.net.URI;
 
 /* Works with the Webinterface */
-@Path("/")
+@Path("auth")
 @Singleton
 public class WebAuthTest implements ContainerResponseFilter {
    
   private ClientConfig config = new ClientConfig();
   Client client = ClientBuilder.newClient(config);
   WebTarget target = client.target(getBaseUri());
+  private String sessionId;
   
   @POST
-  @Path("/login")
+  @Path("login")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response consumeJSON( String data ) throws JSONException {
     JSONObject json = new JSONObject(data);
-    String sessionId;
     //System.out.println(json);
     Response response = target.path("createSession").path(json.get("user").toString())
-        .path(json.get("password").toString()).request().get();
+        .path(json.get("password").toString()).request().get(Response.class);
+    this.sessionId = response.readEntity(String.class);
     if(response.getStatus() != 200) {      
       /* Folgende Zeile ist zur Kontrolle der SessionId
       / System.out.println(target.path(json.get("user").toString()).path(json.get("password")
         .toString()).request().get(String.class));*/
      return Response.status(403).entity("Wrong password or username").build();
     }
-    sessionId = response.readEntity(String.class);
-    return Response.ok(sessionId).build();
+    return Response.ok(this.sessionId).build();
   }
   
   @GET
-  @Path("/hello")
+  @Path("hello")
   @Produces(MediaType.TEXT_PLAIN)
   public String sayPlainTextHello() {
       return "Hello there!";
+  }
+  
+  public Response getUserRole(/*String sessionId*/) {
+    /* Die nächste Zeile dient nur zum Test.
+     * Die Methode getSessionId kann nicht verwendet werden, da immer nur die letzte
+     * erstellte SessionID zurück gegeben wird, dies ist bei mehr als 1 user tötlich.
+     * Es muss eine Möglichkeit über den Header des Webinterfaces, also das Interface
+     * schickt den Header mit samt sessionID, oder eine andere Möglichkeit an die 
+     * sessionID zu kommen, geben.
+     */
+    this.sessionId = this.target.path("getSessionId").request().get(String.class);
+    return this.target.path("role").request().header("sessionId", this.sessionId).get(Response.class);
   }
   
   public URI getBaseUri() {

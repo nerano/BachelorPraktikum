@@ -1,6 +1,7 @@
 package mm.controller.servlet;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -8,20 +9,26 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
+import org.glassfish.jersey.client.ClientConfig;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import mm.controller.auth.WebAuthTest;
 import mm.controller.exclusion.NoStatusNodeStrat;
 import mm.controller.main.ControllerData;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.PowerSource;
 import mm.controller.modeling.VLan;
-import mm.controller.modeling.WPort;
 import mm.controller.net.ControllerNetGet;
 import mm.controller.power.ControllerPowerGet;
 
@@ -51,7 +58,8 @@ public class ControllerGet {
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
 	@Path("/nodes")
 	public Response getAllNodes() {
-
+	  //if () {
+	    
 		Gson gson = new GsonBuilder().setExclusionStrategies (new NoStatusNodeStrat())  
 				 .setPrettyPrinting().create();
 		// TODO TESTEN
@@ -60,41 +68,8 @@ public class ControllerGet {
 		String responseString = gson.toJson(list);
 		// responseString = ControllerData.getAllNodesAsList().toString();
 		return Response.status(200).entity(responseString).build();
+	  //}
 	}
-	
-	
-	/**
-	 * 
-	 * @return
-	 */
-	@GET
-	@Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
-	@Path("ports")
-	public Response getPorts() {
-	  
-	  LinkedList<WPort> list = ControllerData.getAllWPorts();
-	  
-	  String responseString = gson.toJson(list);
-	  
-	  return Response.ok(responseString).build();
-	  
-	}
-	
-	
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/status/{exp}")
-	public Response getNodePowerStatus(@PathParam("exp") String exp) throws UnsupportedEncodingException {
-	    
-	    Experiment experiment = ControllerData.getExpById(exp);
-	    
-	    LinkedList<PowerSource> psrc = experiment.status();
-	    
-	    experiment.updateNodeStatusPower(psrc);
-	    
-	    return Response.ok(gson.toJson(experiment)).build();
-	}
-	
 	/**
 	 * 
 	 * @param id
@@ -204,11 +179,15 @@ public class ControllerGet {
 	@Produces({ "json/application", "text/plain" })
 	@Path("/exp")
 	public Response getAllExp(){
-		
-		String responseString = gson.toJson(ControllerData.getAllExp());
-		
-		return Response.status(200).entity(responseString).build();
+		/*
+		 * test case if the rolemanagement works
+		 */
+	  WebAuthTest auth = new WebAuthTest();
+	  if (auth.getUserRole().readEntity(String.class).equals("admin")) {
+	    String responseString = gson.toJson(ControllerData.getAllExp());
+	    return Response.status(200).entity(responseString).build();
+	  }
+	  
+		return Response.status(401).entity("no permission for all experiments!").build();
 	}
-
-
 }
