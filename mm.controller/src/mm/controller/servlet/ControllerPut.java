@@ -252,20 +252,20 @@ public class ControllerPut {
 
 	}
 	
-	
-	public Response stopExp(String exp) {
+	@PUT
+	@Path("/stop")
+	public Response stopExp(String expId) {
 	  
 	  //TODO alle knoten aus
 	  //TODO VMs stoppen
 
 	  return null;
 	
-	}
+	}	
 	
-	
-	
-	
-	public Response startExp(String exp) {
+	@PUT
+	@Path("/start")
+	public Response startExp(String expId) {
 	  //TODO Experiment starten
 	  
 	  //TODO Setze VLans auf letzten Switch
@@ -274,7 +274,22 @@ public class ControllerPut {
 	  
 	  return Response.ok().build();
 	}
-
+	
+	@PUT
+	@Path("/pause")
+	public Response pauseExp(String expId) {
+	  //TODO Experiment pausieren
+	  
+	  return Response.ok().build();
+	}
+	
+	@PUT
+	@Path("/unpause")
+	public Response unpauseExp(String expId) {
+	  //TODO 
+	  return Response.ok().build();
+	}
+	
 	/**
 	 * Turns the given Component from the given Node off.
 	 * <p>
