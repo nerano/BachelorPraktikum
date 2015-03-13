@@ -15,7 +15,6 @@ public class NodeObjects {
 	private String room;
 	private String latitude;
 	private String longitude;
-	private boolean status = false;
 	
 	public NodeObjects() {
 	}
@@ -209,7 +208,6 @@ public class NodeObjects {
 		this.longitude = longitude;
 	}
 
-	
 	public String toString() {
 		
 		StringBuffer sb = new StringBuffer();

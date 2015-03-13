@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -149,6 +150,8 @@ public class ControllerGet {
 
 		Response response;
 		String responseString;
+		Experiment exp;
+		WebAuthTest auth = new WebAuthTest();
 
 		if (!(ControllerData.existsExp(id))) {
 			responseString = "404, Experiment not found";
@@ -159,8 +162,9 @@ public class ControllerGet {
 		Gson gson = new GsonBuilder()/* .setExclusionStrategies(new NoStatusNodeStrat()) */
 									 .setPrettyPrinting().create();
 
-		responseString = gson.toJson(ControllerData.getExpById(id));
-
+		/*if (auth.getUserRole().readEntity(String.class).equals(exp.getUser())) {*/
+		  responseString = gson.toJson(ControllerData.getExpById(id));
+		/*}*/
 		response = Response.status(200).entity(responseString).build();
 
 		return response;
@@ -189,5 +193,36 @@ public class ControllerGet {
 	  }
 	  
 		return Response.status(401).entity("no permission for all experiments!").build();
+	}
+	
+	 /**
+   * Returns a list of all experiments of a user.
+   * <p>
+   * Returns a list of all currently existing experiments for a user in JSON format. 
+   * No input Parameters are required. The user name is stored in a header received
+   * from the webinterface.
+   * URI: baseuri:port/mm.controller/rest/get/exp
+   * 
+   * @return a Response Object with the JSON in the message body.
+   */
+	@GET
+	@Produces({"json/application", "text/plain"})
+	@Path("/expForUser")
+	public Response getExpForUser(@HeaderParam("user") String user) {
+	  LinkedList<Experiment> expList = ControllerData.getAllExp();
+	  LinkedList<Experiment> temp = new LinkedList<Experiment>();
+	  String responseString;
+	  for (Experiment exp : expList) {
+	    if (exp.getUser().equals(user)) {
+	      temp.add(exp);
+	    }
+	  }
+	  
+	  if (temp.isEmpty()) {
+	    responseString = "No experiments for user: " + user + " existing.";
+	  } else {
+	    responseString = gson.toJson(temp);
+	  }
+	  return Response.ok(responseString).build();
 	}
 }

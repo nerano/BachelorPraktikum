@@ -31,7 +31,6 @@ public class XmlParser {
   private DocumentBuilder docBuilder;
   private Document doc;
   private DOMSource source;
-  private HashMap<String, Instances> map;
     
   /**
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
@@ -57,7 +56,7 @@ public class XmlParser {
    */
   public HashMap<String,Instances> parse() {
     NodeList nodeList = doc.getElementsByTagName("*");
-    map = new HashMap<String, Instances>();
+    HashMap<String, Instances> map = new HashMap<String, Instances>();
     Instances vm = new Instances();
     Node node;
     int counter = 1;
