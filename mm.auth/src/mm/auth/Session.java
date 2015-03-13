@@ -73,6 +73,7 @@ public class Session {
   
   /**
    * The method uses the GregorianCalendar() to set a expire time for a sessionId.
+   *
    * <p>
    * As default the expire time for a sessionId is set to 15 minutes. This could be changed in
    * the line "this.timer.add(GregorianCalendar.MINUTE, 15);", by editing the value "15".
@@ -92,6 +93,7 @@ public class Session {
    * Checks if the time of the given sessionId is still within the 15 minute span.
    * The method uses the Java class Date() to get the current time and compares 
    * it to the expire time of the sessionId.
+   *
    * <p>
    * If the sessionId is expired it will be deleted from the hash map "ids", else
    * a new timer is set to become a new 15 minute time span for the sessionId. In this case

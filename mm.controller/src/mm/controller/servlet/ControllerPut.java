@@ -22,9 +22,6 @@ import com.google.gson.GsonBuilder;
 public class ControllerPut {
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-	
-	
 	
 	/**
 	 * Creates a new Experiment.

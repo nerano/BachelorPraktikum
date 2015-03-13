@@ -2,48 +2,48 @@ package mm.power.modeling;
 
 public class PowerSource {
 
-	private String id;
-	private boolean status;
-	private String failure;
+  private String id;
+  private boolean status;
+  private String failure;
 
-	public PowerSource(String id) {
-		this.id = id;
-	}
+  public PowerSource(String id) {
+    this.id = id;
+  }
 
-	public PowerSource(String id, boolean status) {
-		this.id = id;
-		this.status = status;
-		this.failure = "none";
-	}
-	
-	public PowerSource(String id, boolean status, String failure) {
-		this.id = id;
-		this.status = status;
-		this.failure = failure;
-	}
+  public PowerSource(String id, boolean status) {
+    this.id = id;
+    this.status = status;
+    this.failure = "none";
+  }
 
-	public String getFailure() {
-		return failure;
-	}
+  public PowerSource(String id, boolean status, String failure) {
+    this.id = id;
+    this.status = status;
+    this.failure = failure;
+  }
 
-	public void setFailure(String failure) {
-		this.failure = failure;
-	}
+  public String getFailure() {
+    return failure;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public void setFailure(String failure) {
+    this.failure = failure;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public boolean isStatus() {
-		return status;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
+  public boolean isStatus() {
+    return status;
+  }
+
+  public void setStatus(boolean status) {
+    this.status = status;
+  }
 
 }

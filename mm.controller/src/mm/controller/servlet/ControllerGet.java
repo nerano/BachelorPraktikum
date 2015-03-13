@@ -190,6 +190,8 @@ public class ControllerGet {
 	  if (auth.getUserRole().readEntity(String.class).equals("admin")) {
 	    String responseString = gson.toJson(ControllerData.getAllExp());
 	    return Response.status(200).entity(responseString).build();
+	  } else {
+	    
 	  }
 	  
 		return Response.status(401).entity("no permission for all experiments!").build();
@@ -205,10 +207,7 @@ public class ControllerGet {
    * 
    * @return a Response Object with the JSON in the message body.
    */
-	@GET
-	@Produces({"json/application", "text/plain"})
-	@Path("/expForUser")
-	public Response getExpForUser(@HeaderParam("user") String user) {
+	private Response getExpForUser(@HeaderParam("user") String user) {
 	  LinkedList<Experiment> expList = ControllerData.getAllExp();
 	  LinkedList<Experiment> temp = new LinkedList<Experiment>();
 	  String responseString;
