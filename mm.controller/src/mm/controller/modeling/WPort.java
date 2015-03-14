@@ -10,6 +10,7 @@ public class WPort {
   String port;
   String building;
   String room;
+  String trunk;
   LinkedList<Integer> vlanIds = new LinkedList<Integer>();
   
   

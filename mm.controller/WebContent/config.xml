@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="test.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<configs>
+
+<config name = "WARP+APU">
+<wire>WARP B~APU 2</wire>
+<wire>WARP A~APU 3~*</wire>
+</config>
+
+<config name = "APU">
+<wire>APU 3~*</wire>
+</config>
+
+<config name = "WARP">
+<wire>WARP A~WARP B~*</wire>
+</config>
+
+</configs>

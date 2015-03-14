@@ -1,15 +1,19 @@
 package mm.net.main;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import mm.net.modeling.NetComponent;
+import mm.net.modeling.StaticComponent;
 import mm.net.modeling.VLan;
 
 public class NetData {
 	
 	private static HashMap<String, NetComponent> ALL_NETCOMPONENT = new HashMap<String, NetComponent>();
 	// private static LinkedList<Config> CONFIG_LIST = new LinkedList<Config>();
+	
+	private static LinkedList<StaticComponent> STATIC_COMPONENTS;
 	
 	private static LinkedList<VLan> GLOBAL_VLAN_LIST;
 	private static LinkedList<VLan> LOCAL_VLAN_LIST;
@@ -29,7 +33,8 @@ public class NetData {
 	
 	
 	protected NetData(HashMap<String, NetComponent> list, int[] vlanInfo, 
-	                        LinkedList<VLan> globalVlans, LinkedList<VLan> localVlans) {
+	                        LinkedList<VLan> globalVlans, LinkedList<VLan> localVlans,
+	                        LinkedList<StaticComponent> scList) {
 		
 	    ALL_NETCOMPONENT = list;
 		
@@ -46,7 +51,17 @@ public class NetData {
 	    GLOBAL_VLAN_LIST = globalVlans;
 	    LOCAL_VLAN_LIST = localVlans;
 		
+	    STATIC_COMPONENTS = scList;
+	    
+	    
+	    
+	    for (StaticComponent sc : scList) {
+	        System.out.println("ID " + sc.getId());
+	        System.out.println("PORT " + sc.getPort());
+        }
+	   
 	}
+	
 
 	
 	public static VLan getFreeGlobalVlan() {
@@ -73,6 +88,10 @@ public class NetData {
 	 return false;   
 	}
 	
+	
+	public static LinkedList<StaticComponent> getStaticComponents() {
+	    return STATIC_COMPONENTS;
+	}
 
 	public static NetComponent getNetComponentById(String id) {
 	    

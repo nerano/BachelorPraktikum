@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="test.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+
+	<topology>
+	
+	<vertex>NetGear1;1</vertex>
+	<vertex>NetGear1;7</vertex>
+	
+	<vertex>NetGear2;1</vertex>
+	
+	
+	<edge>NetGear1;7~NetGear2;1</edge>
+	
+	
+	<startVertex>NetGear1;1</startVertex>
+	
+	</topology>

@@ -22,7 +22,7 @@ public class NetDelete {
         boolean bool = NetData.freeGlobalVlan(id);
         
         if(!bool) {
-            return Response.status(500).entity("Could not free VLan").build();
+            return Response.status(500).entity("Could not free VLan" + id).build();
         }
         
         return Response.ok().build();
@@ -31,6 +31,9 @@ public class NetDelete {
 
 
 
+    @DELETE
+    @Path("/")
+    public Response destroyLocalVlan()
 
 
 }

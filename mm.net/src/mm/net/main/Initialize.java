@@ -1,6 +1,7 @@
 package mm.net.main;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletContext;
@@ -8,6 +9,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import mm.net.modeling.NetComponent;
+import mm.net.modeling.StaticComponent;
 import mm.net.modeling.VLan;
 import mm.net.parser.XmlParser;
 
@@ -29,22 +31,29 @@ public class Initialize implements ServletContextListener
     	ServletContext context = contextEvent.getServletContext();
         String NetComponentPath = context.getRealPath("/NetComponents.xml");
         String VLanConfigPath = context.getRealPath("/vlan.xml");
+        String StaticComponentPath = context.getRealPath("/staticComponents.xml");
         System.out.println("NetComponent Path: " + NetComponentPath);
         
+        /* Parsing Network Components*/
         parser.parseXml(NetComponentPath);
-        
         HashMap<String, NetComponent> netComponentMap = parser.getNetComponents();
         
+        /* Parsing VLan Configurations*/
         parser.parseXml(VLanConfigPath);
-        
         int[] vlanInfo = parser.getVLanInfo();
         
         LinkedList<VLan> globalVlans = createGlobalVLans(vlanInfo);
         LinkedList<VLan> localVlans = createLocalVlans(vlanInfo);
         
-        new NetData(netComponentMap, vlanInfo, globalVlans, localVlans);
+        /* Parsing Static Components */
+        parser.parseXml(StaticComponentPath);
+        LinkedList<StaticComponent> scList = parser.getStaticComponents();
         
+        /* Creating NetData */
+        new NetData(netComponentMap, vlanInfo, globalVlans, localVlans, scList);
         
+        /* Initializing Static VLans */
+        initializeStaticVlans();
         addExpExample();
     }
 
@@ -89,6 +98,15 @@ public class Initialize implements ServletContextListener
         return vlanList;
     }
     
+    private static void initializeStaticVlans() {
+        
+        for (StaticComponent sc : NetData.getStaticComponents()) {
+            sc.setStaticVLan();
+        }
+
+        //TODO topologie vlans setzen
+        
+    }
     
     public static void addExpExample(){
         

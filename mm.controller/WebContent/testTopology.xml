@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="test.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+
+	<topology>
+	
+
+	<vertex>NetGear1;1</vertex>
+	<vertex>NetGear1;2</vertex>
+	<vertex>NetGear1;3</vertex>
+	<vertex>NetGear1;4</vertex>
+	
+	<vertex>NetGear1;5</vertex>
+	<vertex>NetGear2;5</vertex>
+	
+	<vertex>NetGear2;1</vertex>
+	<vertex>NetGear2;2</vertex>
+	<vertex>NetGear2;3</vertex>
+	<vertex>NetGear2;4</vertex>
+	
+	<vertex>NetGear3;1</vertex>
+	
+	<vertex>NetGear4;2</vertex>
+	
+	<vertex>NetGear5;2</vertex>
+
+	<vertex>NetGear6;1</vertex>
+	
+	<vertex>NetGear7;1</vertex>
+	
+	<vertex>NetGear8;2</vertex>
+	
+	<vertex>NetGear9;2</vertex>
+	
+	
+	
+	<edge>NetGear1;1~NetGear3;1</edge>
+	<edge>NetGear1;2~NetGear4;2</edge>
+	<edge>NetGear1;3~NetGear5;2</edge>
+	
+	<edge>NetGear1;5~NetGear2;5</edge>
+	
+	<edge>NetGear2;1~NetGear6;1</edge>
+	<edge>NetGear2;2~NetGear7;1</edge>
+	<edge>NetGear2;3~NetGear8;2</edge>
+	<edge>NetGear2;4~NetGear9;2</edge>
+	
+	
+	<startVertex>NetGear1;4</startVertex>
+	
+	</topology>

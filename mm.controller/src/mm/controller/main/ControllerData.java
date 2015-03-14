@@ -1,12 +1,17 @@
 package mm.controller.main;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 import mm.controller.modeling.Component;
+import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.WPort;
+
+import org.jgraph.graph.DefaultEdge;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.BellmanFordShortestPath;
+import org.jgrapht.graph.SimpleGraph;
 
 /**
  * Holds a static List with all experiments. Works as the central data point for
@@ -23,6 +28,69 @@ public class ControllerData {
 	/* !-- Global List of WPorts --!*/
 	private static LinkedList<WPort> ALL_WPORTS = new LinkedList<WPort>();
 	
+	private static Set<Config> ALL_CONFIGS;
+	
+	private static UndirectedGraph<String, DefaultEdge> TOPOLOGY;// = new SimpleGraph<String, DefaultEdge> (DefaultEdge.class);
+	private static BellmanFordShortestPath<String, DefaultEdge> BFSP;
+	
+	
+	ControllerData(HashMap<String, NodeObjects> allNodes, 
+	               UndirectedGraph<String, DefaultEdge> topology, String startVertex,
+	               Set<Config> configSet) {
+	ALL_NODES = allNodes;
+	TOPOLOGY = topology;
+	
+	ALL_CONFIGS = configSet;
+	
+	BFSP = new BellmanFordShortestPath<String, DefaultEdge>(TOPOLOGY, startVertex);
+	
+	}
+	
+	/**
+	 * Returns a list of ports which define a path from the startVertex to the given vertex,
+	 * empty list if no path was found.
+	 * 
+	 * 
+	 * @param   vertex to which the path should be calculated
+	 * @return
+	 */
+	public static LinkedList<String> getPath(String vertex) {
+	    try {
+	    List<DefaultEdge> edgeList = BFSP.getPathEdgeList(vertex);
+	    
+	    
+	    Set<String> set = new HashSet<String>();
+	    
+	    for (DefaultEdge edge : edgeList) {
+            set.add(TOPOLOGY.getEdgeSource(edge));
+            set.add(TOPOLOGY.getEdgeTarget(edge));
+        }
+	    System.out.println("PATH : ");
+	    System.out.println(new LinkedList<String>(set));
+	    
+	    return new LinkedList<String>(set);
+	       } catch (IllegalArgumentException e) {
+	           return new LinkedList<String>();
+	       }
+	    catch (Exception e) {
+	        return new LinkedList<String>();
+	    }
+	    
+	}
+	
+	public static Set<Config> getAllConfigs() {
+	    return ALL_CONFIGS;
+	}
+	
+	
+	public static Config getConfig(String name) {
+	    for (Config config : ALL_CONFIGS) {
+            if(config.getName().equals(name)) {
+                return config;
+            }
+        }
+	    return null;
+	}
 	
 	public static Component getComponentByPort(String port) {
 		return PORT_TO_COMPONENT.get(port);

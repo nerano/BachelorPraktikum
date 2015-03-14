@@ -2,6 +2,9 @@ package mm.controller.parser;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -9,12 +12,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 
 import mm.controller.modeling.Component;
+import mm.controller.modeling.Interface;
 import mm.controller.modeling.NodeObjects;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import mm.controller.modeling.Config;
+import mm.controller.modeling.Wire;
 
 public class XmlParser {
 
@@ -70,6 +78,208 @@ public class XmlParser {
     return this.getNodeObjects();
   }
 
+public Set<Config> parseConfigs() {
+      
+      NodeList nodeList = doc.getElementsByTagName("*");
+      Node node;
+      String[] stringArray = null;
+      Set<Config> configSet = new HashSet<Config>();
+      Set<Wire> wireSet = new HashSet<Wire>();
+      Set<String> endpointSet = new HashSet<String>();
+      
+      String name = "";
+      
+      int count = 0;
+      while(count < nodeList.getLength()) {
+          node = nodeList.item(count);
+          
+          if(node.getNodeName().equals("config")) {
+              
+              if(!name.equals("")) {
+                  configSet.add(new Config(name, new HashSet<Wire>(wireSet)));
+                  wireSet.clear();
+                 
+              }
+              
+              name = ((Element) node).getAttribute("name");
+          }
+          
+          if(node.getNodeName().equals("wire")) {
+              stringArray = node.getTextContent().split("~");
+              
+              for (int i = 0; i < stringArray.length; i++) {
+                  endpointSet.add(stringArray[i]);
+            }
+              wireSet.add(new Wire(new HashSet<String>(endpointSet)));
+              endpointSet.clear();
+          }
+          
+          count++;
+      }
+      
+      configSet.add(new Config(name, new HashSet<Wire>(wireSet)));
+      
+      return configSet;
+  }
+  
+  
+  public String getStartVertex() {
+      
+      String startVertex = "";
+      NodeList nodeList = doc.getElementsByTagName("*");
+      Node node;
+      int count = 0;
+      
+      while(count < nodeList.getLength()) {
+          node = nodeList.item(count);
+          if(node.getNodeName().equals("startVertex")) {
+              startVertex = node.getTextContent();
+              return startVertex;
+          }
+          count++;
+      }
+      return null;
+      
+  }
+  
+  public LinkedList<String> getVertices() {
+      
+      LinkedList<String> list = new LinkedList<String>();
+      NodeList nodeList = doc.getElementsByTagName("*");
+      Node node;
+      String vertex = "";
+      int count = 0;
+      
+      while(count < nodeList.getLength()) {
+          node = nodeList.item(count);
+          
+          if(node.getNodeName().equals("vertex")) {
+              vertex = node.getTextContent();
+              list.add(vertex);
+          }
+          count++;
+      }
+      return list;
+  }
+  
+  
+  public LinkedList<String> getEdges() {
+      
+      LinkedList<String> list = new LinkedList<String>();
+      NodeList nodeList = doc.getElementsByTagName("*");
+      Node node;
+      String vertex = "";
+      int count = 0;
+      
+      while(count < nodeList.getLength()) {
+          node = nodeList.item(count);
+          
+          if(node.getNodeName().equals("edge")) {
+              vertex = node.getTextContent();
+              list.add(vertex);
+          }
+          count++;
+      }
+      return list;
+  }
+  
+  public HashMap<String, NodeObjects> getNodeObjects2() {
+      int times = 0;
+      NodeList nodeList = doc.getElementsByTagName("*");
+      HashMap<String, NodeObjects> map = new HashMap<String, NodeObjects>();
+      Node node;
+      int count = 0;
+      int ifc = 0;
+      boolean first = true;
+      NodeObjects nodeobject = new NodeObjects();
+      Component comp = null;
+      Interface interf = null;
+      
+      String interfaceName = "";
+      String interfacePort = "";
+      String interfaceRole = "";
+      
+      
+      while (count < nodeList.getLength()) {
+          node = nodeList.item(count);
+          
+          
+          if(node.getNodeName().equals("id")) {
+              if(first) {
+                  nodeobject.setId(node.getTextContent());
+                  first = false;
+              } else {
+                  map.put(nodeobject.getId(), nodeobject);
+                  nodeobject = new NodeObjects(node.getTextContent());
+              }
+          }
+          
+          if(node.getNodeName().equals("type")) {
+              nodeobject.setNodeType(node.getTextContent());
+          }
+          
+          if(node.getNodeName().equals("trunk")) {
+              nodeobject.setTrunk(node.getTextContent());
+          }
+          
+          
+          if(node.getNodeName().equals("component")) {
+              
+              
+              String asd = ((Element) node).getAttribute("type");
+              
+              comp = new Component(((Element) node).getAttribute("type"));
+              nodeobject.addComponent(comp);
+              System.out.println("ELEMENT NODE TEST :" + ((Element) node).getAttribute("type")) ;
+              
+          }
+          
+          if(node.getNodeName().equals("powerSource")) {
+              comp.setPowerSource(node.getTextContent());
+          }
+          
+          if(node.getNodeName().equals("name")) {
+              interfaceName = node.getTextContent();
+              ifc++;
+          }
+          
+          if(node.getNodeName().equals("port")) {
+              interfacePort = node.getTextContent();
+              ifc++;
+          }
+          
+          if(node.getNodeName().equals("role")) {
+              interfaceRole = node.getTextContent();
+              ifc++;
+          }
+          
+          if(ifc % 3 == 0 && ifc != 0) {
+              times++;
+              System.out.println("TIMES ENTERED: " + times);
+              System.out.println("IFC: " + ifc);
+              interf = new Interface(interfaceName, interfacePort, interfaceRole);
+              comp.addInterface(interf);
+              interf = null;
+              ifc = 0;
+          }
+          
+          if(node.getNodeName().equals("building")) {
+              nodeobject.setBuilding(node.getTextContent());
+          }
+          if(node.getNodeName().equals("room")) {
+              nodeobject.setRoom(node.getTextContent());
+          }
+          
+          count++;
+      }
+      
+      map.put(nodeobject.getId(), nodeobject);
+      
+      System.out.println("IFC: " + ifc);
+      
+      return map;
+  }
+  
   /**
    * Uses DOM Tree out of Variable doc to build Objects for every Node in Tree.
    * Builds a new Object every time when identifier "ID" occurs. Objects are
@@ -80,7 +290,7 @@ public class XmlParser {
    * @return HashMap, includes NodeID as Key and NodeObjects with all the
    *         Information.
    */
-  public HashMap<String, NodeObjects> getNodeObjects() {
+  public HashMap<String, NodeObjects> getNodeObjects() { 
 
     NodeList nodeList = doc.getElementsByTagName("*");
     HashMap<String, NodeObjects> map = new HashMap<String, NodeObjects>();
@@ -91,7 +301,7 @@ public class XmlParser {
     boolean first = true;
 
     while (count < nodeList.getLength()) {
-      node = nodeList.item(count);
+        node = nodeList.item(count);
       if (node.getNodeName().equals("id")) {
         if (first) {
           nodeObjects.setId(node.getTextContent());

@@ -7,11 +7,12 @@
 	<type>NetGearGS108Tv2</type>
 	
 	<id>NetGear2</id>
-	<host>TESTFAILHOST2</host>
+	<host>netgearGS</host>
 	<type>NetGearGS108Tv2</type>
 	
 	<id>NetGear3</id>
-	<host>TESTFAILHOST3</host>
+	<host>netgearGS</host>
 	<type>NetGearGS108Tv2</type>
 
 </NetComponents>
+

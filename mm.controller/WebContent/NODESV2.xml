@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="test.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<Nodes>
+	<id>Node A</id>
+	
+		<type>APU+WARP</type>
+		<trunk>NetGear1;1</trunk>
+	
+	<component type = "WARP">
+		
+		<powerSource>AeHome1;3</powerSource>
+		
+		<name>eth0</name>
+		<port>NetGear1;2</port>
+		<role>WARP A</role>
+	
+		<name>eth1</name>
+		<port>NetGear1;3</port>
+		<role>WARP B</role>
+	</component>
+	
+	<component type = "APU">
+		
+		<powerSource>AeHome1;1</powerSource>
+		
+		<name>eth2</name>
+		<port>NetGear1;4</port>
+		<role>APU 1</role>
+		
+		<name>eth3</name>
+		<port>NetGear1;5</port>
+		<role>APU 2</role>
+		
+		<name>eth4</name>
+		<port>NetGear1;6</port>
+		<role>APU 3</role>
+	</component>
+		
+		<building>Building 1</building>
+		<room>Room right</room>
+	
+	<id>Node C</id>
+	
+		<type>APU PoE</type>
+		<trunk>Cisco1;123</trunk>
+	
+	<component type = "APU">
+		<powerSource>Cisco1;115</powerSource>
+		<name>eth0</name>
+		<port>Cisco1;115</port>
+		<role>APU 1</role>
+	</component>
+	
+		<building>Building 2</building>
+		<room>Room left</room>
+
+
+	<id>Node B</id>
+	
+	<type>CustomType</type>
+	
+	<component type = "Typ X">
+		<powerSource>PowerSource X</powerSource>
+		<name>X-NAME</name>
+		<port>X-PORT</port>
+		<role>ROLLE X</role>
+	</component>	
+	
+	<component type = "Typ Z">
+		<powerSource>PowerSource Z</powerSource>
+		<name>Z-NAME</name>
+		<port>Z-PORT</port>
+		<role>ROLLE Z</role>
+	</component>
+	
+		<ports>NetComponent;2</ports>
+		<powerSource>AeHome1;2</powerSource>
+	
+	
+	<building>X BUILDING</building>
+	<room>Z RAUM</room>
+	
+</Nodes>

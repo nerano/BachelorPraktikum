@@ -14,6 +14,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -39,6 +41,21 @@ import mm.controller.power.ControllerPowerGet;
  */
 @Path("/get")
 public class ControllerGet {
+    
+    
+    @GET
+    @Path("/test")
+    public Response test(@Context HttpHeaders header, @HeaderParam("testHeaderKey") String auth) {
+        
+        
+        header.getHeaderString("testHeaderKey");
+        
+        System.out.println("GETHEADERSTRING: " + header.getHeaderString("testHeaderKey"));
+        System.out.println("HEADERPARAM: " + auth);
+        
+        
+        return Response.ok("HEADERTEST").header("testHeaderKey", "testHeaderValue").build();
+    }
 
 	private ControllerPowerGet powerGet = new ControllerPowerGet();
 	private ControllerNetGet netGet = new ControllerNetGet();
@@ -71,6 +88,57 @@ public class ControllerGet {
 		return Response.status(200).entity(responseString).build();
 	  //}
 	}
+	
+	   /**
+     * 
+     * @return
+     */
+    @GET
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Path("/configs")
+    public Response getConfigs() {
+        
+       String responseString = gson.toJson(ControllerData.getAllConfigs());
+        
+       return Response.ok(responseString).build();
+        
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    @GET
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Path("/ports")
+    public Response getPorts() {
+      
+      String responseString = gson.toJson(ControllerData.getAllWPorts());
+      
+      return Response.ok(responseString).build();
+      
+    }
+    
+    /**
+     * 
+     * @param exp
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/status/{exp}")
+    public Response getNodePowerStatus(@PathParam("exp") String exp) throws UnsupportedEncodingException {
+        
+        Experiment experiment = ControllerData.getExpById(exp);
+        
+        LinkedList<PowerSource> psrc = experiment.status();
+        
+        experiment.updateNodeStatusPower(psrc);
+        
+        return Response.ok(gson.toJson(experiment)).build();
+    }
+    
 	/**
 	 * 
 	 * @param id

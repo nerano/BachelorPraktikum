@@ -1,13 +1,19 @@
 package mm.controller.main;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.ws.rs.core.Context;
+
+import org.jgraph.graph.DefaultEdge;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.SimpleGraph;
 
 import mm.controller.modeling.Component;
+import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.VLan;
@@ -19,10 +25,6 @@ import mm.controller.parser.XmlParser;
 public class Initialize implements ServletContextListener
     {
            
-    @Context
-    private ServletContext context; 
-    
-    public ControllerData controllerData;
     
     // public static HashMap<String, Component> POWER_TO_COMPONENT;
     // public static HashMap<Component, String> COMPONENT_TO_POWER;
@@ -32,27 +34,44 @@ public class Initialize implements ServletContextListener
     */
     public void contextInitialized(ServletContextEvent contextEvent) 
     {   
-       XmlParser parser = new XmlParser();
+        System.out.println("Initialising mm.controller.");
+        ServletContext context = contextEvent.getServletContext();
+        XmlParser parser = new XmlParser();
+        
+        String nodePath = context.getRealPath("/NODESV2.xml");
+        String topologyPath = context.getRealPath("/topology - 2 netgear.xml");
+        String configPath = context.getRealPath("/config.xml");
        
-      //  POWER_TO_COMPONENT = new HashMap<String, Component>();
-       //TODO add all parsed Nodes to allNodes
+        //  POWER_TO_COMPONENT = new HashMap<String, Component>();
        
-       String path = contextEvent.getServletContext().getRealPath("/nodesExample.xml");
-       
-       parser.parseXml(path);
-       
+       /* Parsing all Nodes */
+       parser.parseXml(nodePath);
        ControllerData.setAllNodes(parser.getNodeObjects());
+       HashMap<String, NodeObjects> allNodes = parser.getNodeObjects2();
        
-       System.out.println(ControllerData.getNodeById("01"));
-       System.out.println(ControllerData.getNodeById("04"));
+       /* Parsing Topology */
+       parser.parseXml(topologyPath);
+       UndirectedGraph<String, DefaultEdge> topology = 
+             initTopology(parser.getVertices(), parser.getEdges());
+       String startVertex = parser.getStartVertex();
        
-      
-       initPortToComponent();
+       /* Parsing Configs */
+       parser.parseXml(configPath);
+       Set<Config> configSet = parser.parseConfigs();
+       
+       new ControllerData(allNodes, topology, startVertex, configSet);
        
        addExpExample();
-       
-       System.out.println("HASHMAP :" + ControllerData.getComponentByPort("NetComponent;1"));
+       initPortToComponent();
+       System.out.println("HASHMAP: " + ControllerData.getComponentByPort("NetComponent;1"));
     
+      
+       System.out.println("Finished initialising mm.controller.");
+    
+       
+       System.out.println(ControllerData.getPath("NetGear2;1"));
+       
+       System.out.println(ControllerData.getAllNodes());
     
     }
 
@@ -71,7 +90,68 @@ public class Initialize implements ServletContextListener
     }
     
     
-    public static void initPortToComponent() {
+    private static UndirectedGraph<String, DefaultEdge> initTopology
+                    (LinkedList<String> vertices, LinkedList<String> edges) {
+        System.out.println("Initialising Topology");
+        String[] edge;
+        UndirectedGraph<String, DefaultEdge> graph = 
+                new SimpleGraph<String, DefaultEdge> (DefaultEdge.class);
+        
+        for (String vertex : vertices) {
+            graph.addVertex(vertex);
+        }
+        
+        for (String e : edges) {
+            edge = e.split("~");
+            String v1 = vertices.get(vertices.indexOf(edge[0]));
+            String v2 = vertices.get(vertices.indexOf(edge[1]));
+            graph.addEdge(v1, v2);
+        }
+        
+        initImplicitEdges(graph, vertices);
+        System.out.println("Finished Initialising Topology");
+        System.out.println("Topology : " + graph.toString());
+        return graph;
+        
+    }
+    
+    private static void initImplicitEdges(UndirectedGraph<String, DefaultEdge> graph,
+                            LinkedList<String> vertices) {
+        
+        System.out.println("Initialising implicit edges");
+        String[] vertex1Array;
+        String[] vertex2Array;
+        String v1;
+        String v2;
+        String v1c;
+        String v2c;
+        
+        
+        for (String vertex : vertices) {
+            
+            vertex1Array = vertex.split(";");
+            v1 = vertex1Array[0];
+            
+            for (String vertex2 : vertices) {
+                vertex2Array = vertex2.split(";");
+                v2 = vertex2Array[0];
+                if(v1.equals(v2) && !(vertex1Array[1].equals(vertex2Array[1]))) {
+                   
+                    v1c = v1 + ";"+ vertex1Array[1];
+                    v2c = v2 + ";"+ vertex2Array[1];
+                   
+                    if(graph.addEdge(v1c, v2c) != null) {
+                        System.out.println("Added implicit Edge: " + v1c + " - "  + v2c);
+                    }
+                }
+            }
+           
+        }
+    
+    }
+    
+    
+    private static void initPortToComponent() {
         
         String port;
         LinkedList<Component> componentList;

@@ -8,13 +8,15 @@ import mm.controller.main.ControllerData;
 
 public class NodeObjects {
 
-	private String id;
-	private String typeName;
-	private LinkedList<Component> components = new LinkedList<Component>();
-	private String building;
-	private String room;
-	private String latitude;
-	private String longitude;
+    private String id;
+    private String typeName;
+    private LinkedList<Component> components = new LinkedList<Component>();
+    private String building;
+    private String room;
+    private String latitude;
+    private String longitude;
+    private boolean status = false;
+    private String trunk;
 	
 	public NodeObjects() {
 	}
@@ -208,21 +210,31 @@ public class NodeObjects {
 		this.longitude = longitude;
 	}
 
-	public String toString() {
-		
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append("ID: '").append(id).append("'\n");
-		sb.append("TypeName: '").append(typeName).append("' \n");
-		sb.append("Components: \n");
-		for (Component component : components) {
-			sb.append("Component: '").append(component.toString());
-		}
-		sb.append("Room: '").append(room).append("' \n");
-		sb.append("Building: '").append(building).append("' \n");
-		
-		
-		return sb.toString();
-	}
+public String toString() {
+        
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("ID: '").append(id).append("'\n");
+        sb.append("TypeName: '").append(typeName).append("' \n");
+        sb.append("Components: \n");
+    
+        for (Component component : components) {
+            sb.append(component.toString());
+        }
+        
+        sb.append("Room: '").append(room).append("' \n");
+        sb.append("Building: '").append(building).append("' \n");
+        
+        
+        return sb.toString();
+    }
+
+    public void setTrunk(String trunk) {
+        this.trunk = trunk;
+    }
+    
+    public String getTrunk() {
+        return this.trunk;
+    }
 	
 }

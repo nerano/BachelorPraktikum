@@ -4,6 +4,7 @@ package mm.net.parser;
 
 import mm.net.implementation.NetGearGS108Tv2;
 import mm.net.modeling.NetComponent;
+import mm.net.modeling.StaticComponent;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -12,6 +13,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -73,6 +75,48 @@ public class XmlParser {
     }
     this.source = new DOMSource(this.doc);
     return parse;
+  }
+  
+  
+  public LinkedList<StaticComponent> getStaticComponents() {
+      
+      LinkedList<StaticComponent> scList = new LinkedList<StaticComponent>();
+      
+      String id = "";
+      String port = "";
+      String type = "";
+      
+      Node node;
+      NodeList nodeList = doc.getElementsByTagName("*");
+      int counter = 0;
+      
+      while(counter < nodeList.getLength()) {
+          
+          node = nodeList.item(counter);
+        
+          
+          if (node.getNodeName().equals("id")) {
+             
+              if(!type.equals("")) {
+              scList.add(new StaticComponent(id, port, type)); }
+                //System.out.println("Port: " + port);
+                //System.out.println("ID: " + id);
+              id = node.getTextContent();
+            } else {
+              if (node.getNodeName().equals("port")) {
+                port = node.getTextContent();
+              }
+              if (node.getNodeName().equals("type")) {
+                  type = node.getTextContent();
+                }
+            }
+          
+          counter++;
+      }
+      
+      scList.add(new StaticComponent(id, port, type));
+      
+      return scList;
   }
   
   
@@ -138,13 +182,16 @@ public class XmlParser {
     String id = ""; 
     String type = ""; 
     String host = "";
+    int trunk = -1;
     int counter = 0;
-    
+    //TODO trunks richtig einlesen
     while (counter < nodeList.getLength()) {
       node = nodeList.item(counter);
       if (node.getNodeName().equals("id")) {
         switch (type) {
-          case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, 1)); break;
+          case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, 1)); 
+          System.out.println("Host: " + host);
+          System.out.println("ID: " + id);break;
           default: break;
         }
         id = node.getTextContent();

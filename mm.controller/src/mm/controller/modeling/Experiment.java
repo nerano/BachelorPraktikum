@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
 import mm.controller.net.ControllerNetDelete;
 import mm.controller.net.ControllerNetGet;
 import mm.controller.power.ControllerPowerGet;
+import mm.controller.power.ControllerPowerPut;
 
 public class Experiment implements Cloneable {
 
@@ -253,13 +254,13 @@ public class Experiment implements Cloneable {
 	 * 
 	 * @return  an outbound Response Object.
 	 */
-	public Response getGlobalVlan() {
+	public Response addGlobalVlan() {
 	    
 	    Response response = ControllerNetGet.getGlobalVlan();
 	    
 	    if(response.getStatus() == 200) {
 	       VLan vlan = gson.fromJson((String) response.getEntity(), VLan.class);
-	       vlan.setName(this.id + "VLan");
+	       vlan.setName("Global: " + this.id + "VLan");
 	       vlans.add(vlan);
 	       System.out.println("Added VLan " + vlan.getId() + " to experiment " + this.id);
 	       return Response.ok().build(); 
@@ -270,4 +271,46 @@ public class Experiment implements Cloneable {
 	}
 	
 	
+	public Response addNode() {
+	    //TODO CHECK ob node verfügbar
+	    //TODO entsprechend handeln
+	    
+	    return null;
+	    
+	}
+	
+	public Response pause() {
+	    //TODO Strom aus
+	    //TODO errohandling
+	    
+	    for (NodeObjects node : nodes) {
+            node.turnOff();
+          //TODO errohandling
+	    }
+	    
+	    
+	    
+	    return null;
+	    
+	}
+	
+	public Response stop() {
+	    
+	    //TODO Strom aus
+	    //TODO VMs stoppen
+	    //TODO Vlans aufheben
+        //TODO errohandling
+        
+        for (NodeObjects node : nodes) {
+            node.turnOff();
+          //TODO errohandling
+        }
+        
+        return null;
+	    
+	}
+	
+	public Response start() {
+	    return null;
+	}
 }

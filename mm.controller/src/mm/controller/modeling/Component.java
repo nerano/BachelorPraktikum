@@ -1,5 +1,7 @@
 package mm.controller.modeling;
 
+import java.util.LinkedList;
+
 import javax.ws.rs.core.Response;
 
 import mm.controller.power.ControllerPowerPut;
@@ -8,7 +10,8 @@ public class Component {
 
 	private String type;
 	private String ports;
-	private String powerSource;
+	private LinkedList<Interface> interfaces = new LinkedList<Interface>();
+    private String powerSource;
 	private boolean status;
 	private int vLanIds;
 	private transient ControllerPowerPut powerPut = new ControllerPowerPut();
@@ -19,6 +22,20 @@ public class Component {
 		// this.statusfalse;
 	}
 
+	public void addInterface(Interface interf) {
+        interfaces.add(interf);
+    }
+    
+    
+    public LinkedList<Interface> getInterfaces() {
+        return interfaces;
+    }
+    
+    public void setInterfaces(LinkedList<Interface> interfaces) {
+        this.interfaces = interfaces;
+    }
+	
+	
 	public void setPowerSource(String powerSource) {
 		this.powerSource = powerSource;
 	}
@@ -110,17 +127,20 @@ public class Component {
 	}
 	
 	
-	public String toString() {
-		
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append("Type: '").append(type).append("'\n");
-		sb.append("PowerSource: '").append(powerSource).append("'\n");
-		sb.append("Ports: '").append(ports).append("'\n");
-		
-		return sb.toString();
-		
-	}
+public String toString() {
+        
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("Type: '").append(type).append("'\n");
+        sb.append("PowerSource: '").append(powerSource).append("'\n");
+        
+        for (Interface interface1 : interfaces) {
+            sb.append("Interface: '").append(interface1.toString()).append("'\n");
+        }
+        
+        return sb.toString();
+        
+    }
 	
 	
 	

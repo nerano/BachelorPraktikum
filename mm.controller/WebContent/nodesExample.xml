@@ -10,7 +10,7 @@
 		<ports>NetComponent;1</ports>
 		<powerSource>AeHome1;1</powerSource>
 		
-		<component>APU</component>
+		<component>APU</component>+
 		<ports>NetComponent;2</ports>
 		<powerSource>AeHome1;2</powerSource>
 	</components>

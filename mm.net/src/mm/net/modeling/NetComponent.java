@@ -8,6 +8,7 @@ public interface NetComponent {
 
 	public Response start();
 	public Response stop();
+	public Response setVLan(int port, boolean global, int vlanId, String name);
 	public Response setVLan(LinkedList<Integer> ports, boolean global, int vlanId, String name);
 	public Response getPVID(int port);
 
