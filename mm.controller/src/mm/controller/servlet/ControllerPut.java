@@ -86,7 +86,8 @@ public class ControllerPut {
 	        experiment.setNodeList(nodeList);
 	        experiment.setWports(wPortList);
 	        
-	        experiment.getGlobalVlan();
+	        experiment.addGlobalVlan();
+	        
 	        
 	        ControllerData.addExp(experiment);
 	        
