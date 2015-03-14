@@ -6,7 +6,6 @@ import javax.ws.rs.core.Response;
 
 public class AuthMain {
 
-  //MediaType mediatype = new MediaType(MediaType.TEXT_PLAIN, "subAuth");  
   private static final HashMap<String, UserData> users;
 
   static
@@ -20,6 +19,12 @@ public class AuthMain {
   /**
    * This method checks if the given parameters match the saved information.
    * If the data matches true is returned otherwise false.
+   * <p>
+   * Possible HTTP status codes:
+   * 
+   * <li>200: The given pair of user name and password are valid and saved in users.
+   * <li>403: False user name or password.
+   *          User name and password does not match the saved information.
    * 
    * @param user is the authorized user
    * @param pw is password of this active user
@@ -34,4 +39,23 @@ public class AuthMain {
     }
     return Response.status(403).entity("Wrong user name or password!").build();
   }
-} 
+
+  /**
+   * Returns a Response holding the user role as entity.
+   * <p>
+   * Possible HTTP status codes:
+   * 
+   * <li>200: If the user name is registered and the role is send.
+   * <li>403: Status error if the user name does not exist.
+   * 
+   * @param user name for which the role is needed.
+   * @return Response with status 200 if user name is known and its role as entity,
+   *          otherwise status 403 user name is not registered with entity string.
+   */
+  public Response getUserRole(String user) {
+    if (AuthMain.users.containsKey(user)) {
+      return Response.ok(AuthMain.users.get(user).getRole()).build();
+    }
+    return Response.status(403).entity("User name not registered!").build();
+  }
+}

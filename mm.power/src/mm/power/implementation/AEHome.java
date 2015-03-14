@@ -27,13 +27,14 @@ public class AEHome implements PowerSupply {
 
   private static final int socket = 3; // Three sockets on a Anel Elektronik
   // Home version
-  private String           id;
-  private String           host, type;
-  private String           states;
+  private String id;
+  private String host;
+  private String type;
+  private String states;
 
-  private String           URL_STRG;
-  private String           URL_CTRL;
-  private String           USER_BASE64;
+  private String URL_STRG;
+  private String URL_CTRL;
+  private String USER_BASE64;
 
   // private String TEST_USER = "adminanel";
 
@@ -86,7 +87,8 @@ public class AEHome implements PowerSupply {
 
       connection.setRequestProperty("Authorization", USER_BASE64);
 
-      BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      BufferedReader in = new BufferedReader(new InputStreamReader(
+          connection.getInputStream()));
 
       String inputLine;
 
@@ -102,28 +104,30 @@ public class AEHome implements PowerSupply {
       if (variables[variables.length - 2].equals("end")) {
         states = variables[20] + variables[21] + variables[22];
       } else {
-        responseString = "TransferNotComplete in PowerSupply: " + this.toString() + "Response: "
-            + response + "%n";
+        responseString = "TransferNotComplete in PowerSupply: "
+            + this.toString() + "Response: " + response + "%n";
         return Response.status(500).entity(responseString).build();
       }
 
       return Response.status(200).entity(states).build();
 
-    }
-    catch (java.net.NoRouteToHostException e) {
-        responseString = "NoRouteToHostException in PowerSupply: " + this.toString();
-        e.printStackTrace();
-        return Response.status(500).entity(responseString).build();
-    }
+    } catch (java.net.NoRouteToHostException e) {
+      responseString = "NoRouteToHostException in PowerSupply: "
+          + this.toString();
+      e.printStackTrace();
+      return Response.status(500).entity(responseString).build();
+    
 
-    catch (java.net.UnknownHostException e) {
-      responseString = "UnknownHostException in PowerSupply: " + this.toString();
+    } catch (java.net.UnknownHostException e) {
+      responseString = "UnknownHostException in PowerSupply: "
+          + this.toString();
       e.printStackTrace();
 
       return Response.status(500).entity(responseString).build();
 
     } catch (MalformedURLException e) {
-      responseString = "MalformedURLException in PowerSupply: " + this.toString();
+      responseString = "MalformedURLException in PowerSupply: "
+          + this.toString();
       e.printStackTrace();
       return Response.status(500).entity(responseString).build();
 
@@ -155,7 +159,8 @@ public class AEHome implements PowerSupply {
     try {
 
       if (socket > AEHome.socket) {
-        String responseString = "Socketnumber exceeds existing sockets on: " + this.toString();
+        String responseString = "Socketnumber exceeds existing sockets on: "
+            + this.toString();
         return Response.status(500).entity(responseString).build();
       }
       URL url = new URL(URL_CTRL);
@@ -189,12 +194,14 @@ public class AEHome implements PowerSupply {
     }
 
     catch (MalformedURLException e) {
-      String responseString = "MalformedURLException in PowerSupply: " + this.toString();
+      String responseString = "MalformedURLException in PowerSupply: "
+          + this.toString();
       e.printStackTrace();
       return Response.status(500).entity(responseString).build();
 
     } catch (ProtocolException e) {
-      String responseString = "ProtocolException in PowerSupply: " + this.toString();
+      String responseString = "ProtocolException in PowerSupply: "
+          + this.toString();
       e.printStackTrace();
       return Response.status(500).entity(responseString).build();
 
@@ -221,7 +228,8 @@ public class AEHome implements PowerSupply {
   public Response turnOff(int socket) {
 
     if (socket > AEHome.socket) {
-      String responseString = "Socketnumber exceeds existing sockets on: " + this.toString();
+      String responseString = "Socketnumber exceeds existing sockets on: "
+          + this.toString();
       return Response.status(500).entity(responseString).build();
     }
 
@@ -233,20 +241,20 @@ public class AEHome implements PowerSupply {
 
     String state = (String) stateResponse.getEntity();
 
-    Response r;
+    Response response;
 
     switch (state) {
-    case "1":
-      r = toggle(socket);
-      if (r.getStatus() == 200) {
+      case "1":
+        response = toggle(socket);
+        if (response.getStatus() == 200) {
+          return Response.ok().build();
+        } else {
+          return response;
+        }
+      case "0":
         return Response.ok().build();
-      } else {
-        return r;
-      }
-    case "0":
-      return Response.ok().build();
-    default:
-      return Response.status(500).build();
+      default:
+        return Response.status(500).build();
 
     }
 
@@ -267,7 +275,8 @@ public class AEHome implements PowerSupply {
   public Response turnOn(int socket) {
 
     if (socket > AEHome.socket) {
-      String responseString = "Socketnumber exceeds existing sockets on: " + this.toString();
+      String responseString = "Socketnumber exceeds existing sockets on: "
+          + this.toString();
       return Response.status(500).entity(responseString).build();
     }
 
@@ -279,20 +288,20 @@ public class AEHome implements PowerSupply {
 
     String state = (String) stateResponse.getEntity();
 
-    Response r;
+    Response response;
 
     switch (state) {
-    case "0":
-      r = toggle(socket);
-      if (r.getStatus() == 200) {
+      case "0":
+        response = toggle(socket);
+        if (response.getStatus() == 200) {
+          return Response.ok().build();
+        } else {
+          return response;
+        }
+      case "1":
         return Response.ok().build();
-      } else {
-        return r;
-      }
-    case "1":
-      return Response.ok().build();
-    default:
-      return Response.status(500).build();
+      default:
+        return Response.status(500).build();
 
     }
   }
@@ -325,7 +334,8 @@ public class AEHome implements PowerSupply {
 
     String responseString, sentence;
     if (socket > AEHome.socket) {
-      responseString = "Socketnumber exceeds existing sockets on: " + this.toString();
+      responseString = "Socketnumber exceeds existing sockets on: "
+          + this.toString();
       return Response.status(500).entity(responseString).build();
     }
 
@@ -343,9 +353,11 @@ public class AEHome implements PowerSupply {
       return Response.ok(sentence).build();
 
     } else {
-      return Response.status(500)
-          .entity("StateString was not valid in:" + this.toString() + "StateString: " + states)
-          .build();
+      return Response
+          .status(500)
+          .entity(
+              "StateString was not valid in:" + this.toString()
+                  + "StateString: " + states).build();
     }
 
   }
