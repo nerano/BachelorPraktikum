@@ -4,7 +4,11 @@ import java.util.LinkedList;
 
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import mm.controller.main.ControllerData;
+import mm.controller.net.ControllerNetGet;
 
 public class NodeObjects {
 
@@ -17,7 +21,9 @@ public class NodeObjects {
     private String longitude;
     private boolean status = false;
     private String trunk;
-	
+    private String config;
+    
+    
 	public NodeObjects() {
 	}
 
@@ -25,7 +31,17 @@ public class NodeObjects {
 		this.id = id;
 	}
 	
-	/**
+	
+	
+	public String getConfig() {
+        return config;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
+    }
+
+    /**
 	 * Updates a the PowerStatus of the Node with the information from the given
 	 * list of PowerSources
 	 * 
@@ -34,32 +50,22 @@ public class NodeObjects {
 	 */
 	public void updateNodeStatusPower(LinkedList<PowerSource> statusList) {
 
+	    boolean nodeStatus = true;
+	    
 		for (PowerSource powerSource : statusList) {
 			for (Component component : components) {
 				if (component.getPowerSource().equals(powerSource.getId())) {
 					component.setStatus(powerSource.getStatus());
+					
+					if(!powerSource.getStatus()) {
+					    nodeStatus = false;
+					}
 				}
 			}
 		}
-	}
-
-	public void updateNodeStatusVLan(LinkedList<VLan> vlanList) {
-
-		LinkedList<String> portList;
-		Component component;
-
-		for (VLan vLan : vlanList) {
-			portList = vLan.getPortList();
-
-			for (String string : portList) {
-				component = ControllerData.getComponentByPort(string);
-				if (component != null) {
-					component.setvLanId(vLan.getId());
-				}
-			}
-
-		}
-
+	
+		this.status = nodeStatus;
+	
 	}
 
 	/**
@@ -153,6 +159,50 @@ public class NodeObjects {
 	}
 
 	
+	/**
+	 * Checks if a Node is currently available, which means none of the ports from the
+	 * node are active in any VLan.
+	 * 
+	 * 
+	 * @return
+	 */
+	public Response isAvailable() {
+	    
+	    LinkedList<Interface> infList = ControllerNetGet.getVlanInfo(this);
+	    int responseStatus = 200;
+	    String responseString = null;
+	    int vlanId;
+	    LinkedList<Interface> returnList = new LinkedList<Interface>();
+	    Experiment exp;
+	    
+	    for (Interface inf : infList) {
+            vlanId = inf.getVlanId();
+	        switch (vlanId) {
+            case 0:
+                responseStatus = 500;
+                returnList.add(inf);
+                break;
+            case 1:
+                break;
+            default:
+                exp = ControllerData.getExpByVlanId(vlanId);
+                responseString = exp.getUser();
+                responseStatus = 403;
+                break;
+            }
+        }
+	    
+	    if(responseStatus == 500) {
+	        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	        responseString = gson.toJson(returnList);
+	    }
+	    
+	    if(responseStatus == 200) {
+	        responseString = "Node is free to use!";
+	    }
+	    
+	   return Response.status(responseStatus).entity(responseString).build();
+	}
 
 	public String getId() {
 		return this.id;

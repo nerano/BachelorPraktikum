@@ -5,6 +5,7 @@ import java.util.*;
 import mm.controller.modeling.Component;
 import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
+import mm.controller.modeling.Interface;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.WPort;
 
@@ -22,11 +23,11 @@ public class ControllerData {
 	/* !-- Global List of Experiments --! */
 	private static LinkedList<Experiment> EXPERIMENT_LIST = new LinkedList<Experiment>();
 	/* !-- Global Mapping from PORTs to COMPONENTs --! */
-	private static HashMap<String, Component> PORT_TO_COMPONENT = new HashMap<String, Component>();
+	private static HashMap<String, Interface> PORT_TO_INTERFACE = new HashMap<String, Interface>();
 	/* !-- Global HashMap of all known Nodes--! */
 	private static HashMap<String, NodeObjects> ALL_NODES = new HashMap<String, NodeObjects>();
 	/* !-- Global List of WPorts --!*/
-	private static LinkedList<WPort> ALL_WPORTS = new LinkedList<WPort>();
+	private static Set<WPort> ALL_WPORTS;
 	
 	private static Set<Config> ALL_CONFIGS;
 	
@@ -35,15 +36,27 @@ public class ControllerData {
 	
 	
 	ControllerData(HashMap<String, NodeObjects> allNodes, 
+	               HashMap<String, Interface> portToInterface,
 	               UndirectedGraph<String, DefaultEdge> topology, String startVertex,
-	               Set<Config> configSet) {
+	               Set<Config> configSet,
+	               Set<WPort> portSet) {
 	ALL_NODES = allNodes;
+	
+	PORT_TO_INTERFACE = portToInterface;
+	
 	TOPOLOGY = topology;
 	
 	ALL_CONFIGS = configSet;
 	
+	ALL_WPORTS = portSet;
+	
 	BFSP = new BellmanFordShortestPath<String, DefaultEdge>(TOPOLOGY, startVertex);
 	
+	}
+	
+	
+	public static Interface getInterfaceByPort(String port) {
+	    return PORT_TO_INTERFACE.get(port);
 	}
 	
 	/**
@@ -92,23 +105,6 @@ public class ControllerData {
 	    return null;
 	}
 	
-	public static Component getComponentByPort(String port) {
-		return PORT_TO_COMPONENT.get(port);
-	}
-
-	protected ControllerData() {
-		EXPERIMENT_LIST = new LinkedList<Experiment>();
-		PORT_TO_COMPONENT = new HashMap<String, Component>();
-		ALL_NODES = new HashMap<String, NodeObjects>();
-	}
-
-	protected ControllerData(LinkedList<Experiment> expList) {
-		EXPERIMENT_LIST = expList;
-		PORT_TO_COMPONENT = new HashMap<String, Component>();
-
-	}
-	
-	
 	public static WPort getWportById(String id) {
 	    for (WPort wPort : ALL_WPORTS) {
             if(wPort.getId().equals(id)){
@@ -119,13 +115,8 @@ public class ControllerData {
 	}
 	
 	public static LinkedList<WPort> getAllWPorts() {
-	  return ALL_WPORTS;
+	  return new LinkedList<WPort>(ALL_WPORTS);
 	}
-
-	public static void setWPorts(LinkedList<WPort> list) {
-	  ALL_WPORTS = list;
-	}
-	
 	
 	public static void addNode(NodeObjects node){
 		
@@ -146,11 +137,6 @@ public class ControllerData {
 		return returnList;
 		
 	}
-	
-	public static void addPort(String port, Component component){
-		PORT_TO_COMPONENT.put(port, component);
-	}
-	
 	
 	public LinkedList<Experiment> getExpList() {
 		return EXPERIMENT_LIST;
@@ -175,14 +161,32 @@ public class ControllerData {
 	 */
 	static public Experiment getExpById(String id) {
 
-		Experiment exp = null;
 		for (Experiment experiment : EXPERIMENT_LIST) {
 			if (experiment.getId().equals(id)) {
-				exp = experiment;
+				return experiment;
 			}
 		}
-		return exp;
+		return null;
 	}
+	
+	/**
+	 * Returns the experiment with is affiliated with the given VLan ID.
+	 * 
+	 * 
+	 * @param id
+	 * @return
+	 */
+	static public Experiment getExpByVlanId(int id) {
+	    LinkedList<Integer> idList;
+	    for (Experiment experiment : EXPERIMENT_LIST) {
+	        idList = experiment.getAllVlanIds();
+	        if(idList.contains(id)) {
+	            return experiment;
+	        }
+        }
+	    return null;
+	}
+	
 	
 	/**
 	 * Adds a experiment to the global data.

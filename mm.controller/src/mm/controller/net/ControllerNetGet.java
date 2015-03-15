@@ -12,7 +12,11 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import mm.controller.modeling.Component;
 import mm.controller.modeling.Experiment;
+import mm.controller.modeling.Interface;
+import mm.controller.modeling.NodeObjects;
+import mm.controller.modeling.PowerSource;
 import mm.controller.modeling.VLan;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -27,27 +31,29 @@ public class ControllerNetGet {
 	private static Client client = ClientBuilder.newClient(config);
 	private static WebTarget target = client.target(getBaseUri());
 
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	/* -- PUBLIC METHODS -- */
 	
 	
-	public VLan getVlan(int id) {
-
-		/**
-		 * String sentence =
-		 * target.path(Integer.toString(id)).request().get(String.class);
-		 * 
-		 * Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		 * 
-		 * VLan vlan = gson.fromJson(sentence, VLan.class);
-		 * 
-		 * return vlan;
-		 **/
-
-		return getVLanFromId(id).getFirst();
-
+	/**
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static LinkedList<Interface> getVlanInfo(NodeObjects node) {
+	    
+	    String parameter = turnNodeToPortString(node);
+	    
+	    Response response = target.path("vlanStatus").path(parameter).request().get(Response.class);
+	    
+	    Type type = new TypeToken<LinkedList<Interface>>() {}.getType();
+	    
+	    return gson.fromJson(response.readEntity(String.class), type);
 	}
+	
+
+
 
 	public LinkedList<VLan> getVLanFromId(int id) {
 
@@ -86,7 +92,7 @@ public class ControllerNetGet {
 	/**
 	 * Returns a new and free global VLan from the NetService.
 	 * 
-	 * @return  a Outbound Response Object with status and message body
+	 * @return  an Outbound Response Object with status and message body
 	 */
 	public static Response getGlobalVlan() {
 	    
@@ -99,6 +105,34 @@ public class ControllerNetGet {
 	}
 	
 	/* -- PRIVATE METHODS -- */
+	
+	
+	private static String turnNodeToPortString(NodeObjects node) {
+	    
+	    StringBuffer sb = new StringBuffer();
+	    
+	    for (Component component : node.getComponents()) {
+            
+	        for (Interface inf : component.getInterfaces()) {
+	            sb.append(inf.getSwitchport());
+	            
+	            if (sb.length() > 0 && (sb.charAt(sb.length()-1) != ';')) {
+	                    sb.append(";");
+	            }
+            }
+        }
+	    
+	    sb.append("end");
+	    try {
+            return URLEncoder.encode(sb.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+	}
+	
+	
 	
 	private String turnExperimentToVLanIdString(Experiment exp)
 			throws UnsupportedEncodingException {

@@ -14,12 +14,13 @@ public class WPort {
   LinkedList<Integer> vlanIds = new LinkedList<Integer>();
   
   
-  public WPort(String id, String port, String building, String room) {
+  public WPort(String id, String port, String building, String room, String trunk) {
     
     this.id = id;
     this.port = port;
     this.building = building;
     this.room = room;
+    this.trunk = trunk;
     
   }
   

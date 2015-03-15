@@ -1,7 +1,5 @@
 package mm.net.parser;
 
-
-
 import mm.net.implementation.NetGearGS108Tv2;
 import mm.net.modeling.NetComponent;
 import mm.net.modeling.StaticComponent;
@@ -30,9 +28,12 @@ public class XmlParser {
    */
   private DocumentBuilder docBuilder;
   private Document doc;
-  private TransformerFactory factory = TransformerFactory.newInstance();
-  private Transformer transformer;
-  private DOMSource source;
+  @SuppressWarnings("unused")
+private TransformerFactory factory = TransformerFactory.newInstance();
+  @SuppressWarnings("unused")
+private Transformer transformer;
+  @SuppressWarnings("unused")
+private DOMSource source;
     
   /**
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
@@ -48,7 +49,6 @@ public class XmlParser {
     try {
       docBuilder = docFactory.newDocumentBuilder();
     } catch (ParserConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -69,7 +69,6 @@ public class XmlParser {
     try {
       doc = docBuilder.parse(file);
     } catch (SAXException | IOException e) {
-      // TODO Auto-generated catch block
       parse = false;
       e.printStackTrace();
     }
@@ -182,20 +181,34 @@ public class XmlParser {
     String id = ""; 
     String type = ""; 
     String host = "";
-    int trunk = -1;
+    String[] trunkArray;
+    LinkedList<Integer> trunks = null;
     int counter = 0;
     //TODO trunks richtig einlesen
     while (counter < nodeList.getLength()) {
       node = nodeList.item(counter);
       if (node.getNodeName().equals("id")) {
         switch (type) {
-          case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, 1)); 
+          case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, trunks)); 
           System.out.println("Host: " + host);
-          System.out.println("ID: " + id);break;
+          System.out.println("ID: " + id);
+          System.out.println(trunks);
+          break;
           default: break;
         }
         id = node.getTextContent();
       } else {
+        
+        if(node.getNodeName().equals("trunk")) {
+            System.out.println("TRUNKS");
+            trunkArray = node.getTextContent().split(";");
+            trunks = new LinkedList<Integer>();
+            for (int i = 0; i < trunkArray.length; i++) {
+                System.out.println(trunkArray[i]);
+                trunks.add(Integer.parseInt(trunkArray[i]));
+            }
+        }
+          
         if (node.getNodeName().equals("type")) {
           type = node.getTextContent();
         }
@@ -207,7 +220,10 @@ public class XmlParser {
     }
     
     switch (type) {
-    case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, 1)); break;
+    case "NetGearGS108Tv2": map.put(id, new NetGearGS108Tv2(id, host, trunks)); 
+        System.out.println(trunks);
+    break;
+        
     default: break;
     }
     return map;

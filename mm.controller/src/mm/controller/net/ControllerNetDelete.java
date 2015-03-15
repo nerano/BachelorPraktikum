@@ -9,22 +9,38 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 
+
+import mm.controller.modeling.VLan;
+
 import org.glassfish.jersey.client.ClientConfig;
 
-
+/**
+ * 
+ * 
+ *
+ */
 public class ControllerNetDelete {
 
     private static ClientConfig config = new ClientConfig();
     private static Client client = ClientBuilder.newClient(config);
     private static WebTarget target = client.target(getBaseUri());
 
-    
-    public static Response freeGlobalVLan(int id) {
+    /**
+     * Frees a VLan for further use and deletes it from all NetComponents.
+     * @param id
+     * @return
+     */
+    public static Response freeGlobalVlan(int id) {
         
-        Response response = target.path("globalVLan/" + id).request().delete( Response.class);
+        Response response = target.path("globalVLan/" + id).request().delete(Response.class);
         
         String responseString = response.readEntity(String.class);
         return Response.status(response.getStatus()).entity(responseString).build();
+    }
+    
+    
+    public static Response freeLocalVlan(VLan vlan) {
+        return null;
     }
     
     

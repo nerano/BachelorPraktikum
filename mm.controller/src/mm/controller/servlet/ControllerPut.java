@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import mm.controller.main.ControllerData;
+import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.WPort;
@@ -58,6 +59,7 @@ public class ControllerPut {
 	  Experiment exp = gson.fromJson(data, Experiment.class);
 		String responseString;
 		String id = exp.getId();
+		String nodeId;
 		
 		System.out.println(data);
 
@@ -66,14 +68,23 @@ public class ControllerPut {
 			return Response.status(409).entity(responseString).build();
 		} else {
 		    //TODO USERNAME
+		    
 		    Experiment experiment = new Experiment(id);
 	        experiment.setStatus("stopped");
+	        experiment.setUser(exp.getUser());
 	        
 	        LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
 	        LinkedList<WPort> wPortList = new LinkedList<WPort>();
 	        
 	        for (NodeObjects node : exp.getList()) {
-	            nodeList.add(ControllerData.getNodeById(node.getId()));
+
+	            nodeId = node.getId();
+	            Config config = ControllerData.getConfig(node.getConfig());
+	            
+	            nodeList.add(ControllerData.getNodeById(nodeId));
+	            
+	            experiment.addNodeConfig(node.getId(), config);
+	            
 	        }
 	    
 	        for (WPort wport : exp.getWports()) {
@@ -84,12 +95,11 @@ public class ControllerPut {
 	        experiment.setWports(wPortList);
 	        
 	        experiment.addGlobalVlan();
-	        
+	        experiment.deployAllTrunks();
 	        
 	        ControllerData.addExp(experiment);
 	        
 	        exp = null;
-	        
 	        
 			responseString = "New Experiment posted/created with ID : " + id;
 			
@@ -292,7 +302,7 @@ public class ControllerPut {
 	 * Turns the given Component from the given Node off.
 	 * <p>
 	 * Address of this method:
-	 * baseuri:port/mm.controller/rest/put/turnOff/{component}, where component is a
+	 * <code>baseuri:port/mm.controller/rest/put/turnOff/{component}</code>, where component is a
 	 * String with the type of the component. The node, to which the component
 	 * belongs, has to be specified in the message body.
 	 * <p>

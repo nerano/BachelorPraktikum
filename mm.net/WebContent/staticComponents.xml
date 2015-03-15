@@ -3,11 +3,11 @@
 <staticComponents>
 
 	<id>PowerOutlet1</id>
-	<port>NetGear1;8</port>
+	<port>NetGear2;8</port>
 	<type>power</type>
 	
 	<id>Management1</id>
-	<port>NetGear1;7</port>
+	<port>NetGear2;7</port>
 	<type>management</type>
 	
 </staticComponents>

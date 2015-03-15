@@ -1,7 +1,6 @@
 package mm.net.main;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import mm.net.modeling.NetComponent;
@@ -16,10 +15,8 @@ public class NetData {
 	private static LinkedList<StaticComponent> STATIC_COMPONENTS;
 	
 	private static LinkedList<VLan> GLOBAL_VLAN_LIST;
-	private static LinkedList<VLan> LOCAL_VLAN_LIST;
 	
 	private static LinkedList<VLan> USED_GLOBAL_VLAN_LIST = new LinkedList<VLan>();
-	private static LinkedList<VLan> USED_LOCAL_VLAN_LIST = new LinkedList<VLan>();
 	
 	
 	private static int GLOBAL_VLAN_RANGE_MAX;
@@ -30,10 +27,13 @@ public class NetData {
     
     private static int POWER_VLAN_ID;
     private static int MANAGE_VLAN_ID;
+    
+    private static String POWER_VLAN_NAME = "StaticPowerVLan";
+    private static String MANAGE_VLAN_NAME = "StaticManagementVLan";
 	
 	
 	protected NetData(HashMap<String, NetComponent> list, int[] vlanInfo, 
-	                        LinkedList<VLan> globalVlans, LinkedList<VLan> localVlans,
+	                        LinkedList<VLan> globalVlans,
 	                        LinkedList<StaticComponent> scList) {
 		
 	    ALL_NETCOMPONENT = list;
@@ -49,7 +49,6 @@ public class NetData {
 	    
 	    
 	    GLOBAL_VLAN_LIST = globalVlans;
-	    LOCAL_VLAN_LIST = localVlans;
 		
 	    STATIC_COMPONENTS = scList;
 	    
@@ -63,6 +62,10 @@ public class NetData {
 	}
 	
 
+	public static LinkedList<NetComponent> getAllNetComponents() {
+	    return new LinkedList<NetComponent>(ALL_NETCOMPONENT.values());
+	}
+	
 	
 	public static VLan getFreeGlobalVlan() {
 	    
@@ -123,6 +126,15 @@ public class NetData {
 
     public static int getMANAGE_VLAN_ID() {
         return MANAGE_VLAN_ID;
+    }
+
+
+    public static String getMANAGE_VLAN_NAME() {
+        return MANAGE_VLAN_NAME;
+    }
+    
+    public static String getPOWER_VLAN_NAME() {
+        return POWER_VLAN_NAME;
     }
 	
 }

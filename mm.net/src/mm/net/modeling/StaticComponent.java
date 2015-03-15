@@ -53,12 +53,16 @@ public class StaticComponent {
         case "power":
             vlanId = NetData.getPOWER_VLAN_ID();
             System.out.println("Setting Power VLan for " + this.id );
-            nc.setVLan(ncPort, true, vlanId, "StaticPowerVLan");
+            
+            nc.addPort(ncPort, vlanId);
+            
             break;
         case "management":
             vlanId = NetData.getMANAGE_VLAN_ID();
             System.out.println("Setting Manage VLan for " + this.id );
-            nc.setVLan(ncPort, true, vlanId, "StaticManagementVLan");
+           
+            nc.addPort(ncPort, vlanId);
+            
             break;
         default:
             break;
@@ -67,8 +71,4 @@ public class StaticComponent {
         }
         
     }
-    
-    
-    
-    
 }

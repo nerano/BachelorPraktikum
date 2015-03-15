@@ -2,17 +2,14 @@
 <NetComponents>
 	
 	<id>NetGear1</id>
-	<host>netgearGS</host>
-	<trunk>1|8</trunk>
+	<trunk>1;5;6;7;8</trunk>
+	<host>netgeargs1</host>
 	<type>NetGearGS108Tv2</type>
 	
 	<id>NetGear2</id>
-	<host>netgearGS</host>
+	<trunk>1</trunk>
+	<host>netgeargs2</host>
 	<type>NetGearGS108Tv2</type>
 	
-	<id>NetGear3</id>
-	<host>netgearGS</host>
-	<type>NetGearGS108Tv2</type>
-
 </NetComponents>
 

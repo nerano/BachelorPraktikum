@@ -1,6 +1,7 @@
 package mm.controller.modeling;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.ws.rs.core.Response;
@@ -8,10 +9,11 @@ import javax.ws.rs.core.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import mm.controller.main.ControllerData;
 import mm.controller.net.ControllerNetDelete;
 import mm.controller.net.ControllerNetGet;
+import mm.controller.net.ControllerNetPut;
 import mm.controller.power.ControllerPowerGet;
-import mm.controller.power.ControllerPowerPut;
 
 public class Experiment implements Cloneable {
 
@@ -30,7 +32,7 @@ public class Experiment implements Cloneable {
 	 */
 	private LinkedList<VLan> vlans;
 	private LinkedList<WPort> wports;
-	
+	private HashMap<String, Config> nodeConfigs = new HashMap<String, Config>();
 	//TODO VMs
     private String user;
 	
@@ -41,6 +43,16 @@ public class Experiment implements Cloneable {
 	 * paused
 	 */
 	private String status;
+	
+	
+	public void setUser(String user) {
+        this.user = user;
+    }
+
+
+    public void addNodeConfig(String nodeId, Config config) {
+	    nodeConfigs.put(nodeId, config);
+	}
 	
 	
 	public LinkedList<WPort> getWports() {
@@ -116,12 +128,6 @@ public class Experiment implements Cloneable {
 		}
 	}
 
-	public void updateNodeStatusVLan(LinkedList<VLan> vlanList) {
-
-		for (NodeObjects nodeObject : nodes) {
-			nodeObject.updateNodeStatusVLan(vlanList);
-		}
-	}
 
 	public LinkedList<VLan> getVLans() {
 		return vlans;
@@ -153,6 +159,14 @@ public class Experiment implements Cloneable {
 
 	public LinkedList<NodeObjects> getList() {
 		return nodes;
+	}
+	
+	public LinkedList<Integer> getAllVlanIds() {
+	    LinkedList<Integer> list = new LinkedList<Integer>();
+	    for (VLan vlan : vlans) {
+            list.add(vlan.getId());
+        }
+	    return list;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -234,16 +248,26 @@ public class Experiment implements Cloneable {
 		return false;
 	}
 	
+	/**
+	 * Deletes all the data in the network from this experiment. 
+	 * 
+	 * Deletes the VLans from this experiment and deletes the virtual machines from the sever.
+	 *
+	 * @return
+	 */
 	public Response destroy() {
 	    System.out.println("Destroying Experiment " + this.id);
-	    
+	    Response response; 
 	    for (VLan vlan : this.vlans) {
-	        ControllerNetDelete.freeGlobalVLan(vlan.getId());
+	        
+	        if(vlan.isGlobal()) {
+	            response = ControllerNetDelete.freeGlobalVlan(vlan.getId());
+	        } else {
+	            response = ControllerNetDelete.freeLocalVlan(vlan);
+	        }
+	        
         }
-	    
-	    
-	    
-	    
+	    //TODO VMs löschen
 	    return Response.ok().build();
 	    
 	}
@@ -260,7 +284,7 @@ public class Experiment implements Cloneable {
 	    
 	    if(response.getStatus() == 200) {
 	       VLan vlan = gson.fromJson((String) response.getEntity(), VLan.class);
-	       vlan.setName("Global: " + this.id + "VLan");
+	       vlan.setName("Global " + this.id + "VLan");
 	       vlans.add(vlan);
 	       System.out.println("Added VLan " + vlan.getId() + " to experiment " + this.id);
 	       return Response.ok().build(); 
@@ -268,6 +292,33 @@ public class Experiment implements Cloneable {
 	        return response;
 	    }
 	    
+	}
+	/**
+	 * Deploys all Trunkports for this experiment.
+	 * @return
+	 */
+	public Response deployAllTrunks() {
+	    
+	    VLan vlan = null;
+	    
+	    for (VLan vLan: vlans) {
+	        if(vLan.isGlobal()) {
+	            vlan = vLan;
+	            break;
+	        }
+        }
+	    
+	    LinkedList<String> path;
+	    for (NodeObjects node : nodes) {
+            
+	        path = ControllerData.getPath(node.getTrunk());
+	        vlan.addPorts(path);
+	        
+        }
+	
+	    Response response = ControllerNetPut.setTrunkPort(vlan);
+	    return response;
+	
 	}
 	
 	

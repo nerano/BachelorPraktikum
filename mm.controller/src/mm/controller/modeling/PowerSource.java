@@ -12,8 +12,8 @@ public class PowerSource {
 	}
 
 	public void setFailure(String failure) {
-		this.failure = failure;
-	}
+        this.failure = failure;
+    }
 
 	public PowerSource(String id){
 		this.id = id;

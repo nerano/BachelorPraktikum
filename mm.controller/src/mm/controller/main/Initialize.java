@@ -15,6 +15,7 @@ import org.jgrapht.graph.SimpleGraph;
 import mm.controller.modeling.Component;
 import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
+import mm.controller.modeling.Interface;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.VLan;
 import mm.controller.modeling.WPort;
@@ -24,10 +25,6 @@ import mm.controller.parser.XmlParser;
 
 public class Initialize implements ServletContextListener
     {
-           
-    
-    // public static HashMap<String, Component> POWER_TO_COMPONENT;
-    // public static HashMap<Component, String> COMPONENT_TO_POWER;
    
     /**
     * !-- Initialize everything for the Controller here --!
@@ -41,13 +38,21 @@ public class Initialize implements ServletContextListener
         String nodePath = context.getRealPath("/NODESV2.xml");
         String topologyPath = context.getRealPath("/topology - 2 netgear.xml");
         String configPath = context.getRealPath("/config.xml");
+        String wportPath = context.getRealPath("/wports.xml");
        
         //  POWER_TO_COMPONENT = new HashMap<String, Component>();
        
        /* Parsing all Nodes */
        parser.parseXml(nodePath);
-       ControllerData.setAllNodes(parser.getNodeObjects());
+       //ControllerData.setAllNodes(parser.getNodeObjects());
        HashMap<String, NodeObjects> allNodes = parser.getNodeObjects2();
+       
+       /* Parsing all wPorts */
+       parser.parseXml(wportPath);
+       Set<WPort> portSet = parser.parseWports();
+       
+       /* Setting up port_to_interface */
+       HashMap <String, Interface> interfaceMap = initPortToInterface(allNodes);
        
        /* Parsing Topology */
        parser.parseXml(topologyPath);
@@ -59,12 +64,9 @@ public class Initialize implements ServletContextListener
        parser.parseXml(configPath);
        Set<Config> configSet = parser.parseConfigs();
        
-       new ControllerData(allNodes, topology, startVertex, configSet);
+       new ControllerData(allNodes, interfaceMap, topology, startVertex, configSet, portSet);
        
        addExpExample();
-       initPortToComponent();
-       System.out.println("HASHMAP: " + ControllerData.getComponentByPort("NetComponent;1"));
-    
       
        System.out.println("Finished initialising mm.controller.");
     
@@ -151,21 +153,27 @@ public class Initialize implements ServletContextListener
     }
     
     
-    private static void initPortToComponent() {
+    private static HashMap<String, Interface> initPortToInterface(HashMap<String, NodeObjects> nodes) {
         
-        String port;
+        LinkedList<NodeObjects> allNodes = new LinkedList<NodeObjects>(nodes.values());
+        
+        HashMap<String, Interface> map = new HashMap<String, Interface>();
+        String switchport;
+        LinkedList<Interface> ifList;
         LinkedList<Component> componentList;
-        LinkedList<NodeObjects> nodeList = ControllerData.getAllNodesAsList();
-       
-        for (NodeObjects nodeObject : nodeList) {
+        
+        for (NodeObjects nodeObject : allNodes) {
            componentList = nodeObject.getComponents();
             for (Component component : componentList) {
-                port = component.getPort();
-                ControllerData.addPort(port, component);
+                ifList = component.getInterfaces();
+                for (Interface inf : ifList) {
+                    switchport = inf.getSwitchport();
+                    map.put(switchport, inf);
+                }
             }
         }
         
-        
+        return map;
     }
     
     public static void exp1(){
@@ -219,26 +227,17 @@ public class Initialize implements ServletContextListener
         node2.setRoom("Raum Links"); **/
         
       
-        WPort port1 = new WPort("testport", "netgear1;1", "building1", "room1");
-        WPort port2 = new WPort("testport2", "netgear1;2", "building2", "room2");
-      
-        LinkedList<WPort> portList = new LinkedList<WPort>();
-        portList.add(port1);
-        portList.add(port2);
-      
-        ControllerData.setWPorts(portList);
-        
-      
-      
         Experiment exp = new Experiment("EXPERIMENT123");
         exp.addNode(ControllerData.getNodeById("Node A"));
         exp.addNode(ControllerData.getNodeById("Node B"));
         
-        VLan vlan1 = new VLan(125, "expVlan125");
-        VLan vlan2 = new VLan(124, "expVLan123");
+        VLan vlan1 = new VLan(125);
+        VLan vlan2 = new VLan(124);
         
-        exp.addVLan(vlan1);
-        exp.addVLan(vlan2);
+        exp.setUser("testUser");
+        
+       exp.addVLan(vlan1);
+       exp.addVLan(vlan2);
         
         exp.setStatus("stopped");
         

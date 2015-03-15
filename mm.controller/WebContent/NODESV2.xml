@@ -4,7 +4,7 @@
 	<id>Node A</id>
 	
 		<type>APU+WARP</type>
-		<trunk>NetGear1;1</trunk>
+		<trunk>NetGear2;1</trunk>
 	
 	<component type = "WARP">
 		
@@ -58,6 +58,7 @@
 	<id>Node B</id>
 	
 	<type>CustomType</type>
+	<trunk>CustomTrunk</trunk>
 	
 	<component type = "Typ X">
 		<powerSource>PowerSource X</powerSource>
