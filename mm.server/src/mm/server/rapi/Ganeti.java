@@ -5,11 +5,13 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 /**
  * This class will be called by the RestInterface class and communicates with the RAPI of the 
@@ -81,7 +83,7 @@ public class Ganeti {
   }
   
   /**
-   * This method will return all attributes of an instance.
+   * Returns all attributes of an instance.
    * @param instance the name of the instance,
    * @return a list with all attributes.
    */
@@ -98,7 +100,7 @@ public class Ganeti {
   }
   
   /**
-   * This method will return one attribute of an instance.
+   * Returns one attribute of an instance.
    * @param instance the name of the instance.
    * @param param the name of the parameter.
    * @return a list with the attribute of a given status.
@@ -118,16 +120,18 @@ public class Ganeti {
   /**
    * Creates an instance with the given parameters.
    * @param param is the String with all parameters to create an instance.
+   * @return the HTTP Response of the ganeti server.
    */
-  public void create(String param) {
-    System.out.println(param);
+  public Response create(String param) {
     target = client.target(url);
+    Response resp = null;
     try {
       builder = target.path("instances").request().header("Content-Type", "application/json");
-      System.out.println(builder.accept("application/json").post(Entity.json(param)));      
+      builder.accept("application/json").post(Entity.json(param));      
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return resp;
   }
  
   
@@ -135,9 +139,11 @@ public class Ganeti {
    * Starts a given instance.
    * @param instance name of the instance that will be started.
    * @param type must be a String of a JSONObject with settings.
+   * @return the HTTP Response of the ganeti server.
    */
-  public void startup(String instance, String type) {
+  public Response startup(String instance, String type) {
     target = client.target(url);
+    Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("startup").request()
           .header("Content-Type", "application/json");
@@ -145,15 +151,18 @@ public class Ganeti {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return resp;
   }
   
   /**
    * Stops a given instance.
    * @param instance name of the VM which should be stopped.
    * @param type must be a String of a JSONObject with settings.
+   * @return the HTTP Response of the ganeti server.
    */
-  public void shutdown(String instance, String type) {
+  public Response shutdown(String instance, String type) {
     target = client.target(url);
+    Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("shutdown").request()
           .header("Content-Type", "application/json");
@@ -161,19 +170,23 @@ public class Ganeti {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return resp;
   }
   
   /**
    * Deletes a given Instance from the server.
    * @param instance name of the VM which should be deleted.
+   * @return the HTTP Response of the ganeti server.
    */
-  public void delete(String instance) {
+  public Response delete(String instance) {
     target = client.target(url);
+    Response resp = null;
     try {
       target.path("instances").path(instance).request().delete();
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return resp;
   }
   
   /**
@@ -181,31 +194,37 @@ public class Ganeti {
    * @param instance name of the VM which should reboot.
    * @param type must be a String of a JSONObject with either soft, hard or full for the type of
    *rebooting.
+   *@return the HTTP Response of the ganeti server.
    */
-  public void reboot(String instance, String type) {
+  public Response reboot(String instance, String type) {
     target = client.target(url);
+    Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("reboot").request()
           .header("Content-Type", "application/json");
-      builder.accept("application/json").post(Entity.json(type));
+      resp = builder.accept("application/json").post(Entity.json(type));
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return resp;
   }
   
   /**
    * Renames a given instance with a new name.
    * @param instance name of the VM which should be renamed.
    * @param newName of the given VM.
+   * @return the HTTP Response of the ganeti server.
    */
-  public void rename(String instance, String newName) {
+  public Response rename(String instance, String newName) {
     target = client.target(url);
+    Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("rename").request()
           .header("Content-Type", "application/json");
-      builder.accept("application/json").put(Entity.json(newName));
+      resp = builder.accept("application/json").put(Entity.json(newName));
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return resp;
   }
 } 

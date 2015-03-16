@@ -38,7 +38,7 @@ public class ControllerServer {
   }
 
   /**
-   * This method will return a list of all instances on the server.
+   * Returns a list of all instances on the server.
    * @return the list of all instances on the ganeti server.
    */
   @GET
@@ -49,7 +49,7 @@ public class ControllerServer {
   }
   
   /**
-   * This method will return a list of all templates of instances.
+   * Returns a list of all templates of instances.
    * @return the list of all templates of instances.
    */
   @GET
@@ -61,7 +61,7 @@ public class ControllerServer {
   }
   
   /**
-   * This method will return a list of all attributes of a given instance.
+   * Returns a list of all attributes of a given instance.
    * @param instance the name of the instance which attributes will be shown.
    * @return the list of all attributes of an instances.
    */
@@ -74,7 +74,7 @@ public class ControllerServer {
   }
   
   /**
-   * This method will return the status of a given parameter of an instances on the server.
+   * Returns the status of a given parameter of an instances on the server.
    * @param instance name of the instance which parameter will be shown.
    * @param param the name of the status which should be returned.
    * @return the attribute of the given parameter of an instance.

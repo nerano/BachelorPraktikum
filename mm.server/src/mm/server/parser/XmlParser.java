@@ -51,7 +51,7 @@ public class XmlParser {
   }
   
   /**
-   * This method parse the XML File and saves the entries for an Instance to its reference.
+   * Parse the XML File and saves the entries for an Instance to its reference.
    * @return a HashMap with every configured Instances.
    */
   public HashMap<String,Instances> parse() {
