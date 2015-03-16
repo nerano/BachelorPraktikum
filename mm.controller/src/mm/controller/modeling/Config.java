@@ -1,17 +1,29 @@
 package mm.controller.modeling;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class Config {
 
     String name;
     Set<Wire> wires;
+    int globals = 0;
+    int locals = 0;
     
     
     public Config(String name, Set<Wire> wires) {
         this.name = name;
         this.wires = wires;
+    
+        for (Wire wire : wires) {
+            
+           if (wire.getEndpoints().contains("*")) {
+               globals++;
+           } else {
+               locals++;
+           }
+        }
     }
     
     public String getName() {
