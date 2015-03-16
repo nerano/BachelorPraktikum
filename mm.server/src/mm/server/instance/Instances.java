@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an instance with its attributes.
+ * This class represents an instance with its attributes.
  * @author Benedikt Bakker
  *
  */
@@ -30,7 +30,7 @@ public class Instances {
   }
   
   /**
-   * Adds a given attribute to the JSONObject.
+   * This method adds a given attribute to the JSONObject.
    * @param key of the given attribute.
    * @param value of the given attribute.
    */
@@ -83,11 +83,6 @@ public class Instances {
     }
   }
   
-  /**
-   * Sets boolean values to the JSONObject.
-   * @param key name of the key.
-   * @param value true or false.
-   */
   public void setBoolean(String key, boolean value) {
     try {
       json.put(key, value);
