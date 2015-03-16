@@ -206,7 +206,7 @@ public class Experiment implements Cloneable {
 	}
 
 	public boolean isNodeActive(NodeObjects node) {
-
+	  //TODO UMSCHREIBEN NODEACTIVE BENUTZT DAS GLEICHE WIE OB NODE FREI IST 
 		LinkedList<Component> compList = node.getComponents();
 
 		for (Component component : compList) {
@@ -214,6 +214,8 @@ public class Experiment implements Cloneable {
 				return true;
 			}
 		}
+		
+		
 		return false;
 
 	}
@@ -326,7 +328,7 @@ public class Experiment implements Cloneable {
 	
 	public Response addNode(NodeObjects node, Config config) {
 	    
-	    if(!node.applicable(config)) {
+	    if(!node.isApplicable(config)) {
 	        return Response.status(500).entity("Node is not applicable for this Config!").build();
 	    }
 	    

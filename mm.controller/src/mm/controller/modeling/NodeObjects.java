@@ -82,6 +82,15 @@ public class NodeObjects {
 	}
 	
 	
+	public Response activateConfig(Config config) {
+	    
+	    
+	    
+	    
+	    return null;
+	}
+	
+	
 	/**
 	 * Checks if a Config is applicable for the node.
 	 * 
@@ -89,7 +98,7 @@ public class NodeObjects {
 	 * @param config
 	 * @return
 	 */
-	public boolean applicable(Config config) {
+	public boolean isApplicable(Config config) {
 	    
 	    Set<String> configRoles = config.getRoles();
 	    Set<String> nodeRoles = this.getRoles();
