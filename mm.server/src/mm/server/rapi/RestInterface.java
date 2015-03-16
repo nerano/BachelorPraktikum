@@ -1,7 +1,6 @@
 package mm.server.rapi;
 
-import mm.server.instance.Instance;
-import mm.server.instance.Template;
+import mm.server.instance.Instances;
 import mm.server.main.ServerData;
 
 import org.json.JSONException;
@@ -32,7 +31,22 @@ import javax.ws.rs.core.Response;
 public class RestInterface {
 
   private Ganeti ga = new Ganeti();
-  private HashMap<String, Template> map = ServerData.getTemplateList();
+  private HashMap<String, Instances> map = ServerData.getTemplateList();
+  
+  /**
+   * Empty standard constructor.
+   */
+  public RestInterface() {
+    
+  }
+  
+  /**
+   * Constructor which initialize the Hash Map of the instance templates.
+   * @param instanceMap
+   */
+  public RestInterface(HashMap<String, Instances> instanceMap) {
+    map = instanceMap;
+  }
   
   /**
    * Calls the method which returns a list of instances on the server.
@@ -111,36 +125,27 @@ public class RestInterface {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createInstance(String json) {
-    Template temp = null;
     String create = "";
+    String name = "";
+    String resp = "";
     if (json.isEmpty()) {
-      return Response.status(409).entity("There are no parameters").build();
+      resp = "There are no parameters";
+      return Response.status(409).entity(resp).build();
     }
-    if (!json.contains("template") || !json.contains("name") || !json.contains("bridge") 
-        || !json.contains("ip") || !json.contains("size")) {
-      return Response.status(409)
-          .entity("There is either no template name or no instance name or no bridge or no ip"
-              + "or no disks size").build();
+    if (!json.contains("template") || !json.contains("name")) {
+      resp = "There is either no template name or no instance name";
+      return Response.status(409).entity(resp).build();
     }
     try {
       JSONObject param = new JSONObject(json);
-      temp = map.get(param.get("template"));
-      Instance vm = new Instance();
-      String tmp = temp.getJson().toString();
-      vm.setJson(new JSONObject(tmp));
-      vm.setDisk(temp.getDisk());
-      vm.setNic(temp.getNic());
-      vm.setNics("link", param.getString("bridge"));
-      vm.setNics("ip", param.getString("ip"));
-      vm.setName(param.getString("name"));
-      vm.setDisksSize(param.getInt("size"));
-      create = vm.toString();
+      create = map.get(param.getString("template")).toString();
+      name = param.getString("name");
+      create = create.substring(0, create.length() - 1);
+      create = create.concat(",\"instance_name\":\"" + name + "\"}");
     } catch (JSONException e) {
       e.printStackTrace();
     }
-    System.out.println(create);
-    //return ga.create(create);
-    return Response.ok().build();
+    return ga.create(create);
   }
   
   /**

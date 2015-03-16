@@ -1,7 +1,9 @@
 package mm.server.parser;
 
-import mm.server.instance.Template;
+import mm.server.instance.Instances;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -9,10 +11,12 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
 
 /**
  * This class parses a XML file of configured instances and saves them into a HashMap.
@@ -26,6 +30,7 @@ public class XmlParser {
    */
   private DocumentBuilder docBuilder;
   private Document doc;
+  private DOMSource source;
     
   /**
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
@@ -42,16 +47,17 @@ public class XmlParser {
     } catch (ParserConfigurationException | SAXException | IOException e) {
       e.printStackTrace();
     }
+    this.source = new DOMSource(this.doc);
   }
   
   /**
    * Parse the XML File and saves the entries for an Instance to its reference.
    * @return a HashMap with every configured Instances.
    */
-  public HashMap<String,Template> parse() {
+  public HashMap<String,Instances> parse() {
     NodeList nodeList = doc.getElementsByTagName("*");
-    HashMap<String, Template> map = new HashMap<String, Template>();
-    Template vm = new Template();
+    HashMap<String, Instances> map = new HashMap<String, Instances>();
+    Instances vm = new Instances();
     Node node;
     int counter = 1;
     String id = "";
@@ -63,7 +69,7 @@ public class XmlParser {
         if (!first) {
           vm.setList();
           map.put(id, vm);
-          vm = new Template();
+          vm = new Instances();
         } else {
           first = false;
         }
@@ -92,7 +98,7 @@ public class XmlParser {
    * @param file the path of the XML file.
    * @return the updated HashMap of instances.
    */
-  public HashMap<String, Template> update(String file) {
+  public HashMap<String, Instances> update(String file) {
     try {
       doc = docBuilder.parse(file);
     } catch (SAXException | IOException e) {

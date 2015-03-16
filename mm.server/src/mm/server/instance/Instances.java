@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an template of an instance with its attributes.
+ * Represents an instance with its attributes.
  * @author Benedikt Bakker
  *
  */
-public class Template {
+public class Instances {
 
   private JSONObject json;
   private JSONObject nics;
@@ -23,7 +23,7 @@ public class Template {
   /**
    * Initialize the Lists and JSONObject.
    */
-  public Template() {
+  public Instances() {
     json = new JSONObject();
     nic = new ArrayList<JSONObject>();
     disk = new ArrayList<JSONObject>();
@@ -94,18 +94,6 @@ public class Template {
     } catch (JSONException e) {
       e.printStackTrace();
     }
-  }
-  
-  public JSONObject getJson() {
-    return json;
-  }
-
-  public List<JSONObject> getNic() {
-    return nic;
-  }
-
-  public List<JSONObject> getDisk() {
-    return disk;
   }
   
   public String toString() {
