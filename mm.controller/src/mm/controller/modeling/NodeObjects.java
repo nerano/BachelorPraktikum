@@ -1,6 +1,8 @@
 package mm.controller.modeling;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
@@ -68,6 +70,37 @@ public class NodeObjects {
 	
 	}
 
+	public Set<String> getRoles() {
+	    
+	    Set<String> roles = new HashSet<String>();
+	    for (Component component : components) {
+	        for (Interface inf : component.getInterfaces()) {
+	            roles.add(inf.getRole());
+            }
+        }
+	    return roles;
+	}
+	
+	
+	/**
+	 * Checks if a Config is applicable for the node.
+	 * 
+	 * Every Role from the Config has to be present in the Node.
+	 * @param config
+	 * @return
+	 */
+	public boolean applicable(Config config) {
+	    
+	    Set<String> configRoles = config.getRoles();
+	    Set<String> nodeRoles = this.getRoles();
+	    for (String configRole : configRoles) {
+	        if(!nodeRoles.contains(configRole)) {
+                return false;
+            }
+	    }
+	    return true;
+	}
+	
 	/**
 	 * Turns off all components of this node.
 	 * <p>

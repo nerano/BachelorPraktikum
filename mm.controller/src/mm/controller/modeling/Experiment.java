@@ -94,6 +94,7 @@ public class Experiment implements Cloneable {
 
 		this.id = id;
 		this.nodes = nodes;
+		this.vlans = new LinkedList<VLan>();
 
 	}
 
@@ -129,9 +130,7 @@ public class Experiment implements Cloneable {
 	}
 
 
-	public LinkedList<VLan> getVLans() {
-		return vlans;
-	}
+	
 
 	private void setVlans(LinkedList<VLan> list) {
 		this.vlans = list;
@@ -149,9 +148,6 @@ public class Experiment implements Cloneable {
 		return this.id;
 	}
 
-	public void addNode(NodeObjects node) {
-		nodes.add(node);
-	}
 
 	public void setNodeList(LinkedList<NodeObjects> list) {
 		this.nodes = list;
@@ -169,22 +165,6 @@ public class Experiment implements Cloneable {
 	    return list;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Experiment clone() throws CloneNotSupportedException {
-		Experiment cloned = (Experiment) super.clone();
-		cloned.setNodeList((LinkedList<NodeObjects>) cloned.getList().clone());
-
-		cloned.setId(new String(cloned.getId()));
-
-		cloned.setVlans((LinkedList<VLan>) cloned.getVLans().clone());
-	
-		
-		return cloned;
-	
-	
-	
-	}
 
 	public boolean contains(NodeObjects node) {
 
@@ -322,26 +302,68 @@ public class Experiment implements Cloneable {
 	}
 	
 	
-	public Response addNode() {
-	    //TODO CHECK ob node verfügbar
-	    //TODO entsprechend handeln
-	    
+	private Response addNodeRunning() {
+	    //TODO Check ob verfügbar
+	    //TODO globale vlans
+	    //TODO letzte vlans
+	    //TODO anmachen
 	    return null;
+	}
+	
+	private Response addNodePaused() {
+        //TODO check of verfügbar
+	    //TODO globbale vlans
+	    //TODO letzte vlans
+	    //TODO ausmachen
+	    return null;
+    }
+	
+	private Response addNodeStopped() {
+	    //TODO globale vlans
+	    return null;
+	}
+	
+	
+	public Response addNode(NodeObjects node, Config config) {
+	    
+	    if(!node.applicable(config)) {
+	        return Response.status(500).entity("Node is not applicable for this Config!").build();
+	    }
+	    
+	    switch (status) {
+        case "running":
+            return addNodeRunning();
+        case "paused":
+            return addNodePaused();
+        case "stopped":
+            return addNodeStopped();
+        default:
+            return Response.status(500).entity("Could not determine status of experiment").build();
+        }
 	    
 	}
 	
+	/**
+	 * Pauses the experiment. 
+	 * 
+	 * <p>
+	 * To do this all the nodes are turned off. If something goes wrong 
+	 * @return an Outbound Response Object with status code and message body in error case
+	 */
 	public Response pause() {
-	    //TODO Strom aus
-	    //TODO errohandling
+	    
+	    Response response;
+	    int responseStatus = 200;
+	    String responseString = "";
 	    
 	    for (NodeObjects node : nodes) {
-            node.turnOff();
-          //TODO errohandling
+           response = node.turnOff();
+           if(response.getStatus() != 200) {
+               responseStatus = 500;
+               responseString += (String) response.getEntity();
+           }
 	    }
-	    
-	    
-	    
-	    return null;
+	    return Response.status(responseStatus).entity(responseString).build();
 	    
 	}
 	
@@ -362,6 +384,11 @@ public class Experiment implements Cloneable {
 	}
 	
 	public Response start() {
+	    
+	    //TODO letzten vlans
+	    //TODO vms starten
+	    //TODO strom an
+	    
 	    return null;
 	}
 }

@@ -116,6 +116,8 @@ public class NetPut {
 	    
 	    VLan vlan = gson.fromJson(incoming, VLan.class);
 	 
+	        vlan.isGlobal();
+	    
 	    return null;
 	}
 	

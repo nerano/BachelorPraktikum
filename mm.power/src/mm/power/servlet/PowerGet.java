@@ -35,6 +35,8 @@ public class PowerGet {
 	  int socket, responseStatus = 200;
 	  //String incoming = "TESTAEHOME#1;1;TESTAEHOME#1;2;TESTAEHOME#1;3;notfound;2;end";
 	  
+	  System.out.println("INCOMING in POWERGET : " + incoming);
+	  
 	  String[] parts = incoming.split(";");
 	  
 
@@ -48,6 +50,7 @@ public class PowerGet {
 		  
 		  id = parts[i];
 		  socket = Integer.parseInt(parts[i+1]);
+		  
 		  
 		  if(!(PowerData.exists(id))) {
 			  responseStatus = 404;

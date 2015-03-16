@@ -2,7 +2,6 @@ package mm.controller.main;
 
 import java.util.*;
 
-import mm.controller.modeling.Component;
 import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.Interface;
@@ -12,7 +11,6 @@ import mm.controller.modeling.WPort;
 import org.jgraph.graph.DefaultEdge;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.BellmanFordShortestPath;
-import org.jgrapht.graph.SimpleGraph;
 
 /**
  * Holds a static List with all experiments. Works as the central data point for

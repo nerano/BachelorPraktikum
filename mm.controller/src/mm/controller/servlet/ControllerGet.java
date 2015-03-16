@@ -1,7 +1,6 @@
 package mm.controller.servlet;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.ws.rs.GET;
@@ -24,9 +23,6 @@ import mm.controller.main.ControllerData;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.PowerSource;
-import mm.controller.modeling.VLan;
-import mm.controller.net.ControllerNetGet;
-import mm.controller.power.ControllerPowerGet;
 
 /**
  * Class for all GET methods in the controller servlet
@@ -50,8 +46,6 @@ public class ControllerGet {
         return Response.ok("HEADERTEST").header("testHeaderKey", "testHeaderValue").build();
     }
 
-	private ControllerPowerGet powerGet = new ControllerPowerGet();
-	private ControllerNetGet netGet = new ControllerNetGet();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	/**
@@ -135,6 +129,11 @@ public class ControllerGet {
     @Path("/status/{exp}")
     public Response getNodePowerStatus(@PathParam("exp") String exp) throws UnsupportedEncodingException {
         
+        if(!ControllerData.existsExp(exp)) {
+            return Response.status(404).entity("404, Experiment does not exist!").build();
+        }
+        
+        
         Experiment experiment = ControllerData.getExpById(exp);
         
         LinkedList<PowerSource> psrc = experiment.status();
@@ -151,7 +150,7 @@ public class ControllerGet {
 	 * @throws CloneNotSupportedException
 	 * @throws UnsupportedEncodingException
 	 */
-	@GET
+	/**@GET
 	@Produces({ "json/application", "text/plain" })
 	@Path("/activeExp/{id}")
 	public Response getActiveNodesByExpId(@PathParam("id") String id)
@@ -172,16 +171,13 @@ public class ControllerGet {
 
 		LinkedList<PowerSource> statusList = powerGet.status(exp);
 		
-		LinkedList<VLan> vlanList = netGet.getVLanFromExperiment(exp);
 
 		// VLan vlan = netGet.getVlan(id);
 
 		exp.updateNodeStatusPower(statusList);
 		
 		System.out.println(gson.toJson(statusList));
-		System.out.println(gson.toJson(vlanList));
 		
-		Experiment returnExp = exp.clone();
 		LinkedList<NodeObjects> list = returnExp.getList();
 		
 		for (Iterator<NodeObjects> nodeObject = list.iterator(); nodeObject.hasNext();) {
@@ -199,7 +195,7 @@ public class ControllerGet {
 		responseString = gson.toJson(returnExp);
 		response = Response.status(200).entity(responseString).build();
 		return response;
-	}
+	} **/
 
 	/**
 	 * Returns an experiment.

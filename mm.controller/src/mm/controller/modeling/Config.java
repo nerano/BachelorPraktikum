@@ -1,5 +1,6 @@
 package mm.controller.modeling;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Config {
@@ -20,6 +21,21 @@ public class Config {
     public Set<Wire> getWires() {
         return wires;
     }
+    
+    
+    public Set<String> getRoles() {
+        
+        Set<String> roles = new HashSet<String>();
+        Set<String> endpoints;
+        for (Wire wire : wires) {
+            endpoints = wire.getEndpoints();
+            for (String endpoint : endpoints) {
+                roles.add(endpoint);
+            }
+        }
+        return roles;
+    }
+    
  
     public String toString() {
         

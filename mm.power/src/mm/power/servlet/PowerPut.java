@@ -53,10 +53,10 @@ public class PowerPut {
     try {
       System.out.println("POWER SERVLET TURN ON");
       String[] parts = incoming.split(";");
-      int size; 
+      int size = (parts.length - 1) / 2;
       int socket;
       int responseStatus = -1;
-      size = (parts.length - 1) / 2;
+      
       String[] ids = new String[size];
       String id;
       StringBuffer buffer = new StringBuffer();

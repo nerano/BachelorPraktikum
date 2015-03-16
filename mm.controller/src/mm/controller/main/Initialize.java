@@ -147,9 +147,7 @@ public class Initialize implements ServletContextListener
                     }
                 }
             }
-           
         }
-    
     }
     
     
@@ -226,10 +224,15 @@ public class Initialize implements ServletContextListener
         node1.setRoom("Raum Rechts");
         node2.setRoom("Raum Links"); **/
         
-      
-        Experiment exp = new Experiment("EXPERIMENT123");
-        exp.addNode(ControllerData.getNodeById("Node A"));
-        exp.addNode(ControllerData.getNodeById("Node B"));
+        NodeObjects node1 = ControllerData.getNodeById("Node A");
+        NodeObjects node2 = ControllerData.getNodeById("Node B");
+        
+        LinkedList<NodeObjects> nodeList = new  LinkedList<NodeObjects>();
+        
+        nodeList.add(node1);
+       // nodeList.add(node2);
+        
+        Experiment exp = new Experiment("EXPERIMENT123", nodeList);
         
         VLan vlan1 = new VLan(125);
         VLan vlan2 = new VLan(124);
@@ -239,7 +242,7 @@ public class Initialize implements ServletContextListener
        exp.addVLan(vlan1);
        exp.addVLan(vlan2);
         
-        exp.setStatus("stopped");
+        exp.setStatus("paused");
         
         
         ControllerData.addExp(exp);

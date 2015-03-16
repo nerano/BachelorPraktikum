@@ -397,7 +397,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
         if (response.getStatus() != 200) {
             return errorHandler("addTrunkPort", "could not get egressPorts/Untagged because of: \n"
-                    + Arrays.toString((String[]) response.getEntity()));
+                    + ((String) response.getEntity()));
         }
 
         String newEgress = ((String[]) response.getEntity())[0];

@@ -61,14 +61,14 @@
 	<trunk>CustomTrunk</trunk>
 	
 	<component type = "Typ X">
-		<powerSource>PowerSource X</powerSource>
+		<powerSource>PowerSourceX;1</powerSource>
 		<name>X-NAME</name>
 		<port>X-PORT</port>
 		<role>ROLLE X</role>
 	</component>	
 	
 	<component type = "Typ Z">
-		<powerSource>PowerSource Z</powerSource>
+		<powerSource>PowerSourceZ;2</powerSource>
 		<name>Z-NAME</name>
 		<port>Z-PORT</port>
 		<role>ROLLE Z</role>
