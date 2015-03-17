@@ -1,10 +1,10 @@
 package mm.auth.main;
 
+import mm.auth.session.UserData;
+
 import java.util.HashMap;
 
 import javax.ws.rs.core.Response;
-
-import mm.auth.session.UserData;
 
 public class AuthMain {
 
