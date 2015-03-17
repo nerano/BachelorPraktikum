@@ -1,4 +1,4 @@
-package mm.auth;
+package mm.auth.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,6 +16,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import mm.auth.main.AuthMain;
 
 @Path("session")
 @Singleton
