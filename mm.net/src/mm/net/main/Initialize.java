@@ -12,114 +12,107 @@ import mm.net.modeling.StaticComponent;
 import mm.net.modeling.VLan;
 import mm.net.parser.XmlParser;
 
-public class Initialize implements ServletContextListener
-{
+public class Initialize implements ServletContextListener {
 
-    public static VLan vlan1;
-    public static VLan vlan2;
-    public static VLan vlan3;
 
-    /**
-     * !-- Initialize everything for the NetService here --!
-     */
-    public void contextInitialized(ServletContextEvent contextEvent)
-    {
+  /**
+   * !-- Initialize everything for the NetService here --!
+   */
+  public void contextInitialized(ServletContextEvent contextEvent) {
 
-        XmlParser parser = new XmlParser();
-        ServletContext context = contextEvent.getServletContext();
-        String NetComponentPath = context.getRealPath("/NetComponents.xml");
-        String VLanConfigPath = context.getRealPath("/vlan.xml");
-        String StaticComponentPath = context.getRealPath("/staticComponents.xml");
-        System.out.println("NetComponent Path: " + NetComponentPath);
+    XmlParser parser = new XmlParser();
+    ServletContext context = contextEvent.getServletContext();
+    String netComponentPath = context.getRealPath("/NetComponents.xml");
+    String vLanConfigPath = context.getRealPath("/vlan.xml");
+    String staticComponentPath = context.getRealPath("/staticComponents.xml");
+    System.out.println("NetComponent Path: " + netComponentPath);
 
-        /* Parsing VLan Configurations */
-        parser.parseXml(VLanConfigPath);
-        int[] vlanInfo = parser.getVLanInfo();
+    /* Parsing VLan Configurations */
+    parser.parseXml(vLanConfigPath);
+    int[] vlanInfo = parser.getVLanInfo();
 
-        /* Parsing Network Components */
-        parser.parseXml(NetComponentPath);
-        HashMap<String, NetComponent> netComponentMap = parser.getNetComponents();
+    /* Parsing Network Components */
+    parser.parseXml(netComponentPath);
+    HashMap<String, NetComponent> netComponentMap = parser.getNetComponents();
 
-        LinkedList<VLan> globalVlans = createGlobalVLans(vlanInfo);
-        LinkedList<VLan> localVlans =  createLocalVlans(vlanInfo);
-        
-        /* Parsing Static Components */
-        parser.parseXml(StaticComponentPath);
-        LinkedList<StaticComponent> scList = parser.getStaticComponents();
+    LinkedList<VLan> globalVlans = createGlobalVLans(vlanInfo);
+    LinkedList<VLan> localVlans = createLocalVlans(vlanInfo);
 
-        /* Creating NetData */
-        new NetData(netComponentMap, vlanInfo, globalVlans, localVlans, scList);
+    /* Parsing Static Components */
+    parser.parseXml(staticComponentPath);
+    LinkedList<StaticComponent> scList = parser.getStaticComponents();
 
-        /* Initializing Static VLans */
-        initializeStaticVlans();
+    /* Creating NetData */
+    new NetData(netComponentMap, vlanInfo, globalVlans, localVlans, scList);
 
-        /* Creating local Vlans for all NetComponents */
-       
+    /* Initializing Static VLans */
+    initializeStaticVlans();
 
-        System.out.println(NetData.getAllNetComponents());
+    /* Creating local Vlans for all NetComponents */
+
+    System.out.println(NetData.getAllNetComponents());
+
+  }
+
+  public void contextDestroyed(ServletContextEvent context) {
+
+  }
+
+  private static LinkedList<VLan> createGlobalVLans(int[] vlanInfo) {
+    System.out.println("Reading global VLans");
+
+    LinkedList<VLan> vlanList = new LinkedList<VLan>();
+
+    int globalMin = vlanInfo[0];
+    int globalMax = vlanInfo[1];
+
+    for (int i = globalMin; i <= globalMax; i++) {
+      vlanList.add(new VLan(i, true));
+    }
+
+    System.out.println("Reading global VLans finished");
+
+    return vlanList;
+  }
+
+  private static LinkedList<VLan> createLocalVlans(int[] vlanInfo) {
+
+    System.out.println("Reading Local VLans");
+    LinkedList<VLan> vlanList = new LinkedList<VLan>();
+
+    int globalMin = vlanInfo[2];
+    int globalMax = vlanInfo[3];
+
+    for (int i = globalMin; i <= globalMax; i++) {
+      vlanList.add(new VLan(i, false));
+    }
+    System.out.println("Reading local VLans finished");
+
+    return vlanList;
+
+  }
+
+  private static void initializeStaticVlans() {
+
+    for (NetComponent nc : NetData.getAllNetComponents()) {
+
+      nc.start();
+
+      nc.setTrunkPort(nc.getTrunks(),
+          NetData.getMANAGE_VLAN_ID(),
+          NetData.getMANAGE_VLAN_NAME());
+
+      nc.setTrunkPort(nc.getTrunks(),
+          NetData.getPOWER_VLAN_ID(),
+          NetData.getPOWER_VLAN_NAME());
+
+      nc.stop();
 
     }
 
-    public void contextDestroyed(ServletContextEvent context)
-    {
-
+    for (StaticComponent sc : NetData.getStaticComponents()) {
+      sc.setStaticVLan();
     }
-
-    private static LinkedList<VLan> createGlobalVLans(int[] vlanInfo) {
-        System.out.println("Reading global VLans");
-
-        LinkedList<VLan> vlanList = new LinkedList<VLan>();
-
-        int globalMin = vlanInfo[0];
-        int globalMax = vlanInfo[1];
-
-        for (int i = globalMin; i <= globalMax; i++) {
-            vlanList.add(new VLan(i, true));
-        }
-
-        System.out.println("Reading global VLans finished");
-
-        return vlanList;
-    }
-
-    private static LinkedList<VLan> createLocalVlans(int[] vlanInfo) {
-
-        System.out.println("Reading Local VLans");
-        LinkedList<VLan> vlanList = new LinkedList<VLan>();
-
-        int globalMin = vlanInfo[2];
-        int globalMax = vlanInfo[3];
-
-        for (int i = globalMin; i <= globalMax; i++) {
-            vlanList.add(new VLan(i, false));
-        }
-        System.out.println("Reading local VLans finished");
-        
-        return vlanList;
-
-    }
-
-    private static void initializeStaticVlans() {
-
-        for (NetComponent nc : NetData.getAllNetComponents()) {
-
-            nc.start();
-
-            nc.setTrunkPort(nc.getTrunks(),
-                    NetData.getMANAGE_VLAN_ID(),
-                    NetData.getMANAGE_VLAN_NAME());
-
-            nc.setTrunkPort(nc.getTrunks(),
-                    NetData.getPOWER_VLAN_ID(),
-                    NetData.getPOWER_VLAN_NAME());
-
-            nc.stop();
-
-        }
-
-        for (StaticComponent sc : NetData.getStaticComponents()) {
-            sc.setStaticVLan();
-        }
-    }
+  }
 
 }

@@ -26,6 +26,13 @@ import mm.controller.parser.XmlParser;
 public class Initialize implements ServletContextListener
     {
    
+    static String NODE_PATH;
+    static String TOPOLOGY_PATH;
+    static String CONFIG_PATH;
+    static String WPORT_PATH;
+  
+  
+  
     /**
     * !-- Initialize everything for the Controller here --!
     */
@@ -35,33 +42,33 @@ public class Initialize implements ServletContextListener
         ServletContext context = contextEvent.getServletContext();
         XmlParser parser = new XmlParser();
         
-        String nodePath = context.getRealPath("/NODESV2.xml");
-        String topologyPath = context.getRealPath("/topology - 2 netgear.xml");
-        String configPath = context.getRealPath("/config.xml");
-        String wportPath = context.getRealPath("/wports.xml");
+        NODE_PATH = context.getRealPath("/NODESV2.xml");
+        TOPOLOGY_PATH = context.getRealPath("/topology - 2 netgear.xml");
+        CONFIG_PATH = context.getRealPath("/config.xml");
+        WPORT_PATH = context.getRealPath("/wports.xml");
        
         //  POWER_TO_COMPONENT = new HashMap<String, Component>();
        
        /* Parsing all Nodes */
-       parser.parseXml(nodePath);
+       parser.parseXml(NODE_PATH);
        //ControllerData.setAllNodes(parser.getNodeObjects());
        HashMap<String, NodeObjects> allNodes = parser.getNodeObjects2();
        
        /* Parsing all wPorts */
-       parser.parseXml(wportPath);
+       parser.parseXml(WPORT_PATH);
        Set<WPort> portSet = parser.parseWports();
        
        /* Setting up port_to_interface */
        HashMap <String, Interface> interfaceMap = initPortToInterface(allNodes);
        
        /* Parsing Topology */
-       parser.parseXml(topologyPath);
+       parser.parseXml(TOPOLOGY_PATH);
        UndirectedGraph<String, DefaultEdge> topology = 
              initTopology(parser.getVertices(), parser.getEdges());
        String startVertex = parser.getStartVertex();
        
        /* Parsing Configs */
-       parser.parseXml(configPath);
+       parser.parseXml(CONFIG_PATH);
        Set<Config> configSet = parser.parseConfigs();
        
        new ControllerData(allNodes, interfaceMap, topology, startVertex, configSet, portSet);
@@ -91,6 +98,17 @@ public class Initialize implements ServletContextListener
         
     }
     
+    public static boolean reloadConfigs() {
+      try {
+      XmlParser parser = new XmlParser();
+      parser.parseXml(CONFIG_PATH);
+      ControllerData.setConfigs(parser.parseConfigs()); 
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+      return true;
+    }
     
     private static UndirectedGraph<String, DefaultEdge> initTopology
                     (LinkedList<String> vertices, LinkedList<String> edges) {

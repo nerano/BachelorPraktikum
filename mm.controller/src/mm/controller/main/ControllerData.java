@@ -89,6 +89,12 @@ public class ControllerData {
 	    
 	}
 	
+	protected static void setConfigs(Set<Config> configs) {
+	  
+	  ALL_CONFIGS = configs;
+	  
+	}
+	
 	public static Set<Config> getAllConfigs() {
 	    return ALL_CONFIGS;
 	}

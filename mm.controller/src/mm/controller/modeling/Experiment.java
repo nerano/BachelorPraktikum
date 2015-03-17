@@ -250,7 +250,7 @@ public class Experiment implements Cloneable {
 	            response = ControllerNetDelete.freeGlobalVlan(vlan.getId());
 	       
         }
-	    //TODO VMs löschen
+	    //TODO VMs lï¿½schen
 	    return Response.ok().build();
 	    
 	}
@@ -315,7 +315,7 @@ public class Experiment implements Cloneable {
 	
 	
 	private Response addNodeRunning(NodeObjects node, Config config) {
-	    //TODO Check ob verfügbar
+	    //TODO Check ob verfï¿½gbar
 	    node.isAvailable();
 	    
 	    
@@ -329,7 +329,7 @@ public class Experiment implements Cloneable {
 	}
 	
 	private Response addNodePaused(NodeObjects node, Config config) {
-        //TODO check of verfügbar
+        //TODO check of verfï¿½gbar
         node.isAvailable();
 	    //TODO globbale vlans
 	    //TODO letzte vlans
@@ -386,6 +386,8 @@ public class Experiment implements Cloneable {
                responseString += (String) response.getEntity();
            }
 	    }
+	    
+	    this.setStatus("paused");
 	    return Response.status(responseStatus).entity(responseString).build();
 	    
 	}

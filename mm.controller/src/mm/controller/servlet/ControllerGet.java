@@ -64,8 +64,6 @@ public class ControllerGet {
         return Response.ok("HEADERTEST").header("testHeaderKey", "testHeaderValue").build();
     }
 
-	private ControllerPowerGet powerGet = new ControllerPowerGet();
-	private ControllerNetGet netGet = new ControllerNetGet();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	/**

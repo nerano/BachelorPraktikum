@@ -15,4 +15,8 @@
 <wire>WARP A~WARP B~*</wire>
 </config>
 
+<config name = "WARP Special">
+<wire>WARP B~APU 1~*</wire>
+</config>
+
 </configs>

@@ -1,7 +1,6 @@
 package mm.controller.modeling;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class Config {
@@ -18,7 +17,7 @@ public class Config {
     
         for (Wire wire : wires) {
             
-           if (wire.getEndpoints().contains("*")) {
+           if (wire.hasUplink()) {
                globals++;
            } else {
                locals++;

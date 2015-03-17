@@ -3,6 +3,7 @@ package mm.controller.servlet;
 import java.util.LinkedList;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import mm.controller.main.ControllerData;
+import mm.controller.main.Initialize;
 import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
@@ -48,6 +50,9 @@ public class ControllerPut {
 	@Path("/exp")
 	public Response addNewExperiment(String data) {
 
+	  
+	  
+	   //TODO 
 	   //TODO Lege Experiment an
 	   //TODO VMs hinzufügen
 	  
@@ -85,7 +90,7 @@ public class ControllerPut {
 	        for (NodeObjects node : oldExp.getList()) {
 	            
 	            //TODO DELETE the next line, only for testing purposes
-	            node.setConfig(ControllerData.getConfig("WARP+APU"));
+	            node.setConfig(ControllerData.getConfig("WARP"));
 	            //////////////////////////////////////////////////////
 	            nodeId = node.getId();
 	            config = node.getConfig();
@@ -345,6 +350,20 @@ public class ControllerPut {
 	    //TODO KNOTEN ANMACHNE
 	  return Response.ok().build();
 	}
+	
+	@GET
+	@Path("/reloadConfigs")
+	public Response reloadConfigs () {
+	  boolean bool = Initialize.reloadConfigs();
+	  
+	  if(bool) {
+	    return Response.status(200).entity("Configs were reloaded.").build();
+	  } else {
+	    return Response.status(500).entity("Reload Configs failed!").build();
+	  }
+	  
+	}
+	
 	
 	/**
 	 * Turns the given Component from the given Node off.

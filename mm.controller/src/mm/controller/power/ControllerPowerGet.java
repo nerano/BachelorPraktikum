@@ -99,8 +99,8 @@ public class ControllerPowerGet {
 		String powerString = powerTarget.path("get").request()
 				.get(String.class);
 
-		LinkedList<PowerSource> nodeList = new LinkedList<PowerSource>();
-
+		LinkedList<PowerSource> nodeList; 
+		
 		Type type = new TypeToken<LinkedList<PowerSource>>() {
 		}.getType();
 
