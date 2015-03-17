@@ -11,11 +11,11 @@
 		<powerSource>AeHome1;3</powerSource>
 		
 		<name>eth0</name>
-		<port>NetGear1;2</port>
+		<port>NetGear2;2</port>
 		<role>WARP A</role>
 	
 		<name>eth1</name>
-		<port>NetGear1;3</port>
+		<port>NetGear2;3</port>
 		<role>WARP B</role>
 	</component>
 	
@@ -24,15 +24,15 @@
 		<powerSource>AeHome1;1</powerSource>
 		
 		<name>eth2</name>
-		<port>NetGear1;4</port>
+		<port>NetGear2;4</port>
 		<role>APU 1</role>
 		
 		<name>eth3</name>
-		<port>NetGear1;5</port>
+		<port>NetGear2;5</port>
 		<role>APU 2</role>
 		
 		<name>eth4</name>
-		<port>NetGear1;6</port>
+		<port>NetGear2;6</port>
 		<role>APU 3</role>
 	</component>
 		

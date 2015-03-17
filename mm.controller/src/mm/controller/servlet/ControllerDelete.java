@@ -1,7 +1,9 @@
 package mm.controller.servlet;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -25,10 +27,10 @@ public class ControllerDelete {
 	 * @param id Identifier of the Experiment to delete
 	 * @return a Response Object
 	 */
-	@DELETE
+	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/exp")
-	public Response deleteExperiment(String id){
+	@Path("/exp/{id}")
+	public Response deleteExperiment(@PathParam("id") String id){
 		
 	    
 	    System.out.println("DELETE EXPERIMENT: " + id);
@@ -39,14 +41,13 @@ public class ControllerDelete {
     //TODO VMs löschen
     //TODO exp
 	  
-	   Experiment experiment = ControllerData.getExpById(id);
-	   experiment.destroy();
-	  
-	  
-	  Response response;
+	    Experiment experiment = ControllerData.getExpById(id);
+	   
+	    Response response;
 		String responseString;
-		if(ControllerData.removeExp(id)){
-			responseString = "Experiment with ID '" + id + "' was removed";
+		if(experiment != null){
+		    experiment.destroy();
+		    responseString = "Experiment with ID '" + id + "' was removed";
 			response = Response.status(200).entity(responseString).build();
 			return response;
 		} else {

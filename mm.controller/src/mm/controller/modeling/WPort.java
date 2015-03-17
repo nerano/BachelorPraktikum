@@ -44,6 +44,10 @@ public class WPort {
 public String getId() {
     return this.id;
 }
+
+public String getTrunk() {
+    return trunk;
+}
   
   
   

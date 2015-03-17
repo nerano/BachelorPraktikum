@@ -54,9 +54,32 @@ public class NetDelete {
 
 
     @DELETE
-    @Path("/localVLan")
-    public Response destroyLocalVlan() {
-        return null;
+    @Path("/localVLan/{id}")
+    public Response destroyLocalVlan(@PathParam("id") int id) {
+        LinkedList<NetComponent> ncList = NetData.getAllNetComponents();
+        Response response;
+        String responseString = "";
+        for (NetComponent nc : ncList) {
+            response = nc.destroyVlan(id);
+        
+            for (int i = 1; i <= 6; i++) {
+                    nc.setPVID(i, 1);
+            }
+            
+            if(response.getStatus() != 200) {
+                responseString += (String) response.getEntity();
+            }
+        
+        }
+        
+        boolean bool = NetData.freeLocalVlan(id);
+        
+        if(!bool) {
+            responseString += "Could not free local VLan" + id;
+            return Response.status(500).entity(responseString).build();
+        }
+        
+        return Response.ok().build();
     }
 
 

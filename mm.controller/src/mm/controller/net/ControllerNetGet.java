@@ -86,6 +86,15 @@ public class ControllerNetGet {
 	    
 	}
 	
+	
+	public static Response getLocalVlan() {
+	    Response response = target.path("localVLan").request().get(Response.class);
+        
+        String responseString = response.readEntity(String.class);
+        
+        return Response.status(response.getStatus()).entity(responseString).build();
+	}
+	
 	/* -- PRIVATE METHODS -- */
 	
 	

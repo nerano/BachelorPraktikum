@@ -42,7 +42,9 @@ public class Config {
         for (Wire wire : wires) {
             endpoints = wire.getEndpoints();
             for (String endpoint : endpoints) {
-                roles.add(endpoint);
+                if(!endpoint.equals("*")){
+                    roles.add(endpoint);
+                }
             }
         }
         return roles;

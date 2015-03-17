@@ -15,9 +15,10 @@ public class NetData {
 	private static LinkedList<StaticComponent> STATIC_COMPONENTS;
 	
 	private static LinkedList<VLan> GLOBAL_VLAN_LIST;
+	private static LinkedList<VLan> LOCAL_VLAN_LIST;
 	
 	private static LinkedList<VLan> USED_GLOBAL_VLAN_LIST = new LinkedList<VLan>();
-	
+	private static LinkedList<VLan> USED_LOCAL_VLAN_LIST = new LinkedList<VLan>();
 	
 	private static int GLOBAL_VLAN_RANGE_MAX;
     private static int GLOBAL_VLAN_RANGE_MIN;
@@ -33,7 +34,7 @@ public class NetData {
 	
 	
 	protected NetData(HashMap<String, NetComponent> list, int[] vlanInfo, 
-	                        LinkedList<VLan> globalVlans,
+	                        LinkedList<VLan> globalVlans, LinkedList<VLan> localVlans,
 	                        LinkedList<StaticComponent> scList) {
 		
 	    ALL_NETCOMPONENT = list;
@@ -49,6 +50,7 @@ public class NetData {
 	    
 	    
 	    GLOBAL_VLAN_LIST = globalVlans;
+	    LOCAL_VLAN_LIST = localVlans;
 		
 	    STATIC_COMPONENTS = scList;
 	    
@@ -90,6 +92,32 @@ public class NetData {
         }
 	 return false;   
 	}
+	
+	public static VLan getFreeLocalVlan() {
+        
+        VLan vlan = LOCAL_VLAN_LIST.getFirst();
+        LOCAL_VLAN_LIST.remove(vlan);
+        USED_LOCAL_VLAN_LIST.add(vlan);
+        
+        System.out.println("NetData allocated local VLan " + vlan.getId());
+        
+        return vlan;
+    }
+	
+	public static boolean freeLocalVlan(int id) {
+        for (VLan vLan : USED_LOCAL_VLAN_LIST) {
+            if(vLan.getId() == id) {
+                USED_LOCAL_VLAN_LIST.remove(vLan);
+                vLan.clear();
+                LOCAL_VLAN_LIST.add(vLan);
+                System.out.println("NetData freed local VLan " + id);
+                return true;
+            }
+        }
+     return false;   
+    }
+	
+	
 	
 	
 	public static LinkedList<StaticComponent> getStaticComponents() {

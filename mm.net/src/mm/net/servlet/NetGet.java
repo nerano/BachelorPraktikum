@@ -124,6 +124,16 @@ public class NetGet {
     }
     
     
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/localVLan")
+    public Response getNewLocalVlan() {
+        VLan vlan = NetData.getFreeLocalVlan();
+        if(vlan != null) {
+            return Response.ok(gson.toJson(vlan)).build();
+        }
+       return Response.status(404).entity("No local VLan available").build();
+    }
     
     /**
      * 
