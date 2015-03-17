@@ -40,7 +40,7 @@ public class Session {
    * The hash map provides the possibility for more than one "active" user at the same time. 
    * 
    * Possible HTTP status codes: 
-   * <li>200: A valid sessionId is build and overturned.
+   * <li>200: A valid sessionId is build and returned.
    * <li>403: LogIn failed, either the user name or the password does not fit the
    *          saved values.
    * 
@@ -128,8 +128,9 @@ public class Session {
    * 
    * Possible HTTP status codes:
    * 
-   * <li>200: The given SessionID is still valid.
-   * <li>408: Request timeout. The given sessionId is expired a new log in is required.
+   * <li> 200: The given SessionID is still valid.
+   * <li> 401: Unauthorized: Header does not contain a sessionId. 
+   * <li> 408: Request timeout. The given sessionId is expired a new log in is required.
    * 
    * @param sessionId holding a 128bit sessionId with the form 
    *     xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, with x = [a-z,0-9].
@@ -138,14 +139,18 @@ public class Session {
   @GET
   @Path("validation")
   public Response testSession(@HeaderParam("sessionId") String sessionId) {
-    UUID temp = UUID.fromString(sessionId);
-    if (this.ids.containsKey(temp)) {
-      this.expire = this.ids.get(temp).getExpire();
-      if (this.checkTime(temp.toString())) {
-        return Response.ok("valid sessionID").build();
+    if (sessionId != null) {
+      UUID temp = UUID.fromString(sessionId);
+      if (this.ids.containsKey(temp)) {
+        this.expire = this.ids.get(temp).getExpire();
+        if (this.checkTime(temp.toString())) {
+          return Response.ok("valid sessionID").build();
+        }
       }
+      return Response.status(408).entity("sessionID expired!").build();
+    } else {
+      return Response.status(401).entity("Header does not contain a sessionId!").build();
     }
-    return Response.status(408).entity("sessionID expired!").build();
   }
   
   /**

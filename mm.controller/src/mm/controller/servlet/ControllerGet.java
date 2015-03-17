@@ -212,6 +212,7 @@ public class ControllerGet {
 	 * Possible HTTP status codes:
 	 * 
 	 * <li> 200: The requested experiment is located in the message body.
+	 * <li> 401: 401: Unauthorized: Header does not contain a sessionId. 
 	 * <li> 404: The requested experiment with the given ID does not exist.
 	 * @param id  Identifier of the experiment
 	 * @return a Response Object
@@ -224,24 +225,28 @@ public class ControllerGet {
 		String responseString;
 		WebAuthTest auth = new WebAuthTest();
     Response response = auth.checkSession(sessionId);
-    if(response.getStatus() == 200) {
-      if (!(ControllerData.existsExp(id))) {
-        responseString = "404, Experiment not found";
-        response = Response.status(404).entity(responseString).build();
-        return response;
-      }
+    if (sessionId != null) {
+      if (response.getStatus() == 200) {
+        if (!(ControllerData.existsExp(id))) {
+          responseString = "404, Experiment not found";
+          response = Response.status(404).entity(responseString).build();
+          return response;
+        }
 
-      Gson gson = new GsonBuilder()/* .setExclusionStrategies(new NoStatusNodeStrat()) */
+        Gson gson = new GsonBuilder()/* .setExclusionStrategies(new NoStatusNodeStrat()) */
 									 .setPrettyPrinting().create();
 
-		/*if (auth.getUserRole(sessionId).readEntity(String.class).equals(exp.getUser())) {*/
-		  responseString = gson.toJson(ControllerData.getExpById(id));
-		/*}*/
-		  response = Response.status(200).entity(responseString).build();
+        /*if (auth.getUserRole(sessionId).readEntity(String.class).equals(exp.getUser())) {*/
+          responseString = gson.toJson(ControllerData.getExpById(id));
+        /*}*/
+        response = Response.status(200).entity(responseString).build();
 
-		  return response;
+        return response;
+      }
+      return response;
+    } else {
+      return Response.status(401).entity("No SessionId contained!").build();
     }
-    return response;
 	}
 	
 	/**
@@ -250,6 +255,10 @@ public class ControllerGet {
 	 * Returns a list of all currently existing experiments in JSON format. 
 	 * No input Parameters are required.
 	 * URI: baseuri:port/mm.controller/rest/get/exp
+	 * <p>
+	 * Possible HTTP status codes:
+	 * <li> 200: Header contains valid sessionId.
+	 * <li> 401: Unauthorized: Header does not contain a sessionId. 
 	 * 
 	 * @return a Response Object with the JSON in the message body.
 	 */
@@ -262,15 +271,19 @@ public class ControllerGet {
 		 **/
 	  WebAuthTest auth = new WebAuthTest();
 	  Response response = auth.checkSession(sessionId);
-	  if(response.getStatus() == 200) {
-	    String user = auth.getUser(sessionId).readEntity(String.class);
-	    if (auth.getUserRole(sessionId).readEntity(String.class).equals("admin")) {
-	      return Response.ok(gson.toJson(ControllerData.getAllExp())).build();
+	  if (sessionId != null) {
+	    if(response.getStatus() == 200) {
+	      String user = auth.getUser(sessionId).readEntity(String.class);
+	      if (auth.getUserRole(sessionId).readEntity(String.class).equals("admin")) {
+	        return Response.ok(gson.toJson(ControllerData.getAllExp())).build();
+	      } else {
+	          return this.getExpByUser(user);
+	      }
 	    } else {
-	        return this.getExpByUser(user);
+	        return response;
 	    }
 	  } else {
-	      return response;
+	    return Response.status(401).encoding("No SessionId contained!").build();
 	  }
 	}
 	
