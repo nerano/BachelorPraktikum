@@ -2,12 +2,12 @@ package mm.server.parser;
 
 import java.util.HashMap;
 
-import mm.server.instance.Instances;
+import mm.server.instance.Template;
 
 public class TestParser {
 
   XmlParser parser = new XmlParser("/home/benedikt/git/BachelorPraktikum/xml/VM.xml");
-  HashMap<String, Instances> map = parser.parse();
+  HashMap<String, Template> map = parser.parse();
   
   public static void main(String[] args) {
     TestParser tp = new TestParser();
