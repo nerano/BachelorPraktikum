@@ -2,7 +2,9 @@ package mm.controller.modeling;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
@@ -31,6 +33,7 @@ public class Experiment implements Cloneable {
 	 * List of VLans in the Experiment
 	 */
 	private LinkedList<VLan> vlans;
+	private LinkedList<VLan> globalVLans = new LinkedList<VLan>();
 	private LinkedList<WPort> wports;
 	private HashMap<String, Config> nodeConfigs = new HashMap<String, Config>();
 	//TODO VMs
@@ -129,7 +132,9 @@ public class Experiment implements Cloneable {
 		}
 	}
 
-
+	public Config getNodeConfig(String nodeId) {
+	    return nodeConfigs.get(nodeId);
+	}
 	
 
 	private void setVlans(LinkedList<VLan> list) {
@@ -242,12 +247,8 @@ public class Experiment implements Cloneable {
 	    Response response; 
 	    for (VLan vlan : this.vlans) {
 	        
-	        if(vlan.isGlobal()) {
 	            response = ControllerNetDelete.freeGlobalVlan(vlan.getId());
-	        } else {
-	            response = ControllerNetDelete.freeLocalVlan(vlan);
-	        }
-	        
+	       
         }
 	    //TODO VMs löschen
 	    return Response.ok().build();
@@ -268,6 +269,7 @@ public class Experiment implements Cloneable {
 	       VLan vlan = gson.fromJson((String) response.getEntity(), VLan.class);
 	       vlan.setName("Global " + this.id + "VLan");
 	       vlans.add(vlan);
+	       globalVLans.add(vlan);
 	       System.out.println("Added VLan " + vlan.getId() + " to experiment " + this.id);
 	       return Response.ok().build(); 
 	    } else {
@@ -283,6 +285,7 @@ public class Experiment implements Cloneable {
 	    
 	    VLan vlan = null;
 	    
+	    //TODO must be changed accordingly
 	    for (VLan vLan: vlans) {
 	        if(vLan.isGlobal()) {
 	            vlan = vLan;
@@ -291,37 +294,55 @@ public class Experiment implements Cloneable {
         }
 	    
 	    LinkedList<String> path;
+	    
+	    // Requesting the Path for the Nodes and adding the Ports to the VLan
 	    for (NodeObjects node : nodes) {
-            
 	        path = ControllerData.getPath(node.getTrunk());
 	        vlan.addPorts(path);
-	        
-        }
-	
+	    }
+	    
+	    // Requesting the Path for the wPorts and adding the Ports to the VLan
+	    for (WPort wPort : wports) {
+	        path = ControllerData.getPath(wPort.getTrunk());
+	        vlan.addPorts(path);
+	    }
+	    
+	    // Setting the TrunkPorts for all Nodes and wPorts
 	    Response response = ControllerNetPut.setTrunkPort(vlan);
 	    return response;
 	
 	}
 	
 	
-	private Response addNodeRunning() {
+	private Response addNodeRunning(NodeObjects node, Config config) {
 	    //TODO Check ob verfügbar
+	    node.isAvailable();
+	    
+	    
 	    //TODO globale vlans
+	    
+	    
+	    
 	    //TODO letzte vlans
 	    //TODO anmachen
 	    return null;
 	}
 	
-	private Response addNodePaused() {
+	private Response addNodePaused(NodeObjects node, Config config) {
         //TODO check of verfügbar
+        node.isAvailable();
 	    //TODO globbale vlans
 	    //TODO letzte vlans
 	    //TODO ausmachen
 	    return null;
     }
 	
-	private Response addNodeStopped() {
+	private Response addNodeStopped(NodeObjects node, Config config) {
+	    
 	    //TODO globale vlans
+	    
+	    
+	    
 	    return null;
 	}
 	
@@ -334,11 +355,11 @@ public class Experiment implements Cloneable {
 	    
 	    switch (status) {
         case "running":
-            return addNodeRunning();
+            return addNodeRunning(node, config);
         case "paused":
-            return addNodePaused();
+            return addNodePaused(node, config);
         case "stopped":
-            return addNodeStopped();
+            return addNodeStopped(node, config);
         default:
             return Response.status(500).entity("Could not determine status of experiment").build();
         }
@@ -375,22 +396,164 @@ public class Experiment implements Cloneable {
 	    //TODO VMs stoppen
 	    //TODO Vlans aufheben
         //TODO errohandling
-        
-        for (NodeObjects node : nodes) {
-            node.turnOff();
-          //TODO errohandling
+	    
+	    
+	    for (VLan vLan : vlans) {
+            
+	        System.out.println(gson.toJson(vLan));
+	        
+	        if(vLan.isGlobal()) {
+	            // Global VLan
+	            Set<String> allNodes = new HashSet<String> (vLan.getPortList());
+	            Set<String> nodesNotToRemove = new HashSet<String>();
+	            LinkedList<String> path;
+	            
+	            // Requesting the Path for the Nodes and adding the Ports to the VLan
+	            for (NodeObjects node : nodes) {
+	                path = ControllerData.getPath(node.getTrunk());
+	                nodesNotToRemove.addAll(path);
+	            }
+	            
+	            // Requesting the Path for the wPorts and adding the Ports to the VLan
+	            for (WPort wPort : wports) {
+	                path = ControllerData.getPath(wPort.getTrunk());
+	                nodesNotToRemove.addAll(path);
+	            }
+	            
+	            allNodes.removeAll(nodesNotToRemove);
+	            
+	            
+	            VLan vlan = new VLan(vLan.getId(), true);
+	            vlan.setPortList(allNodes);
+	            ControllerNetPut.removePort(vlan);
+	            
+	        } else {
+	            // Local VLan
+	            
+	            ControllerNetDelete.freeLocalVlan(vLan.getId());
+	            
+	        }
+	        
+	        
+	        
         }
         
-        return null;
+        /** for (NodeObjects node : nodes) {
+            node.turnOff();
+          //TODO errohandling
+        } **/
+        
+        
+        this.setStatus("stopped");
+        return Response.ok().build();
 	    
 	}
 	
+	
+	private Response deployConfigVlans() {
+	    
+	    Config config;
+	    VLan vlan = null;
+	    String port;
+	    int status = 200;
+	    String responseString = "";
+	    
+	    for (NodeObjects node : nodes) {
+            
+	        config = nodeConfigs.get(node.getId());
+	        
+	        for (Wire wire : config.getWires()) {
+                
+	            if(wire.hasUplink()) {
+	                
+	                // Global VLan
+	                LinkedList<String> portList = new LinkedList<String>();
+	                Set<String> endpoints = wire.getEndpoints();
+	                endpoints.remove("*");
+	                for (String endpoint : endpoints) {
+	                    port = node.getPortByRole(endpoint);
+	                    portList.add(port);
+                    }
+	                
+	                vlan = globalVLans.getFirst(); //TODO probably changed later on
+	                vlan.addPorts(portList);
+	                
+	                ControllerNetPut.addPort(portList, vlan.getId());
+	                
+	            } else {
+	               VLan vlan2 = null;
+	                // Local VLan
+	                Response response = ControllerNetGet.getLocalVlan(); //TODO changed later on
+	                
+	                if(response.getStatus() == 200) {
+	                   vlan2 = gson.fromJson((String) response.getEntity(), VLan.class);
+	                   
+	                   vlan2.setName("Local " + this.id + "VLan");
+	                   System.out.println("ADDED LOCAL LAN " + this.id + "VLan");
+	                   vlan2.setPortList(new HashSet<String>());
+	                }
+	                
+	                
+	                LinkedList<String> portList = new LinkedList<String>();
+	                
+	                for (String endpoint : wire.getEndpoints()) {
+	                    port = node.getPortByRole(endpoint);
+	                    portList.add(port);
+                    }
+	                vlan2.addPorts(portList);
+	                System.out.println("Going to Add VLan: " + portList + " on ID: " + vlan2.getId());
+	                vlans.add(vlan2);
+	                ControllerNetPut.setPort(vlan2);
+	            }
+	            
+            }
+	        
+        }
+	    
+	   return Response.status(status).entity(responseString).build();
+	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public Response start() {
 	    
-	    //TODO letzten vlans
-	    //TODO vms starten
-	    //TODO strom an
 	    
-	    return null;
+	    boolean success = true;
+	    int status = 200;
+	    String responseString = "";
+	    Response response = null;
+	    
+	    // Check availability of nodes
+	    for (NodeObjects node : nodes) {
+	        response = node.isAvailable();
+	        if(response.getStatus() != 200) {
+	            responseString += (String) response.getEntity();
+	            status = 500;
+	            success = false;
+	        }
+        }
+	    
+	    if(!success) {
+	        return Response.status(status).entity(responseString).build();
+	    }
+	    
+	    // Setting the Config VLans
+	    response = deployConfigVlans();
+	    
+	    //TODO vms starten
+	    
+	    
+	    // Turning the power on
+	   /** for (NodeObjects node : nodes) {
+            node.turnOn();
+        } */
+	    
+	    
+	    
+	    this.setStatus("running");
+	    return Response.status(status).entity(responseString).build();
 	}
 }

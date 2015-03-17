@@ -212,6 +212,7 @@ public class NetGearGS108Tv2 implements NetComponent {
      *            int, PVID to set.
      * @return a Outbound Response Object with a status code and message body
      */
+    @Override
     public Response setPVID(int port, int pvid) {
 
         String pvidString = ".1.3.6.1.2.1.17.7.1.4.5.1.1." + port;
@@ -377,7 +378,121 @@ public class NetGearGS108Tv2 implements NetComponent {
         return Response.ok().build();
 
     }
+    
+    @Override
+    public Response removePort(int port, int vlanId) {
+       
+        LinkedList<Integer> list = new LinkedList<Integer>();
+        list.add(port);
 
+        return removePort(list, vlanId);
+    }
+    
+    /**
+     * Removes the Port from the Egress(Outgoing) Portlist and sets the PVID to 1
+     */
+    @Override
+    public Response removePort(List<Integer> ports, int vlanId) {
+        
+        Response response = getEgressPorts(vlanId);
+       
+        System.out.println("removePort Status getEgress: " + response.getStatus());
+        
+        if (response.getStatus() != 200) {
+            return errorHandler("removePort", "could not get egressPorts because of: \n"
+                    + ((String) response.getEntity()));
+        }
+        
+        String newEgress = ((String) response.getEntity());
+        
+        System.out.println("NEW EGRESS AT REMOVE PORT: " + newEgress);
+        
+        for (int i = 0; i < ports.size(); i++) {
+
+            StringBuilder newEgressBuilder = new StringBuilder(newEgress);
+            newEgressBuilder.setCharAt(ports.get(i) - 1, '0');
+            newEgress = newEgressBuilder.toString();
+
+            setPVID(ports.get(i), 1);
+        }
+        
+        System.out.println("NEW EGRESS2 AT REMOVE PORT: " + newEgress);
+
+        response = setEgressPorts(vlanId, newEgress);
+
+        if (response.getStatus() != 200) {
+            errorHandler("removePort - setEgressPorts",
+                    (String) response.getEntity());
+        }
+
+        System.out.println("SET EGRESS IN REMOVE PORT");
+        System.out.println((String) response.getEntity());
+
+        return Response.ok().build();
+        
+    }
+    
+    public Response setPort(int port, int vlanId, String name) {
+
+        LinkedList<Integer> list = new LinkedList<Integer>();
+        list.add(port);
+
+        return setPort(list, vlanId, name);
+
+    }
+   
+    public Response setPort(List<Integer> ports, int vlanId, String name) {
+
+        destroyVlan(vlanId);
+
+        String egressPorts = "";
+        String untaggedPorts = "";
+
+        for (int i = 1; i <= 8; i++) {
+            if (ports.contains(i)) {
+                egressPorts = egressPorts + "1";
+                untaggedPorts = untaggedPorts + "1";
+            } else {
+                egressPorts = egressPorts + "0";
+                untaggedPorts = untaggedPorts + "1";
+            }
+       
+        
+        }
+
+        Response response = setRowStatus(vlanId, 4);
+        if (response.getStatus() != 200) {
+            System.out.println("ROW STATUS FAILED");
+            destroyVlan(vlanId);
+            return response;
+        }
+
+        response = setStaticName(vlanId, name);
+        if (response.getStatus() != 200) {
+            destroyVlan(vlanId);
+            return response;
+        }
+
+        response = setEgressPorts(vlanId, egressPorts);
+        if (response.getStatus() != 200) {
+            destroyVlan(vlanId);
+            return response;
+        }
+
+        response = setUntaggedPorts(vlanId, untaggedPorts);
+        if (response.getStatus() != 200) {
+            destroyVlan(vlanId);
+            return response;
+        }
+       
+        for (int i = 0; i < ports.size(); i++) {
+            setPVID(ports.get(i), vlanId);
+        }
+
+        return Response.ok().build();
+
+    }
+    
     @Override
     public Response addPort(int port, int vlanId) {
 
@@ -393,10 +508,10 @@ public class NetGearGS108Tv2 implements NetComponent {
 
         Response response = getEgressAndUntaggedPorts(vlanId);
 
-        System.out.println("addPorts Status getEgress: " + response.getStatus());
+        System.out.println("addPorts Status getEgress and Untagged: " + response.getStatus());
 
         if (response.getStatus() != 200) {
-            return errorHandler("addTrunkPort", "could not get egressPorts/Untagged because of: \n"
+            return errorHandler("addPort", "could not get egressPorts/Untagged because of: \n"
                     + ((String) response.getEntity()));
         }
 
@@ -426,21 +541,21 @@ public class NetGearGS108Tv2 implements NetComponent {
         response = setEgressPorts(vlanId, newEgress);
 
         if (response.getStatus() != 200) {
-            errorHandler("addTrunkPort - setEgressPorts",
+            errorHandler("addPort - setEgressPorts",
                     (String) response.getEntity());
         }
 
-        System.out.println("SET EGRESS IN ADDTRUNK");
+        System.out.println("SET EGRESS IN ADDPORT");
         System.out.println((String) response.getEntity());
 
         response = setUntaggedPorts(vlanId, newUntagged);
 
         if (response.getStatus() != 200) {
-            errorHandler("addTrunkPort - setUntaggedPorts",
+            errorHandler("addPort - setUntaggedPorts",
                     (String) response.getEntity());
         }
 
-        System.out.println("SET UNTAGGED IN ADDTRUNK");
+        System.out.println("SET UNTAGGED IN ADDPORT");
         System.out.println((String) response.getEntity());
 
         return Response.ok().build();

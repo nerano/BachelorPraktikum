@@ -41,19 +41,20 @@ public class Initialize implements ServletContextListener
         HashMap<String, NetComponent> netComponentMap = parser.getNetComponents();
 
         LinkedList<VLan> globalVlans = createGlobalVLans(vlanInfo);
-
+        LinkedList<VLan> localVlans =  createLocalVlans(vlanInfo);
+        
         /* Parsing Static Components */
         parser.parseXml(StaticComponentPath);
         LinkedList<StaticComponent> scList = parser.getStaticComponents();
 
         /* Creating NetData */
-        new NetData(netComponentMap, vlanInfo, globalVlans, scList);
+        new NetData(netComponentMap, vlanInfo, globalVlans, localVlans, scList);
 
         /* Initializing Static VLans */
         initializeStaticVlans();
 
         /* Creating local Vlans for all NetComponents */
-        createLocalVlans();
+       
 
         System.out.println(NetData.getAllNetComponents());
 
@@ -81,13 +82,20 @@ public class Initialize implements ServletContextListener
         return vlanList;
     }
 
-    private static void createLocalVlans() {
+    private static LinkedList<VLan> createLocalVlans(int[] vlanInfo) {
 
         System.out.println("Reading Local VLans");
-        for (NetComponent nc : NetData.getAllNetComponents()) {
-            nc.createLocalVlans();
+        LinkedList<VLan> vlanList = new LinkedList<VLan>();
+
+        int globalMin = vlanInfo[2];
+        int globalMax = vlanInfo[3];
+
+        for (int i = globalMin; i <= globalMax; i++) {
+            vlanList.add(new VLan(i, false));
         }
         System.out.println("Reading local VLans finished");
+        
+        return vlanList;
 
     }
 

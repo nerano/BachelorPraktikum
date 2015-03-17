@@ -33,14 +33,26 @@ public class ControllerNetDelete {
     public static Response freeGlobalVlan(int id) {
         
         Response response = target.path("globalVLan/" + id).request().delete(Response.class);
+       
+        if(response.getStatus() == 200) {
+            System.out.println("Controller: Could delete globalVLan " + id);
+        }
+        
         
         String responseString = response.readEntity(String.class);
         return Response.status(response.getStatus()).entity(responseString).build();
     }
     
     
-    public static Response freeLocalVlan(VLan vlan) {
-        return null;
+    public static Response freeLocalVlan(int id) {
+        Response response = target.path("localVLan/" + id).request().delete(Response.class);
+        
+        if(response.getStatus() == 200) {
+            System.out.println("Controller: Could delete local VLan " + id);
+        }
+        
+        String responseString = response.readEntity(String.class);
+        return Response.status(response.getStatus()).entity(responseString).build();
     }
     
     

@@ -23,7 +23,7 @@ public class NodeObjects {
     private String longitude;
     private boolean status = false;
     private String trunk;
-    private String config;
+    private Config config;
     
     
 	public NodeObjects() {
@@ -35,12 +35,12 @@ public class NodeObjects {
 	
 	
 	
-	public String getConfig() {
+	public Config getConfig() {
         return config;
     }
 
-    public void setConfig(String config) {
-        this.config = config;
+    public void setConfig(Config config2) {
+        this.config = config2;
     }
 
     /**
@@ -72,6 +72,9 @@ public class NodeObjects {
 
 	public Set<String> getRoles() {
 	    
+	    System.out.println("GET ROLES IN NODEOBJECT");
+	    System.out.println("COMPONENTS " + components);
+	    
 	    Set<String> roles = new HashSet<String>();
 	    for (Component component : components) {
 	        for (Interface inf : component.getInterfaces()) {
@@ -81,15 +84,22 @@ public class NodeObjects {
 	    return roles;
 	}
 	
-	
-	public Response activateConfig(Config config) {
+	/**
+	 * Returns the Port which is connected as the described role or null if no port has such a role.
+	 * @param role
+	 * @return
+	 */
+	public String getPortByRole(String role) {
 	    
-	    
-	    
-	    
-	    return null;
+	    for (Component component : components) {
+            for (Interface inf : component.getInterfaces()) {
+                if(inf.getRole().equals(role)) {
+                    return inf.getSwitchport();
+                }
+            }
+        }
+	   return null;
 	}
-	
 	
 	/**
 	 * Checks if a Config is applicable for the node.
@@ -100,8 +110,16 @@ public class NodeObjects {
 	 */
 	public boolean isApplicable(Config config) {
 	    
+	    
+	    
+	    
+	    
 	    Set<String> configRoles = config.getRoles();
 	    Set<String> nodeRoles = this.getRoles();
+	    
+	    System.out.println("CONFIG ROLES: " + configRoles);
+	    System.out.println("NODE ROLES: " + nodeRoles);
+	    
 	    for (String configRole : configRoles) {
 	        if(!nodeRoles.contains(configRole)) {
                 return false;

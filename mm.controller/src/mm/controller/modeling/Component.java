@@ -76,6 +76,10 @@ public class Component {
 		this.ports = port;
 	}
 	
+
+	    
+	    
+	
 	/**
 	 * Turns off this component.
 	 * <p>

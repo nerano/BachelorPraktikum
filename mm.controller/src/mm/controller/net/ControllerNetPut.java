@@ -1,6 +1,7 @@
 package mm.controller.net;
 
 import java.net.URI;
+import java.util.LinkedList;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -50,15 +51,69 @@ public class ControllerNetPut {
     }
     
     /**
-     * 
-     * @param vlan
+     * Adds the given VLan as TrunkPorts.
+     * @param vlan  a VLan with ID and a list of Ports
      * @return
      */
-    public static Response addPorts(VLan vlan) {
+    public static Response addTrunkPort(VLan vlan) {
         
         String data = gson.toJson(vlan);
         
-        Response response = target.path("newVlan").request().accept(MediaType.TEXT_PLAIN).put(
+        Response response = target.path("addTrunkPort").request().accept(MediaType.TEXT_PLAIN).put(
+                Entity.entity(data, MediaType.TEXT_PLAIN), 
+                                                    Response.class);
+        
+        String responseString = response.readEntity(String.class);
+        
+        return Response.status(response.getStatus()).entity(responseString).build();
+        
+        
+    }
+    
+ public static Response setPort(VLan vlan) {
+        
+        String data = gson.toJson(vlan);
+        
+        Response response = target.path("setPort").request().accept(MediaType.TEXT_PLAIN).put(
+                                Entity.entity(data, MediaType.TEXT_PLAIN), 
+                                                                    Response.class);
+        
+        String responseString = response.readEntity(String.class);
+        
+        return Response.status(response.getStatus()).entity(responseString).build();
+        
+    }
+    
+    
+    public static Response addPort(LinkedList<String> ports, int vlanId) {
+        
+        VLan vlan = new VLan(vlanId);
+        vlan.addPorts(ports);
+        return addPort(vlan);
+        
+    }
+    
+    
+  
+    
+    public static Response addPort(VLan vlan) {
+        
+        String data = gson.toJson(vlan);
+        
+        Response response = target.path("addPort").request().accept(MediaType.TEXT_PLAIN).put(
+                Entity.entity(data, MediaType.TEXT_PLAIN), 
+                                                    Response.class);
+        
+        String responseString = response.readEntity(String.class);
+        
+        return Response.status(response.getStatus()).entity(responseString).build();
+    }
+    
+    public static Response removePort(VLan vlan) {
+        
+        String data = gson.toJson(vlan);
+        
+        Response response = target.path("removePort").request().accept(MediaType.TEXT_PLAIN).put(
                 Entity.entity(data, MediaType.TEXT_PLAIN), 
                                                     Response.class);
         

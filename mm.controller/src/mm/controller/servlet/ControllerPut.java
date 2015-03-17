@@ -48,61 +48,89 @@ public class ControllerPut {
 	@Path("/exp")
 	public Response addNewExperiment(String data) {
 
-		//TODO Lege Experiment an
-	  //TODO Knoten hinzufügen
-	  //TODO Ports hinzufügen
-	  //TODO VMs hinzufügen
+	   //TODO Lege Experiment an
+	   //TODO VMs hinzufügen
 	  
-	  //TODO VLANS setzen
-	  //TODO VMs anlegen
+	   //TODO VLANS setzen
+	   //TODO VMs anlegen
 	  
-	  Experiment exp = gson.fromJson(data, Experiment.class);
-		String responseString;
-		String id = exp.getId();
+	  Experiment oldExp = gson.fromJson(data, Experiment.class);
+	    Config config;
+	    String responseString;
+		String id = oldExp.getId();
 		String nodeId;
+		boolean success = true;
+		String successString = "";
+		Response response;
 		
 		System.out.println(data);
 
-		if (data != null && ControllerData.exists(exp)) {
+		if (data != null && ControllerData.exists(oldExp)) {
 			responseString = "Experiment with this ID already exists!";
 			return Response.status(409).entity(responseString).build();
 		} else {
-		    //TODO USERNAME
+		    //TODO USERNAME remove this after testing.
+		    oldExp.setUser("testUser");
+		    /////////////////////////////////////////////
 		    
+		    // Create new Experiment with full Data
 		    Experiment experiment = new Experiment(id);
 	        experiment.setStatus("stopped");
-	        experiment.setUser(exp.getUser());
+	        experiment.setUser(oldExp.getUser());
 	        
 	        LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
 	        LinkedList<WPort> wPortList = new LinkedList<WPort>();
 	        
-	        for (NodeObjects node : exp.getList()) {
-
+	        // Transfer all Nodes from the sent experiment to the new experiment
+	        for (NodeObjects node : oldExp.getList()) {
+	            
+	            //TODO DELETE the next line, only for testing purposes
+	            node.setConfig(ControllerData.getConfig("WARP+APU"));
+	            //////////////////////////////////////////////////////
 	            nodeId = node.getId();
-	            Config config = ControllerData.getConfig(node.getConfig());
-	            
+	            config = node.getConfig();
 	            nodeList.add(ControllerData.getNodeById(nodeId));
-	            
-	            experiment.addNodeConfig(node.getId(), config);
-	            
+	            experiment.addNodeConfig(nodeId, config);
 	        }
-	    
-	        for (WPort wport : exp.getWports()) {
-	            wPortList.add(ControllerData.getWportById(wport.getId()));
-	        } 
-	        
 	        experiment.setNodeList(nodeList);
+	        
+	        //Check if the nodes are applicable for the chosen configuration
+	        for (NodeObjects node : experiment.getList()) {
+                config = experiment.getNodeConfig(node.getId());
+	            if(!node.isApplicable(config)) {
+	                System.out.println("NODE IS NOT APPLICABLE");
+	                successString += "Node '" + node.getId() + "' is not applicable for "
+	                        + "config: '" + config.getName() + "' \n";
+	                success = false;
+	            }
+            }
+	        
+	        if(!success) {
+	            return Response.status(500).entity(successString).build();
+	        }
+	        
+	        // Transfer all wPorts from the old experiment to the new experiment
+	        for (WPort wPort : oldExp.getWports()) {
+               wPortList.add(ControllerData.getWportById(wPort.getId()));
+            }
 	        experiment.setWports(wPortList);
 	        
-	        experiment.addGlobalVlan();
-	        experiment.deployAllTrunks();
+	        
+	        // Add a Global VLan to the Experiment
+	        response = experiment.addGlobalVlan();
+	        if(response.getStatus() != 200) {
+	            return response;
+	        }
+	        
+	        
+	        // Deploys all Trunk Ports for the Experiment
+	        response = experiment.deployAllTrunks();
+	        if(response.getStatus() != 200) {
+                return response;
+            }
 	        
 	        ControllerData.addExp(experiment);
-	        
-	        exp = null;
-	        
 			responseString = "New Experiment posted/created with ID : " + id;
-			
 			System.out.println(responseString);
 			return Response.status(201).entity(responseString).build();
 		}
@@ -264,37 +292,57 @@ public class ControllerPut {
 	@Path("/stop")
 	public Response stopExp(String expId) {
 	  
-	  //TODO alle knoten aus
-	  //TODO VMs stoppen
-
-	  return null;
-	
+	    Experiment exp = ControllerData.getExpById(expId);
+	      
+	      if (exp == null) {
+	          String responseString = "404, Experiment not found!";
+	          return Response.status(404).entity(responseString).build();
+	      }
+	      return exp.stop();
 	}	
 	
 	@PUT
 	@Path("/start")
 	public Response startExp(String expId) {
 	  //TODO Experiment starten
+	  System.out.println("START EXPERIMENT");
 	  
-	  //TODO Setze VLans auf letzten Switch
-	  //TODO Strom an
-	  //TODO Starte VM
+	  Experiment exp = ControllerData.getExpById(expId);
+      
+      if (exp == null) {
+          String responseString = "404, Experiment not found!";
+          return Response.status(404).entity(responseString).build();
+      }
+      return exp.start();
 	  
-	  return Response.ok().build();
 	}
 	
+	/**
+	 * Pauses the Experiment.
+	 * 
+	 * Turns all Nodes of this experiment off. 
+	 * @param expId experiment ID from the experiment to pause
+	 * @return  a Response Object with status code and message body, which reports possible errors
+	 */
 	@PUT
 	@Path("/pause")
 	public Response pauseExp(String expId) {
 	  //TODO Experiment pausieren
-	  
-	  return Response.ok().build();
+	    
+	    Experiment exp = ControllerData.getExpById(expId);
+	    
+	    if (exp == null) {
+            String responseString = "404, Experiment not found!";
+            return Response.status(404).entity(responseString).build();
+	    }
+	    return exp.pause();
 	}
 	
 	@PUT
 	@Path("/unpause")
 	public Response unpauseExp(String expId) {
-	  //TODO 
+	    //TODO CHECKEN AUF NEUE KNOTEN
+	    //TODO KNOTEN ANMACHNE
 	  return Response.ok().build();
 	}
 	
