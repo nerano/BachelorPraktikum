@@ -262,7 +262,7 @@ public class Initialize implements ServletContextListener
         node2.setRoom("Raum Links"); **/
         
         NodeObjects node1 = ControllerData.getNodeById("Node A");
-        NodeObjects node2 = ControllerData.getNodeById("Node B");
+        //NodeObjects node2 = ControllerData.getNodeById("Node B");
         
         LinkedList<NodeObjects> nodeList = new  LinkedList<NodeObjects>();
         

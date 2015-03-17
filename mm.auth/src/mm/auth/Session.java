@@ -30,7 +30,6 @@ public class Session {
   /**
    * This Method creates a valid sessionId if the given user name and password is valid.
    * 
-   * <p>
    * To check the logIn parameters the method calls mm.auth.sayAuth. If the response is "200"
    * the method buildSessionId is called to build a valid sessionId. After the sessionId exists
    * the method setTimer() is called to set an initial expire time for the sessionId.
