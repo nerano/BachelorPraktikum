@@ -176,6 +176,43 @@ public class Initialize implements ServletContextListener
     
     public static void exp1(){
         
+      /**Experiment exp = new Experiment("EXPERIMENT1");
+      Experiment exp2 = new Experiment("EXPERIMENT2");
+      Experiment exp3 = new Experiment("EXPERIMENT3");
+      Experiment exp4 = new Experiment("EXPERIMENT4");
+      Experiment exp5 = new Experiment("EXPERIMENT5");
+      exp.addNode(ControllerData.getNodeById("Node A"), new Config());
+      exp.addNode(ControllerData.getNodeById("Node B"));
+      exp2.addNode(ControllerData.getNodeById("Node A"));
+      exp2.addNode(ControllerData.getNodeById("Node B"));
+      exp3.addNode(ControllerData.getNodeById("Node B"));
+      
+      for (int i = 0; i < 1000; i++) {
+ exp2.addNode(ControllerData.getNodeById("Node A"));
+}
+      
+      VLan vlan1 = new VLan(125);
+      VLan vlan2 = new VLan(124);
+      
+      exp.addVLan(vlan1);
+      exp.addVLan(vlan2);
+      exp2.addVLan(vlan2);
+      exp3.addVLan(vlan2);
+      exp4.addVLan(vlan1);
+      exp5.addVLan(vlan1);
+      
+      exp.setStatus("paused");
+      exp2.setStatus("running");
+      exp3.setStatus("stopped");
+      exp4.setStatus("error");
+      exp5.setStatus("asdf");
+      
+      ControllerData.addExp(exp);
+      ControllerData.addExp(exp2);
+      ControllerData.addExp(exp3);
+      ControllerData.addExp(exp4);
+      ControllerData.addExp(exp5);**/
+      
     /**    String porta1 = "NetComponentA.1";
  	   String porta2 = "NetComponentA.2";
  	   
@@ -257,8 +294,5 @@ public class Initialize implements ServletContextListener
  /** 	   ControllerData.addNode(node1);
  	   ControllerData.addNode(node2); **/
     
-    }
-    
-
-    
-    }
+    }   
+ }

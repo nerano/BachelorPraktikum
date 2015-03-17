@@ -19,6 +19,7 @@ public class AuthMain {
   /**
    * This method checks if the given parameters match the saved information.
    * If the data matches true is returned otherwise false.
+   * 
    * <p>
    * Possible HTTP status codes:
    * 
@@ -42,6 +43,7 @@ public class AuthMain {
 
   /**
    * Returns a Response holding the user role as entity.
+   * 
    * <p>
    * Possible HTTP status codes:
    * 

@@ -1,13 +1,14 @@
 package mm.auth;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.UUID;
 
 import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -23,15 +24,18 @@ public class Session {
   private UUID sessionId;
   private Date expire;
   private HashMap<UUID, SessionData> ids = new HashMap<UUID, SessionData>();
+  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private AuthMain auth = new AuthMain();
   
   /**
    * This Method creates a valid sessionId if the given user name and password is valid.
+   * 
    * <p>
    * To check the logIn parameters the method calls mm.auth.sayAuth. If the response is "200"
    * the method buildSessionId is called to build a valid sessionId. After the sessionId exists
    * the method setTimer() is called to set an initial expire time for the sessionId.
    * If the sessionId does not already exists, it is saved in the hash map "ids". 
+   *
    * <p>
    * The hash map provides the possibility for more than one "active" user at the same time. 
    * 
@@ -54,9 +58,10 @@ public class Session {
       this.setTimer();
       if (!this.ids.containsKey(this.sessionId)) {
         this.ids.put(this.sessionId, 
-            new SessionData(this.expire, response.getEntity().toString()));
+            new SessionData(this.expire, user, response.getEntity().toString()));
       }
-      return Response.ok(this.sessionId.toString()).build();
+      return Response.ok(gson.toJson(
+          new SessionData(this.sessionId.toString(), response.getEntity().toString()))).build();
     }
     return Response.status(403).entity("LogIn failed!").build();
   }
@@ -82,11 +87,10 @@ public class Session {
     GregorianCalendar timer = new GregorianCalendar();
     timer.add(GregorianCalendar.MINUTE, 15);
     
-    // test ob die Session als ungültig erkannt wird
-    //this.timer.add(GregorianCalendar.SECOND, 10);
+    /** test if the sessionId is invalid after a short time. **/
+    //timer.add(GregorianCalendar.SECOND, 10);
     
     this.expire = timer.getTime();
-    //System.out.println(this.expire.toString());
   }
   
   /**
@@ -106,13 +110,15 @@ public class Session {
     UUID temp = UUID.fromString(sessionId);
     Date currentDate = new Date();
     String userRole;
+    String user;
     if (currentDate.getTime() >= this.ids.get(temp).getExpire().getTime()) {
       this.ids.remove(temp);
       return false;
     }
     userRole = this.ids.get(temp).getRole();
+    user = this.ids.get(temp).getUser();
     this.setTimer();
-    this.ids.put(temp, new SessionData(this.expire, userRole));
+    this.ids.put(temp, new SessionData(this.expire, user, userRole));
     return true;
   }
   
@@ -130,10 +136,8 @@ public class Session {
    * @return a Response Object with a status code and a possible message body.
    */
   @GET
-  @Path("validation/{sessionId}")
-  //@Produces(MediaType.TEXT_PLAIN)
-  @Consumes("text/plain")
-  public Response testSession(@PathParam("sessionId") String sessionId) {
+  @Path("validation")
+  public Response testSession(@HeaderParam("sessionId") String sessionId) {
     UUID temp = UUID.fromString(sessionId);
     if (this.ids.containsKey(temp)) {
       this.expire = this.ids.get(temp).getExpire();
@@ -145,66 +149,30 @@ public class Session {
   }
   
   /**
-   * Checks if the given sessionId is still valid or expired
-   * (sessionId expires after 15 minutes).
-   * 
-   * Possible HTTP status codes:
-   * 
-   * <li>200: The given SessionID is still valid.
-   * <li>408: Request timeout. The given sessionId is expired a new log in is required.
-   * 
-   * @param sessionId holding a 128bit sessionId with the form 
-   *     xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, with x = [a-z,0-9].
-   * @return a Response Object with a status code and a possible message body.
-   */
-  /*@GET
-  @Path("validation")
-  public Response testSession(@HeaderParam("sessionId") String sessionId) {
-    //System.out.println(sessionId);
-    if (this.ids.containsKey(sessionId)) {
-      this.expire = this.ids.get(sessionId).getExpire();
-      if (this.checkTime(sessionId)) {
-        return Response.ok("valid sessionID").build();
-      }
-    }
-    return Response.status(408).entity("SessionID expired!").build();
-  }*/
-  
-  /**
-   * Returns the role of the given user.
-   * 
-   * @param user name for which the role is needed.
-   * @return Response containing a status and the user role.
-   *         See AuthMain.getUserRole for more information about the status.
-   *         Status 403 if user is not logged In at this time.
-   */
-  /*@GET
-  @Path("role/{userName}")
-  @Consumes("text/plain")
-  public Response testRole(@PathParam("userName") String user) {
-    if (this.users.contains(user)) {
-      return auth.getUserRole(user);
-    }
-    return Response.status(403).entity(user + " not logged In!").build();
-  }*/
-  
-  /**
-   * Returns the user role associated to the given sessionId
+   * Returns the user role associated to the given sessionId.
+   * The sessionId is located in a Header.
    * 
    * @param sessionId to which the user role is associated.
    * @return Response with status 200 and the user role as entity.
    */
   @GET
-  @Path("role")
+  @Path("getRole")
   public Response getRole(@HeaderParam("sessionId") String sessionId) {
     UUID temp = UUID.fromString(sessionId);
     return Response.ok(this.ids.get(temp).getRole()).build();
   }
   
+  /**
+   * Returns the user name associated to the given sessionId.
+   * The sessionId is located in a Header.
+   * 
+   * @param sessionId to which the user name is associated.
+   * @return Response with status 200 and the user user as entity.
+   */
   @GET
-  @Path("getSessionId")
-  @Produces(MediaType.TEXT_PLAIN)
-  public String getSessionId() {
-    return this.sessionId.toString();
+  @Path("getUser")
+  public Response getUser(@HeaderParam("sessionId") String sessionId) {
+    UUID temp = UUID.fromString(sessionId);
+    return Response.ok(this.ids.get(temp).getUser()).build();
   }
 }

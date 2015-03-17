@@ -1,18 +1,32 @@
 package mm.controller.servlet;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
+import org.glassfish.jersey.client.ClientConfig;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,12 +37,16 @@ import mm.controller.main.ControllerData;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.PowerSource;
+import mm.controller.modeling.VLan;
+import mm.controller.net.ControllerNetGet;
+import mm.controller.power.ControllerPowerGet;
 
 /**
  * Class for all GET methods in the controller servlet
  * 
  */
 @Path("/get")
+@Singleton
 public class ControllerGet {
     
     
@@ -46,6 +64,8 @@ public class ControllerGet {
         return Response.ok("HEADERTEST").header("testHeaderKey", "testHeaderValue").build();
     }
 
+	private ControllerPowerGet powerGet = new ControllerPowerGet();
+	private ControllerNetGet netGet = new ControllerNetGet();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	/**
@@ -75,18 +95,6 @@ public class ControllerGet {
 		return Response.status(200).entity(responseString).build();
 	  //}
 	}
-	
-	
-	 @GET
-	 @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
-	 @Path("/ava")
-	 public Response isAvailable() {
-	     
-	     NodeObjects node = ControllerData.getNodeById("Node A");
-	     
-	     return node.isAvailable();
-	     
-	 }
 	
 	   /**
      * 
@@ -129,11 +137,6 @@ public class ControllerGet {
     @Path("/status/{exp}")
     public Response getNodePowerStatus(@PathParam("exp") String exp) throws UnsupportedEncodingException {
         
-        if(!ControllerData.existsExp(exp)) {
-            return Response.status(404).entity("404, Experiment does not exist!").build();
-        }
-        
-        
         Experiment experiment = ControllerData.getExpById(exp);
         
         LinkedList<PowerSource> psrc = experiment.status();
@@ -171,13 +174,17 @@ public class ControllerGet {
 
 		LinkedList<PowerSource> statusList = powerGet.status(exp);
 		
+		LinkedList<VLan> vlanList = netGet.getVLanFromExperiment(exp);
 
 		// VLan vlan = netGet.getVlan(id);
 
 		exp.updateNodeStatusPower(statusList);
+		exp.updateNodeStatusVLan(vlanList);
 		
 		System.out.println(gson.toJson(statusList));
+		System.out.println(gson.toJson(vlanList));
 		
+		Experiment returnExp = exp.clone();
 		LinkedList<NodeObjects> list = returnExp.getList();
 		
 		for (Iterator<NodeObjects> nodeObject = list.iterator(); nodeObject.hasNext();) {
@@ -195,7 +202,7 @@ public class ControllerGet {
 		responseString = gson.toJson(returnExp);
 		response = Response.status(200).entity(responseString).build();
 		return response;
-	} **/
+	}**/
 
 	/**
 	 * Returns an experiment.
@@ -214,28 +221,29 @@ public class ControllerGet {
 	@GET
 	@Produces({ "json/application", "text/plain" })
 	@Path("/exp/{id}")
-	public Response getExpById(@PathParam("id") String id) {
+	public Response getExpById(@HeaderParam("sessionId") String sessionId, @PathParam("id") String id) {
 
-		Response response;
 		String responseString;
-		Experiment exp;
 		WebAuthTest auth = new WebAuthTest();
+    Response response = auth.checkSession(sessionId);
+    if(response.getStatus() == 200) {
+      if (!(ControllerData.existsExp(id))) {
+        responseString = "404, Experiment not found";
+        response = Response.status(404).entity(responseString).build();
+        return response;
+      }
 
-		if (!(ControllerData.existsExp(id))) {
-			responseString = "404, Experiment not found";
-			response = Response.status(404).entity(responseString).build();
-			return response;
-		}
-
-		Gson gson = new GsonBuilder()/* .setExclusionStrategies(new NoStatusNodeStrat()) */
+      Gson gson = new GsonBuilder()/* .setExclusionStrategies(new NoStatusNodeStrat()) */
 									 .setPrettyPrinting().create();
 
-		/*if (auth.getUserRole().readEntity(String.class).equals(exp.getUser())) {*/
+		/*if (auth.getUserRole(sessionId).readEntity(String.class).equals(exp.getUser())) {*/
 		  responseString = gson.toJson(ControllerData.getExpById(id));
 		/*}*/
-		response = Response.status(200).entity(responseString).build();
+		  response = Response.status(200).entity(responseString).build();
 
-		return response;
+		  return response;
+    }
+    return response;
 	}
 	
 	/**
@@ -250,19 +258,22 @@ public class ControllerGet {
 	@GET
 	@Produces({ "json/application", "text/plain" })
 	@Path("/exp")
-	public Response getAllExp(){
-		/*
-		 * test case if the rolemanagement works
-		 */
+	public Response getAllExp(@HeaderParam("sessionId") String sessionId){
+		/**
+		 * test case if the role management works.
+		 **/
 	  WebAuthTest auth = new WebAuthTest();
-	  if (auth.getUserRole().readEntity(String.class).equals("admin")) {
-	    String responseString = gson.toJson(ControllerData.getAllExp());
-	    return Response.status(200).entity(responseString).build();
+	  Response response = auth.checkSession(sessionId);
+	  if(response.getStatus() == 200) {
+	    String user = auth.getUser(sessionId).readEntity(String.class);
+	    if (auth.getUserRole(sessionId).readEntity(String.class).equals("admin")) {
+	      return Response.ok(gson.toJson(ControllerData.getAllExp())).build();
+	    } else {
+	        return this.getExpByUser(user);
+	    }
 	  } else {
-	    
+	      return response;
 	  }
-	  
-		return Response.status(401).entity("no permission for all experiments!").build();
 	}
 	
 	 /**
@@ -275,7 +286,7 @@ public class ControllerGet {
    * 
    * @return a Response Object with the JSON in the message body.
    */
-	private Response getExpForUser(@HeaderParam("user") String user) {
+	private Response getExpByUser(String user) {
 	  LinkedList<Experiment> expList = ControllerData.getAllExp();
 	  LinkedList<Experiment> temp = new LinkedList<Experiment>();
 	  String responseString;
@@ -286,7 +297,7 @@ public class ControllerGet {
 	  }
 	  
 	  if (temp.isEmpty()) {
-	    responseString = "No experiments for user: " + user + " existing.";
+	    responseString = "";
 	  } else {
 	    responseString = gson.toJson(temp);
 	  }
