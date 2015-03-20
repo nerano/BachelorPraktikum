@@ -204,7 +204,7 @@ public class Experiment implements Cloneable {
 	        
 	            //response = ControllerNetDelete.freeGlobalVlan(vlan.getId());
 	            
-	            response = ControllerNetPut.freeVlan(vlan);
+	            response = ControllerNetPut.removeVlan(vlan);
 	            
 	            if(response.getStatus() != 200) {
 	                

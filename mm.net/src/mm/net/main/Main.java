@@ -1,9 +1,11 @@
 package mm.net.main;
 
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import javax.ws.rs.core.Response;
+
 
 
 
@@ -21,17 +23,15 @@ public class Main {
       LinkedList<Integer> liste = new LinkedList<Integer>();
       liste.add(1);
       
-      NetGearGS108Tv2 netgear = new NetGearGS108Tv2("netgear.tisch", "netgeargs1", liste);
+      NetGearGS108Tv2 netgear = new NetGearGS108Tv2("netgear.tisch", "netgeargs2", liste);
     Response response = null;
 
     netgear.start();
     
-        netgear.setRowStatus(100, 4);
+        response = netgear.getAllPvids();
     
-    response = netgear.setStaticName(100, "globa laa");
-    
-    System.out.println("Statuscode: " + response.getStatus());
-    System.out.println("Body: " + (String) response.getEntity());
+        System.out.println("Statuscode: " + response.getStatus());
+        System.out.println("Body: " + Arrays.toString((int[]) response.getEntity()));
     
     netgear.stop();
     

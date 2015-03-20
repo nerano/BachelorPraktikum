@@ -31,7 +31,25 @@ public class StaticComponent {
         this.port = port;
     }
 
-
+    public String getNetComponent() {
+        String[] array = port.split(";");
+        return array[0];
+    }
+    
+    public int getSwitchport() {
+        String[] array = port.split(";");
+        return Integer.parseInt(array[1]);
+    }
+    
+    public String getType() {
+        return this.type;
+    }
+    
+    
+    /**
+     * Adds the Switchport from this StaticComponent to the static VLAN defined in the
+     * type field. 
+     */
     public void setStaticVLan() {
         
         String[] strg = port.split(";");

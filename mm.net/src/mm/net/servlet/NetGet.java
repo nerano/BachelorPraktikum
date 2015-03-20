@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import mm.net.main.ConsistencyCheck;
 import mm.net.main.NetData;
 import mm.net.modeling.Interface;
 import mm.net.modeling.NetComponent;
@@ -23,25 +24,6 @@ public class NetGet {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-   /**  @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("{id}")
-    public Response getVLanById(@PathParam("id") int id) {
-
-        String responseString;
-
-        if (!(NetData.exists(id))) {
-            responseString = "404, VLan " + id + " not found!";
-            return Response.status(404).entity(responseString).build();
-        }
-
-        VLan vlan = NetData.getById(id);
-
-        responseString = gson.toJson(vlan);
-        return Response.status(200).entity(responseString).build();
-
-    } **/
-    
     /**
      * 
      * @param incoming
@@ -134,6 +116,22 @@ public class NetGet {
         }
        return Response.status(404).entity("No local VLan available").build();
     }
+    
+    
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/manageConsistency")
+    public Response getManageConsistency() {
+        return ConsistencyCheck.checkStaticConsistency("management");
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/powerConsistency")
+    public Response getPowerConsistency() {
+        return ConsistencyCheck.checkStaticConsistency("power");
+    }
+    
     
     /**
      * 

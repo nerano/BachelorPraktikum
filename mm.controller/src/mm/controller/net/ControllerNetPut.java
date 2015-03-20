@@ -122,7 +122,7 @@ public class ControllerNetPut {
     }
     
     
-   public static Response freeVlan(VLan vlan) {
+   public static Response removeVlan(VLan vlan) {
       
        String data = gson.toJson(vlan);
       

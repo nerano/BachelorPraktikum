@@ -91,7 +91,10 @@ public class Initialize implements ServletContextListener {
     return vlanList;
 
   }
-
+ 
+  /**
+   * Initializes all static VLANS: management and power
+   */
   private static void initializeStaticVlans() {
 
     for (NetComponent nc : NetData.getAllNetComponents()) {

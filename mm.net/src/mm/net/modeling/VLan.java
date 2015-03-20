@@ -8,7 +8,7 @@ public class VLan {
 
     String               name;
     private int          id;
-    private Set<String> portList = new HashSet<String>();
+    private Set<String>  portList = new HashSet<String>();
     private boolean      global;
 
     public VLan(int id, boolean global) {
