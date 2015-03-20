@@ -23,10 +23,10 @@ import javax.ws.rs.core.MediaType;
  * @author Benedikt Bakker
  *
  */
-@Path("ganeti")
+@Path("server")
 public class ControllerServer {
   
-  private static final String url = "http://localhost:8080/mm.server/rest/ganeti";
+  private static final String url = "http://localhost:8080/mm.server/rest/server";
   private ClientConfig config;
   private Client client;
   private WebTarget target;
@@ -42,22 +42,11 @@ public class ControllerServer {
    * @return the list of all instances on the ganeti server.
    */
   @GET
+  @Path("ganeti")
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstances() {
     target = client.target(url);
-    return target.request().get(String.class); 
-  }
-  
-  /**
-   * Returns a list of all templates of instances.
-   * @return the list of all templates of instances.
-   */
-  @GET
-  @Path("template")
-  @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-  public String getTemplate() {
-    target = client.target(url);
-    return target.path("template").request().get(String.class); 
+    return target.path("ganeti").request().get(String.class); 
   }
   
   /**
@@ -66,11 +55,11 @@ public class ControllerServer {
    * @return the list of all attributes of an instances.
    */
   @GET
-  @Path("{instance}")
+  @Path("ganeti/{instance}")
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstanceInfo(@PathParam("instance") String instance) {
     target = client.target(url);
-    return target.path(instance).request().get(String.class); 
+    return target.path("ganeti").path(instance).request().get(String.class); 
   }
   
   /**
@@ -80,12 +69,12 @@ public class ControllerServer {
    * @return the attribute of the given parameter of an instance.
    */
   @GET
-  @Path("{instance}/{param}")
+  @Path("ganeti/{instance}/{param}")
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstanceInfoParam(@PathParam("instance") String instance,
       @PathParam("param") String param) {
     target = client.target(url);
-    return target.path(instance).path(param).request().get(String.class); 
+    return target.path("ganeti").path(instance).path(param).request().get(String.class); 
   }
   
   /**
@@ -93,10 +82,11 @@ public class ControllerServer {
    * @param params a String of a JSONObject with all requested settings of the new instance.
    */
   @POST
+  @Path("ganeti")
   @Consumes(MediaType.APPLICATION_JSON)
   public void createInstance(String params) {
     target = client.target(url);
-    builder = target.request().header("Content-Type", "application/json");
+    builder = target.path("ganeti").request().header("Content-Type", "application/json");
     builder.accept("application/json").post(Entity.json(params));
   }
   
@@ -105,10 +95,10 @@ public class ControllerServer {
    * @param instance name of the instance which should be deleted.
    */
   @DELETE
-  @Path("{instance}")
+  @Path("ganeti/{instance}")
   public void deleteInstance(@PathParam("instance") String instance) {
     target = client.target(url);
-    target.path(instance).request().delete();
+    target.path("ganeti").path(instance).request().delete();
   }
   
   /**
@@ -118,12 +108,12 @@ public class ControllerServer {
    *rebooting.
    */
   @POST
-  @Path("{instance}")
+  @Path("ganeti/{instance}")
   @Consumes(MediaType.APPLICATION_JSON)
   public void rebootInstance(@PathParam("instance") String instance, 
       String type) {
     target = client.target(url);
-    builder = target.path(instance).request()
+    builder = target.path("ganeti").path(instance).request()
         .header("Content-Type", "application/json");
     builder.accept("application/json").post(Entity.json(type));
   }
@@ -134,12 +124,12 @@ public class ControllerServer {
    * @param type must be a String of a JSONObject with settings.
    */
   @PUT
-  @Path("{instance}/start")
+  @Path("ganeti/{instance}/start")
   @Consumes(MediaType.APPLICATION_JSON)
   public void startInstance(@PathParam("instance") String instance,
       String type) {
     target = client.target(url);    
-    builder = target.path(instance).path("start").request()
+    builder = target.path("ganeti").path(instance).path("start").request()
         .header("Content-Type", "application/json");
     builder.put(Entity.json(type));
   }
@@ -150,12 +140,12 @@ public class ControllerServer {
    * @param type must be a String of a JSONObject with settings.
    */
   @PUT
-  @Path("{instance}/stop")
+  @Path("ganeti/{instance}/stop")
   @Consumes(MediaType.APPLICATION_JSON)
   public void stopInstance(@PathParam("instance") String instance,
       String type) {
     target = client.target(url);
-    builder = target.path(instance).path("stop").request()
+    builder = target.path("ganeti").path(instance).path("stop").request()
         .header("Content-Type", "application/json");
     builder.accept("application/json").put(Entity.json(type));
   }
@@ -166,13 +156,39 @@ public class ControllerServer {
    * @param newName of the given VM.
    */
   @PUT
-  @Path("{instance}/rename")
+  @Path("ganeti/{instance}/rename")
   @Consumes(MediaType.APPLICATION_JSON)
   public void renameInstance(@PathParam("instance") String instance, 
       String newName) {
     target = client.target(url);
-    builder = target.path(instance).path("rename").request()
+    builder = target.path("ganeti").path(instance).path("rename").request()
       .header("Content-Type", "application/json");
     builder.accept("application/json").put(Entity.json(newName));
+  }
+  
+  /**
+   * Returns a list of all templates of instances.
+   * @return the list of all templates of instances.
+   */
+  @GET
+  @Path("template")
+  @Produces({MediaType.APPLICATION_JSON})
+  public String getTemplate() {
+    target = client.target(url);
+    return target.path("template").request().get(String.class); 
+  }
+  
+  /**
+   * Renames a given instance with a new name.
+   * @param instance name of the VM which should be renamed.
+   * @param newName of the given VM.
+   */
+  @PUT
+  @Path("template")
+  public void updateTemplate() {
+    target = client.target(url);
+    builder = target.path("template").request()
+      .header("Content-Type", "text/plain");
+    builder.accept("text/plain").put(Entity.json(""));
   }
 }

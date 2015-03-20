@@ -67,7 +67,7 @@ public class Ganeti {
   }
   
   /**
-   * 
+   * Returns only the name of all instances on the ganeti server.
    * @return list of all instances of the server.
    */
   public String getInstances() {
@@ -127,7 +127,9 @@ public class Ganeti {
     Response resp = null;
     try {
       builder = target.path("instances").request().header("Content-Type", "application/json");
-      builder.accept("application/json").post(Entity.json(param));      
+      System.out.println(param);
+      resp = builder.accept("application/json").post(Entity.json(param));
+      System.out.println(resp);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -147,7 +149,7 @@ public class Ganeti {
     try {
       builder = target.path("instances").path(instance).path("startup").request()
           .header("Content-Type", "application/json");
-      builder.accept("application/json").put(Entity.json(type));
+      resp = builder.accept("application/json").put(Entity.json(type));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -166,7 +168,7 @@ public class Ganeti {
     try {
       builder = target.path("instances").path(instance).path("shutdown").request()
           .header("Content-Type", "application/json");
-      builder.accept("application/json").put(Entity.json(type));
+      resp = builder.accept("application/json").put(Entity.json(type));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -182,7 +184,7 @@ public class Ganeti {
     target = client.target(url);
     Response resp = null;
     try {
-      target.path("instances").path(instance).request().delete();
+      resp = target.path("instances").path(instance).request().delete();
     } catch (Exception e) {
       e.printStackTrace();
     }

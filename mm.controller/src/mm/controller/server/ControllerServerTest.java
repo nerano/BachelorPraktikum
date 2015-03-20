@@ -11,7 +11,7 @@ public class ControllerServerTest {
   @Test
   public void testGetCreateStartStopDelete() {
     String instance = "controllertest.seemoo.tu-darmstadt.de";
-    String createInstance = "{\"name\":\"" + instance + "\",\"template\":\"Instanz2\"}";
+    String createInstance = "{\"name\":\"" + instance + "\",\"template\":\"Instanz2\",\"bridge\":\"br0\",\"size\":5012,\"ip\":\"10.10.11.4\"}";
     try {
       assertEquals("Die Instanz " + instance + " ist nicht auf dem Server",
           false, conser.getInstances().contains(instance));

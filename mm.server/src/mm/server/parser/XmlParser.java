@@ -26,14 +26,24 @@ public class XmlParser {
    */
   private DocumentBuilder docBuilder;
   private Document doc;
+  private String file;
     
   /**
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
     * Changes the name space to true.
-    * @param file the path of the XML file.
+    * @param path the path of the XML file.
     * @throws ParserConfigurationException if the documentBuilder can not be instantiated.
     */
-  public XmlParser(String file) {
+  public XmlParser(String path) {
+    this.file = path;
+    this.buildDoc();
+    this.parse();
+  }
+  
+  /**
+   * Builds the document instance for parsing the XML file.
+   */
+  private void buildDoc() {
     DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
     docFactory.setNamespaceAware(true);
     try {
@@ -61,43 +71,116 @@ public class XmlParser {
       node = nodeList.item(counter);
       if (node.getNodeName().equals("id")) {
         if (!first) {
-          vm.setList();
           map.put(id, vm);
           vm = new Template();
+          vm.setId(id);
         } else {
           first = false;
         }
         id = node.getTextContent();
+        vm.setId(id);
       } else {
+        switch (node.getNodeName()) {
+          case 
+            "disk_template": vm.setDisk_template(node.getTextContent());
+            break;
+          case
+            "file_driver": vm.setFile_driver(node.getTextContent());
+            break;
+          case
+            "file_storage_dir": vm.setFile_storage_dir(node.getTextContent());
+            break;
+          case
+            "hypervisor": vm.setHypervisor(node.getTextContent());
+            break;
+          case
+            "iallocator": vm.setIallocator(node.getTextContent());
+            break;
+          case
+            "instance_name": vm.setInstance_name(node.getTextContent());
+            break;
+          case
+            "mode": vm.setMode(node.getTextContent());
+            break;
+          case
+            "os_type": vm.setOs_type(node.getTextContent());
+            break;
+          case
+            "pnode": vm.setPnode(node.getTextContent());
+            break;
+          case
+            "pnode_uuid": vm.setPnode_uuid(node.getTextContent());
+            break;  
+          case
+            "source_instance_name": vm.setSource_instance_name(node.getTextContent());
+            break;  
+          case
+            "source_x509_ca": vm.setSource_x509_ca(node.getTextContent());
+            break;
+          case
+            "src_node": vm.setSrc_node_uuid(node.getTextContent());
+            break;
+          case
+            "src_node_uuid": vm.setSrc_node_uuid(node.getTextContent());
+            break;
+          case
+            "src_path": vm.setSrc_path(node.getTextContent());
+            break;
+          case
+            "__version__": vm.set__version__(Integer.parseInt(node.getTextContent()));
+            break;
+          case
+            "source_shutdown_timeout": vm.setSource_shutdown_timeout(Integer.parseInt(
+                                           node.getTextContent()));
+            break;
+          case
+            "nic_mode": vm.setNicMode(node.getTextContent());
+            break;
+          case
+            "nic_link": vm.setNicLink(node.getTextContent());
+            break;
+          case
+            "nic_ip": vm.setNicIp(node.getTextContent());
+            break;
+          case
+            "nic_mac": vm.setNicMac(node.getTextContent());
+            break;
+          case
+            "nic_name": vm.setNicName(node.getTextContent());
+            break;
+          case
+            "nic_network": vm.setNicNetwork(node.getTextContent());
+            break;
+          case
+            "disks_mode": vm.setDisksMode(node.getTextContent());
+            break;
+          case
+            "disks_size": vm.setDisksSize(Integer.parseInt(node.getTextContent()));
+            break;
+          default: break;
+        }
         switch (node.getTextContent()) {
           case
-            "true" : vm.setBoolean(node.getNodeName(), true);
+            "false": vm.setBoolean(node.getNodeName(), false);
             break;
           case
-            "false" : vm.setBoolean(node.getNodeName(), false);
+            "true": vm.setBoolean(node.getNodeName(), true);
             break;
-          default: vm.setString(node.getNodeName(), node.getTextContent());
-            break;
+          default: break;
         }
       }
       counter++;
     }
-    vm.setList();
     map.put(id, vm);
     return map;
   }
   
   /**
-   * Updates the HashMap of instances.
-   * @param file the path of the XML file.
-   * @return the updated HashMap of instances.
+   * Updates the HashMap of templates by building a new document instance and parse this file.
+   * @return the updated HashMap of templates.
    */
-  public HashMap<String, Template> update(String file) {
-    try {
-      doc = docBuilder.parse(file);
-    } catch (SAXException | IOException e) {
-      e.printStackTrace();
-    }
+  public HashMap<String, Template> update() {
+    this.buildDoc();
     return this.parse();
   }
 }

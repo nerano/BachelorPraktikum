@@ -1,9 +1,6 @@
 package mm.server.main;
 
-import mm.server.instance.Template;
 import mm.server.parser.XmlParser;
-
-import java.util.HashMap;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -18,8 +15,7 @@ public class Initialize implements ServletContextListener {
     String path = contextEvent.getServletContext().getRealPath("/VM.xml");
     XmlParser parser = new XmlParser(path);
     
-    HashMap<String, Template> map = parser.parse();
-    new ServerData(map);
+    new ServerData(parser);
   }
 
   public void contextDestroyed(ServletContextEvent arg0) {

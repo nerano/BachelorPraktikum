@@ -1,5 +1,8 @@
 package mm.server.rapi;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import mm.server.instance.Instance;
 import mm.server.instance.Template;
 import mm.server.main.ServerData;
@@ -28,58 +31,33 @@ import javax.ws.rs.core.Response;
  * @author Benedikt Bakker
  *
  */
-@Path("/ganeti")
+@Path("/server")
 public class RestInterface {
 
   private Ganeti ga = new Ganeti();
   private HashMap<String, Template> map = ServerData.getTemplateList();
+  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
   
   /**
    * Calls the method which returns a list of instances on the server.
    * @return String with all instance names.
    */
   @GET
+  @Path("ganeti")
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstances() {
     return ga.getInstances();
     
   }
-  
-  /**
-   * Calls the method which returns a String of all instance templates with their
-   *attributes.
-   * @return String with all instance names and attributes.
-   */
-  @GET
-  @Path("template")
-  @Produces(MediaType.APPLICATION_JSON)
-  public String getTemplate() {
-    JSONObject json;
-    List<JSONObject> ret = new ArrayList<JSONObject>();
-    String instance = "";
-    String[] keys = map.keySet().toArray(new String[map.size()]);
-    for ( int i = 0; i < map.size(); i++) {
-      instance = map.get(keys[i]).toString();
-      try {
-        json = new JSONObject(instance);
-        json.put("id", keys[i]);
-        ret.add(json);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-    }
-    
-    return ret.toString();
-  }
-  
+
   /**
    * Calls the method which returns a String with all attributes and their values of an
-   *instance on the ganeti server.
+   * instance on the ganeti server.
    * @param instance the name of the instance.
    * @return String with all attributes.
    */
   @GET
-  @Path("{instance}")
+  @Path("ganeti/{instance}")
   //@Produces(MediaType.APPLICATION_JSON)
   public String getInstanceInfo(@PathParam("instance") String instance) {
     return ga.getInstanceInfo(instance);
@@ -87,13 +65,13 @@ public class RestInterface {
   
   /**
    * Calls the method which returns a String with one given attribute and it's value
-   *of an given instance on the ganeti server.
+   * of an given instance on the ganeti server.
    * @param instance the name of the instance.
    * @param param the attribute of an instance.
    * @return the value of an attribute of an instance.
    */
   @GET
-  @Path("{instance}/{param}")
+  @Path("ganeti/{instance}/{param}")
   //@Produces(MediaType.APPLICATION_JSON)
   public String getInstanceInfoParam(@PathParam("instance") String instance,
       @PathParam("param") String param) {
@@ -102,17 +80,19 @@ public class RestInterface {
   
   /**
    * Takes the name of the creating instance and the values of one template instance
-   *and connect these information to one String. Then it calls the method which creates an instance
-   *on the ganeti server.
+   * and connect these information to one String. Then it calls the method which creates an instance
+   * on the ganeti server.
    * @param json A String of a JSONObject with the name of the creating instance and the value of
    *one template instance.
    * @return the HTTP Response of the ganeti server.
    */
   @POST
+  @Path("ganeti")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createInstance(String json) {
     Template temp = null;
-    String create = "";
+    Instance vm = new Instance();
+    String create = "haha";
     if (json.isEmpty()) {
       return Response.status(409).entity("There are no parameters").build();
     }
@@ -125,22 +105,19 @@ public class RestInterface {
     try {
       JSONObject param = new JSONObject(json);
       temp = map.get(param.get("template"));
-      Instance vm = new Instance();
-      String tmp = temp.getJson().toString();
-      vm.setJson(new JSONObject(tmp));
-      vm.setDisk(temp.getDisk());
-      vm.setNic(temp.getNic());
-      vm.setNics("link", param.getString("bridge"));
-      vm.setNics("ip", param.getString("ip"));
-      vm.setName(param.getString("name"));
+      String instance = gson.toJson(temp);
+      vm = gson.fromJson(instance, Instance.class);
+      vm.setNicLink(param.getString("bridge"));
+      vm.setNicIp(param.getString("ip"));
+      vm.setInstance_name(param.getString("name"));
       vm.setDisksSize(param.getInt("size"));
-      create = vm.toString();
+      create = gson.toJson(vm);
     } catch (JSONException e) {
       e.printStackTrace();
     }
-    System.out.println(create);
-    //return ga.create(create);
-    return Response.ok().build();
+    //System.out.println(create);
+    return ga.create(create);
+    //return Response.ok().build();
   }
   
   /**
@@ -149,7 +126,7 @@ public class RestInterface {
    * @return the HTTP Response of the ganeti server.
    */
   @DELETE
-  @Path("{instance}")
+  @Path("ganeti/{instance}")
   public Response deleteInstance(@PathParam("instance") String instance) {
     return ga.delete(instance);
   }
@@ -161,7 +138,7 @@ public class RestInterface {
    * @return the HTTP Response of the ganeti server.
    */
   @POST
-  @Path("{instance}")
+  @Path("ganeti/{instance}")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response rebootInstance(@PathParam("instance") String instance, 
       String type) {
@@ -175,7 +152,7 @@ public class RestInterface {
    * @return the HTTP Response of the ganeti server.
    */
   @PUT
-  @Path("{instance}/start")
+  @Path("ganeti/{instance}/start")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response startInstance(@PathParam("instance") String instance,
       String type) {
@@ -189,7 +166,7 @@ public class RestInterface {
    * @return the HTTP Response of the ganeti server.
    */
   @PUT
-  @Path("{instance}/stop")
+  @Path("ganeti/{instance}/stop")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response stopInstance(@PathParam("instance") String instance,
       String type) {
@@ -200,9 +177,10 @@ public class RestInterface {
    * Calls the method which renames an instance on the ganeti server.
    * @param instance the name of the instance.
    * @param newName a JSONObject String with new_name as key and a non empty String as value.
+   * @return the HTTP Response of the ganeti server.
    */
   @PUT
-  @Path("{instance}/rename")
+  @Path("ganeti/{instance}/rename")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response renameInstance(@PathParam("instance") String instance, 
       String newName) {
@@ -212,5 +190,34 @@ public class RestInterface {
       return Response.status(409).entity(resp).build();
     }
     return ga.rename(instance, newName);
+  }
+  
+  /**
+   * Calls the method which returns a String of all instance templates with their
+   * attributes.
+   * @return String with all instance names and attributes.
+   */
+  @GET
+  @Path("/template")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getTemplate() {
+    List<String> ret = new ArrayList<String>();
+    String[] keys = map.keySet().toArray(new String[map.size()]);
+    for ( int i = 0; i < map.size(); i++) {
+      ret.add(gson.toJson(map.get(keys[i])));
+    }
+    return ret.toString();
+  }
+  
+  /**
+   * Updates the HashMap of templates when there are changes in the XML File.
+   * @return the HTTP Response.
+   */
+  @PUT
+  @Path("template")
+  @Consumes(MediaType.TEXT_PLAIN)
+  public Response updateTemplate() {
+    map = ServerData.updateTemplateList();
+    return Response.ok().entity("Template wurde geupdated.").build();
   }
 }
