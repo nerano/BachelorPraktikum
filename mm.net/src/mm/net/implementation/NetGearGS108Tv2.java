@@ -1,8 +1,6 @@
 package mm.net.implementation;
 
-import mm.net.main.NetData;
 import mm.net.modeling.NetComponent;
-import mm.net.modeling.VLan;
 
 import java.io.IOException;
 import java.io.PrintWriter;

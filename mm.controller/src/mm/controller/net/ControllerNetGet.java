@@ -13,7 +13,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import mm.controller.modeling.Component;
-import mm.controller.modeling.Experiment;
 import mm.controller.modeling.Interface;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.VLan;

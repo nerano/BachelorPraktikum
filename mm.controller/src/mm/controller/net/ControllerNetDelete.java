@@ -10,7 +10,6 @@ import javax.ws.rs.core.UriBuilder;
 
 
 
-import mm.controller.modeling.VLan;
 
 import org.glassfish.jersey.client.ClientConfig;
 

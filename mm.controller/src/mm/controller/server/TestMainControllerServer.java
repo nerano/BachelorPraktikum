@@ -1,11 +1,10 @@
 package mm.controller.server;
 
-import org.json.JSONObject;
 
 public class TestMainControllerServer {
 
   public static void main(String[] args) {
-    ControllerServer conser = new ControllerServer();
+      /**  ControllerServer conser = new ControllerServer();
     JSONObject json = new JSONObject();
     json.put("name", "benvm2.seemoo.tu-darmstadt.de");
     json.put("template", "Instanz1");
@@ -26,6 +25,6 @@ public class TestMainControllerServer {
     //conser.renameInstance("testController2.seemoo.tu-darmstadt.de", newName);
     //conser.deleteInstance("benvm2.seemoo.tu-darmstadt.de");
     //conser.rebootInstance("testController2.seemoo.tu-darmstadt.de", "");
-    //conser.deleteInstance("unittestcontroller.seemoo.tu-darmstadt.de");
+    //conser.deleteInstance("unittestcontroller.seemoo.tu-darmstadt.de"); **/
   }
 }

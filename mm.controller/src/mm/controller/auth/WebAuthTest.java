@@ -19,8 +19,14 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.glassfish.jersey.client.ClientConfig;
-import org.json.JSONException;
+
+
+
+/** import org.json.JSONException;
 import org.json.JSONObject;
+ **/
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,10 +43,15 @@ public class WebAuthTest implements ContainerResponseFilter {
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response consumeJSON( String data ) throws JSONException {
-    JSONObject json = new JSONObject(data);
-    Response response = target.path("createSession").path(json.get("user").toString())
-        .path(json.get("password").toString()).request().get(Response.class);
+  public Response consumeJSON( String data ) {
+    
+    JsonParser parser = new JsonParser();
+    JsonObject json = parser.parse(data).getAsJsonObject();
+    String user = json.get("user").getAsString();
+    String pw = json.get("password").getAsString();
+    
+    Response response = target.path("createSession").path(user)
+        .path(pw).request().get(Response.class);
     if(response.getStatus() != 200) {
      return Response.status(403).entity("Wrong password or username").build();
     }

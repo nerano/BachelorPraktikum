@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import mm.controller.main.ControllerData;
-import mm.controller.net.ControllerNetDelete;
 import mm.controller.net.ControllerNetGet;
 import mm.controller.net.ControllerNetPut;
 import mm.controller.power.ControllerPowerGet;
@@ -425,7 +424,7 @@ public class Experiment implements Cloneable {
 	    this.setStatus("paused");
 	    return Response.status(responseStatus).entity(responseString).build();
 	     **/
-	    return Response.ok().build();
+	    return Response.status(responseStatus).entity(responseString).build();
 	}
 	
 	

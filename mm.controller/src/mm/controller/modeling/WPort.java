@@ -2,7 +2,6 @@ package mm.controller.modeling;
 
 import java.util.LinkedList;
 
-import javax.ws.rs.core.Response;
 
 public class WPort {
 

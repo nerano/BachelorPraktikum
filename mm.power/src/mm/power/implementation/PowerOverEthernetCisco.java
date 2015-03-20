@@ -32,25 +32,21 @@ private int ports;
   }
 
   public PowerSupply getType() {
-    // TODO Auto-generated method stub
     return null;
   }
 
 @Override
 public Response status() {
-    // TODO Auto-generated method stub
     return null;
 }
 
 @Override
 public Response status(int socket) {
-    // TODO Auto-generated method stub
     return null;
 }
 
 @Override
 public Response toggle(int socket) {
-    // TODO Auto-generated method stub
     return null;
 }
 
