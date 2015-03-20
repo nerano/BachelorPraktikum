@@ -1,19 +1,22 @@
 package mm.server.main;
 
 import mm.server.instance.Template;
+import mm.server.parser.XmlParser;
 
 import java.util.HashMap;
 
 public class ServerData {
 
   private static HashMap<String, Template> SERVER_MAP;
+  private static XmlParser PARSER;
 
   /**
    * Initialize the HashMap of instances.
    * @param serverList the given HashMap.
    */
-  public ServerData(HashMap<String, Template> serverList) {
-    SERVER_MAP = serverList;
+  public ServerData(XmlParser pars) {
+    PARSER = pars;
+    SERVER_MAP = PARSER.parse();
   }
 
   /**
@@ -21,6 +24,15 @@ public class ServerData {
    * @return a HashMap wit all instances of a XML file.
    */
   public static HashMap<String, Template> getTemplateList() {
+    return SERVER_MAP;
+  }
+  
+  /**
+   * Updates the HashMap of templates when there are changes in the XML file.
+   * @return the HasMap of templates.
+   */
+  public static HashMap<String, Template> updateTemplateList() {
+    SERVER_MAP = PARSER.update();
     return SERVER_MAP;
   }
 }
