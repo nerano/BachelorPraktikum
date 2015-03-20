@@ -69,7 +69,6 @@ public class ControllerData {
 	    try {
 	    List<DefaultEdge> edgeList = BFSP.getPathEdgeList(vertex);
 	    
-	    
 	    Set<String> set = new HashSet<String>();
 	    
 	    for (DefaultEdge edge : edgeList) {
@@ -86,6 +85,35 @@ public class ControllerData {
 	    catch (Exception e) {
 	        return new LinkedList<String>();
 	    }
+	    
+	}
+	/**
+	 * Returns a Path between to given vertices in the network
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public static LinkedList<String> getPath(String v1, String v2) {
+	    try{
+	    
+	   List<DefaultEdge> edgeList = BellmanFordShortestPath.findPathBetween(TOPOLOGY, v1, v2);
+	    
+	    Set<String> set = new HashSet<String>();
+	    
+	    for (DefaultEdge edge : edgeList) {
+            set.add(TOPOLOGY.getEdgeSource(edge));
+            set.add(TOPOLOGY.getEdgeTarget(edge));
+        }
+        System.out.println("PATH : ");
+        System.out.println(new LinkedList<String>(set));
+        
+        return new LinkedList<String>(set);
+           } catch (IllegalArgumentException e) {
+               return new LinkedList<String>();
+           }
+        catch (Exception e) {
+            return new LinkedList<String>();
+        }
 	    
 	}
 	

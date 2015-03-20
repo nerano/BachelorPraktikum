@@ -69,7 +69,22 @@ public class NodeObjects {
 		this.status = nodeStatus;
 	
 	}
-
+	
+	/**
+	 * Returns a Set of all Switchports which are connected to this node
+	 * @return
+	 */
+	public Set<String> getAllSwitchPorts() {
+	    
+	    Set<String> set = new HashSet<String>();
+	    
+	    for (Component component : components) {
+            for (Interface inf : component.getInterfaces()) {
+                set.add(inf.getSwitchport());
+            }
+        }
+	    return set;
+	}
 	public Set<String> getRoles() {
 	    
 	    System.out.println("GET ROLES IN NODEOBJECT");
@@ -220,11 +235,21 @@ public class NodeObjects {
 
 	
 	/**
-	 * Checks if a Node is currently available, which means none of the ports from the
-	 * node are active in any VLan.
+	 * Checks if a Node is currently available.
 	 * 
+	 * Availability of a node means that every port of this node is not affiliated with a 
+	 * PVID/Native VLan ID. If only one port has a PVID on the NetComponent then the whole node
+	 * is not available for use.
 	 * 
-	 * @return
+	 * Possible HTTP status codes: 
+	 * 
+	 * <li> 200: The Node is free to use
+	 * <li> 403: The Node is currently used by another user. The Node ID and the User are
+	 * described in the message body, if the user can be determined. 
+	 * <li> 500: The Controller could not retrieve the requested information a specified error
+	 * description is located in the message body
+	 * 
+	 * @return  Returns an outbound Response Object with status code and message body
 	 */
 	public Response isAvailable() {
 	    
@@ -246,8 +271,14 @@ public class NodeObjects {
                 break;
             default:
                 exp = ControllerData.getExpByVlanId(vlanId);
-                responseString = exp.getUser();
+                if(exp == null) {
+                    responseStatus = 403;
+                    responseString = "Node is currently used, but could not identify the user, "
+                            + "because the VLan ID '" + vlanId + "' is not in the system.";
+                } else {
+                responseString = "Node '" + this.id + "' is currently used by User: '" + exp.getUser() + "'";
                 responseStatus = 403;
+                    }
                 break;
             }
         }

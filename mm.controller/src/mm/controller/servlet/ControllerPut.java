@@ -45,17 +45,13 @@ public class ControllerPut {
 	 *         already exists
 	 */
 	@PUT
-	@Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/exp")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public Response addNewExperiment(String data) {
 
-	  
-	  
-	   //TODO 
 	   //TODO Lege Experiment an
 	   //TODO VMs hinzufügen
-	  
 	   //TODO VLANS setzen
 	   //TODO VMs anlegen
 	  
@@ -63,6 +59,7 @@ public class ControllerPut {
 	    Config config;
 	    String responseString;
 		String id = oldExp.getId();
+		String user = oldExp.getUser();
 		String nodeId;
 		boolean success = true;
 		String successString = "";
@@ -70,18 +67,14 @@ public class ControllerPut {
 		
 		System.out.println(data);
 
-		if (data != null && ControllerData.exists(oldExp)) {
+		if (data != null && ControllerData.existsExp(user+id)) {
 			responseString = "Experiment with this ID already exists!";
 			return Response.status(409).entity(responseString).build();
 		} else {
-		    //TODO USERNAME remove this after testing.
-		    oldExp.setUser("testUser");
-		    /////////////////////////////////////////////
 		    
 		    // Create new Experiment with full Data
-		    Experiment experiment = new Experiment(id);
+		    Experiment experiment = new Experiment(id, user);
 	        experiment.setStatus("stopped");
-	        experiment.setUser(oldExp.getUser());
 	        
 	        LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
 	        LinkedList<WPort> wPortList = new LinkedList<WPort>();
@@ -90,7 +83,7 @@ public class ControllerPut {
 	        for (NodeObjects node : oldExp.getList()) {
 	            
 	            //TODO DELETE the next line, only for testing purposes
-	            node.setConfig(ControllerData.getConfig("WARP"));
+	            node.setConfig(ControllerData.getConfig("WARP+APU"));
 	            //////////////////////////////////////////////////////
 	            nodeId = node.getId();
 	            config = node.getConfig();
@@ -144,52 +137,106 @@ public class ControllerPut {
 	}
 	
 	/**
-     * Turns all the components from a given node off.
-     * <p>
-     * Address of this method: baseuri:port/mm.controller/rest/put/turnOn The node
-     * to turn off has to be identified in the message body.
-     * <p>
-     * Possible HTTP status codes:
-     * 
-     * <li>200: All components of the node were turned off. No further data.
-     * <li>404: The node was not found. Additional Data in the message body.
-     * <li>500: Overwrites a 404 status code. Something else happened and the
-     * node could not be turned off. Additional data in the message body.
-     * 
-     * @param data
-     *            Identifier for the node in the message body.
-     * @return  Response Object with a status code and a possible message body.
-     */
+	 * Stops the experiment.
+	 * 
+	 * @param expId
+	 * @return
+	 */
 	@PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/turnOff")
-	public Response turnNodeOff(String data) {
+    @Path("/stop")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response stopExp(String expId) {
+        System.out.println("STOP EXPERIMENT");
+        Experiment exp = ControllerData.getExpById(expId);
+          
+          if (exp == null) {
+              String responseString = "404, Experiment not found!";
+              return Response.status(404).entity(responseString).build();
+          }
+          return exp.stop();
+    }   
+    
+	/**
+	 * Starts the experiment.
+	 * @param expId
+	 * @return
+	 */
+    @PUT
+    @Path("/start")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response startExp(String expId) {
+      //TODO Experiment starten
+      System.out.println("START EXPERIMENT");
+      
+      Experiment exp = ControllerData.getExpById(expId);
+      
+      if (exp == null) {
+          String responseString = "404, Experiment not found!";
+          return Response.status(404).entity(responseString).build();
+      }
+      return exp.start();
+      
+    }
+    
+    @PUT
+    @Path("/unpause")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response unpauseExp(String expId) {
+        //TODO CHECKEN AUF NEUE KNOTEN
+        //TODO KNOTEN ANMACHNE
+      return Response.ok().build();
+    }
+    
+    /**
+     * Pauses the Experiment.
+     * 
+     * Turns all Nodes of this experiment off. 
+     * @param expId experiment ID from the experiment to pause
+     * @return  a Response Object with status code and message body, which reports possible errors
+     */
+    @PUT
+    @Path("/pause")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response pauseExp(String expId) {
+      //TODO Experiment pausieren
+        
+        Experiment exp = ControllerData.getExpById(expId);
+        
+        if (exp == null) {
+            String responseString = "404, Experiment not found!";
+            return Response.status(404).entity(responseString).build();
+        }
+        
+        if(ControllerData.getExpById(expId).getStatus().equals("stopped")) {
+            return exp.firstPause();
+        }
+        
+        if(ControllerData.getExpById(expId).getStatus().equals("running")) {
+            return exp.pause();
+        }
+        
+        return Response.status(500).entity("Status was not stopped or running, did nothing").build();
+    }
 
-		NodeObjects node = ControllerData.getNodeById(data);
-
-		String responseString;
-
-		if (node != null && ControllerData.exists(node)) {
-
-			Response r = node.turnOff();
-
-			if (r.getStatus() == 200) {
-				responseString = "All Components in the Node turned off";
-				return Response.status(200).entity(responseString).build();
-			} else {
-				responseString = "WARNING: Not all Components were turned off! \n";
-				responseString += (String) r.getEntity();
-				return Response.status(500).entity(responseString).build();
-			}
-
-		} else {
-			responseString = "404, Node '" + data + "' not found!";
-			return Response.status(404).entity(responseString).build();
-		}
-
-	}
-
+    /**
+     * Reloads the config.xml file.
+     * 
+     * After calling this function new added configurations are available for use.
+     * @return
+     */
+    @GET
+    @Path("/reloadConfigs")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response reloadConfigs () {
+      boolean bool = Initialize.reloadConfigs();
+      if(bool) {
+        return Response.status(200).entity("Configs were reloaded.").build();
+      } else {
+        return Response.status(500).entity("Reload Configs failed!").build();
+      }
+      
+    }
+    
 	/**
 	 * Turns all the components from a given node on.
 	 * <p>
@@ -208,9 +255,9 @@ public class ControllerPut {
 	 * @return  Response Object with a status code and a possible message body.
 	 */
 	@PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/turnOn")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public Response turnNodeOn(String data) {
 
 		NodeObjects node = ControllerData.getNodeById(data);
@@ -262,9 +309,9 @@ public class ControllerPut {
 	 * @return a Response Object with a status code and a possible message body.
 	 */
 	@PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/turnOn/{comp}")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public Response turnCompOn(String data, @PathParam("comp") String comp) {
 
 		NodeObjects node = ControllerData.getNodeById(data);
@@ -292,78 +339,52 @@ public class ControllerPut {
 		}
 
 	}
-	
-	@PUT
-	@Path("/stop")
-	public Response stopExp(String expId) {
-	  
-	    Experiment exp = ControllerData.getExpById(expId);
-	      
-	      if (exp == null) {
-	          String responseString = "404, Experiment not found!";
-	          return Response.status(404).entity(responseString).build();
-	      }
-	      return exp.stop();
-	}	
-	
-	@PUT
-	@Path("/start")
-	public Response startExp(String expId) {
-	  //TODO Experiment starten
-	  System.out.println("START EXPERIMENT");
-	  
-	  Experiment exp = ControllerData.getExpById(expId);
-      
-      if (exp == null) {
-          String responseString = "404, Experiment not found!";
-          return Response.status(404).entity(responseString).build();
-      }
-      return exp.start();
-	  
-	}
-	
-	/**
-	 * Pauses the Experiment.
-	 * 
-	 * Turns all Nodes of this experiment off. 
-	 * @param expId experiment ID from the experiment to pause
-	 * @return  a Response Object with status code and message body, which reports possible errors
-	 */
-	@PUT
-	@Path("/pause")
-	public Response pauseExp(String expId) {
-	  //TODO Experiment pausieren
-	    
-	    Experiment exp = ControllerData.getExpById(expId);
-	    
-	    if (exp == null) {
-            String responseString = "404, Experiment not found!";
+	   
+    /**
+     * Turns all the components from a given node off.
+     * <p>
+     * Address of this method: baseuri:port/mm.controller/rest/put/turnOn The node
+     * to turn off has to be identified in the message body.
+     * <p>
+     * Possible HTTP status codes:
+     * 
+     * <li>200: All components of the node were turned off. No further data.
+     * <li>404: The node was not found. Additional Data in the message body.
+     * <li>500: Overwrites a 404 status code. Something else happened and the
+     * node could not be turned off. Additional data in the message body.
+     * 
+     * @param data
+     *            Identifier for the node in the message body.
+     * @return  Response Object with a status code and a possible message body.
+     */
+    @PUT
+    @Path("/turnOff")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    public Response turnNodeOff(String data) {
+
+        NodeObjects node = ControllerData.getNodeById(data);
+
+        String responseString;
+
+        if (node != null && ControllerData.exists(node)) {
+
+            Response r = node.turnOff();
+
+            if (r.getStatus() == 200) {
+                responseString = "All Components in the Node turned off";
+                return Response.status(200).entity(responseString).build();
+            } else {
+                responseString = "WARNING: Not all Components were turned off! \n";
+                responseString += (String) r.getEntity();
+                return Response.status(500).entity(responseString).build();
+            }
+
+        } else {
+            responseString = "404, Node '" + data + "' not found!";
             return Response.status(404).entity(responseString).build();
-	    }
-	    return exp.pause();
-	}
-	
-	@PUT
-	@Path("/unpause")
-	public Response unpauseExp(String expId) {
-	    //TODO CHECKEN AUF NEUE KNOTEN
-	    //TODO KNOTEN ANMACHNE
-	  return Response.ok().build();
-	}
-	
-	@GET
-	@Path("/reloadConfigs")
-	public Response reloadConfigs () {
-	  boolean bool = Initialize.reloadConfigs();
-	  
-	  if(bool) {
-	    return Response.status(200).entity("Configs were reloaded.").build();
-	  } else {
-	    return Response.status(500).entity("Reload Configs failed!").build();
-	  }
-	  
-	}
-	
+        }
+    }
 	
 	/**
 	 * Turns the given Component from the given Node off.
@@ -389,9 +410,9 @@ public class ControllerPut {
 	 * @return a Response Object with a status code and a possible message body.
 	 */
 	@PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/turnOff/{comp}")
+	@Produces(MediaType.TEXT_PLAIN)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public Response turnCompOff(String data, @PathParam("comp") String comp) {
 
 		NodeObjects node = ControllerData.getNodeById(data);

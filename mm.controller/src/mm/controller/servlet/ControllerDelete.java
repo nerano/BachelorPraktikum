@@ -1,7 +1,6 @@
 package mm.controller.servlet;
 
 import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -13,7 +12,8 @@ import mm.controller.modeling.Experiment;
 
 @Path("/delete")
 public class ControllerDelete {
-	/**
+	
+    /**
 	 * Deletes an experiment.
 	 * <p>
 	 * Deletes an experiment with the given ID, the message body contains the 
@@ -27,26 +27,27 @@ public class ControllerDelete {
 	 * @param id Identifier of the Experiment to delete
 	 * @return a Response Object
 	 */
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
+	@DELETE
 	@Path("/exp/{id}")
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response deleteExperiment(@PathParam("id") String id){
 		
-	    
 	    System.out.println("DELETE EXPERIMENT: " + id);
-	  //TODO Experiment löschen
+	    //TODO Experiment löschen
     
-    //TODO VLans löschen
-    //TODO Strom aus (???)
-    //TODO VMs löschen
-    //TODO exp
+	    //TODO VLans löschen
+	    //TODO Strom aus (???)
+	    //TODO VMs löschen
+	    //TODO exp
 	  
 	    Experiment experiment = ControllerData.getExpById(id);
 	   
 	    Response response;
 		String responseString;
 		if(experiment != null){
+		    // Destroy all data from the experiment
 		    experiment.destroy();
+		    ControllerData.removeExp(experiment);
 		    responseString = "Experiment with ID '" + id + "' was removed";
 			response = Response.status(200).entity(responseString).build();
 			return response;

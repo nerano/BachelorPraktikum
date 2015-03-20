@@ -93,9 +93,6 @@ public class ControllerNetPut {
         
     }
     
-    
-  
-    
     public static Response addPort(VLan vlan) {
         
         String data = gson.toJson(vlan);
@@ -124,6 +121,20 @@ public class ControllerNetPut {
         
     }
     
+    
+   public static Response freeVlan(VLan vlan) {
+      
+       String data = gson.toJson(vlan);
+      
+       Response response = target.path("removeVLan").request().accept(MediaType.TEXT_PLAIN).put(
+               Entity.entity(data, MediaType.TEXT_PLAIN), 
+                                                   Response.class);
+       
+       String responseString = response.readEntity(String.class);
+       
+       return Response.status(response.getStatus()).entity(responseString).build();
+       
+   }
     
     private static URI getBaseUri() {
         return UriBuilder.fromUri("http://localhost:8080/mm.net/rest/put")

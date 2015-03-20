@@ -38,6 +38,8 @@ public class NetPut {
 		VLan vlan = gson.fromJson(incoming, VLan.class);
 		System.out.println(incoming);
 	    Response response;
+	    String responseString = "";
+	    int responseStatus = 200;
 		
 		NetComponent nc;
 		
@@ -51,12 +53,17 @@ public class NetPut {
 		    nc = NetData.getNetComponentById(ncId);
 		    nc.start();
 		    response = nc.setTrunkPort(portList, vlan.getId(), vlan.getName());
+		    
+		    if(response.getStatus() != 200) {
+		        responseStatus = 500;
+		        responseString += (String) response.getEntity();
+		    }
 		    System.out.println("STATUS SETTRUNKPORT: " + response.getStatus());
 		    System.out.println("ENTITY SETTRUNKPORT: " + (String) response.getEntity());
 		    nc.stop();
         }
 		
-		return Response.ok().build();
+		return Response.status(responseStatus).entity(responseString).build();
 	}
 	
 	/**
@@ -170,7 +177,7 @@ public class NetPut {
 	    }   
 	    
 	    
-	    return null;
+	    return Response.ok().build();
 	}
 	
 	@PUT
@@ -207,8 +214,57 @@ public class NetPut {
         }   
         
         
-        return null;
+        return Response.ok().build();
     }
+	
+	@PUT
+    @Path("/removeVLan")
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    public Response removeVlan(String incoming) {
+    
+        VLan vlan = gson.fromJson(incoming, VLan.class);
+        Response response;
+        NetComponent nc;
+        String responseString = "";
+        int responseStatus = 200;
+        System.out.println("REMOVEVLAN INCOMING : " + incoming);
+        
+        HashMap<String, LinkedList<Integer>> map = portListToHashMap(vlan.getPortList());
+        
+        for (Entry<String, LinkedList<Integer>>  entry : map.entrySet()) {
+            
+            String ncId = entry.getKey();
+            LinkedList<Integer> portList = entry.getValue();
+            nc = NetData.getNetComponentById(ncId);
+            nc.start();
+            response = nc.destroyVlan(vlan.getId());
+
+            System.out.println("STATUS REMOVEPORT: " + response.getStatus());
+            System.out.println("ENTITY REMOVEPORT: " + (String) response.getEntity());
+            
+            for (Integer port : portList) {
+                response = nc.getPVID(port);
+                
+                int pvid = Integer.parseInt((String) response.getEntity());
+                
+                if(pvid != 1  && pvid == vlan.getId()) {
+                    nc.setPVID(port, 1);
+                } else {
+                    responseString = "Could not identify PVID";
+                }
+                
+            }
+           
+            if(response.getStatus() != 200) {
+                //TODO errorhandling
+            }
+            nc.stop();
+        }   
+        
+        return Response.ok().build();
+    }
+
 	
 	
 	/**

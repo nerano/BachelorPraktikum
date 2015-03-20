@@ -42,7 +42,7 @@ public class StaticComponent {
         String ncId = strg[0];
         int ncPort = Integer.parseInt(strg[1]);
         int vlanId;
-        
+
         NetComponent nc = NetData.getNetComponentById(ncId);
         
         if(nc == null) {

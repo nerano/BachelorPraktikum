@@ -1,6 +1,7 @@
 package mm.controller.main;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -64,7 +65,7 @@ public class Initialize implements ServletContextListener
        /* Parsing Topology */
        parser.parseXml(TOPOLOGY_PATH);
        UndirectedGraph<String, DefaultEdge> topology = 
-             initTopology(parser.getVertices(), parser.getEdges());
+             initTopology(parser.getVertices(), parser.getEdges(), allNodes);
        String startVertex = parser.getStartVertex();
        
        /* Parsing Configs */
@@ -81,6 +82,11 @@ public class Initialize implements ServletContextListener
        System.out.println(ControllerData.getPath("NetGear2;1"));
        
        System.out.println(ControllerData.getAllNodes());
+       
+       
+       System.out.println(ControllerData.getPath("NetGear2;3", "NetGear2;6"));
+       
+       
     
     }
 
@@ -111,7 +117,8 @@ public class Initialize implements ServletContextListener
     }
     
     private static UndirectedGraph<String, DefaultEdge> initTopology
-                    (LinkedList<String> vertices, LinkedList<String> edges) {
+                    (LinkedList<String> vertices, LinkedList<String> edges,
+                            HashMap<String, NodeObjects> allNodes) {
         System.out.println("Initialising Topology");
         String[] edge;
         UndirectedGraph<String, DefaultEdge> graph = 
@@ -128,7 +135,7 @@ public class Initialize implements ServletContextListener
             graph.addEdge(v1, v2);
         }
         
-        initImplicitEdges(graph, vertices);
+        initImplicitEdges(graph, vertices, allNodes);
         System.out.println("Finished Initialising Topology");
         System.out.println("Topology : " + graph.toString());
         return graph;
@@ -136,7 +143,23 @@ public class Initialize implements ServletContextListener
     }
     
     private static void initImplicitEdges(UndirectedGraph<String, DefaultEdge> graph,
-                            LinkedList<String> vertices) {
+                            LinkedList<String> vertices,
+                            HashMap<String, NodeObjects> allNodes) {
+        
+        Set<String> allVertices = new HashSet<String>();
+        allVertices.addAll(vertices);
+        
+        // Add SwitchPorts from Nodes and wPorts to list of all vertices
+        // TODO SwitchPorts from wPorts
+        for (NodeObjects node : allNodes.values()) {
+            // Eventually add Trunk from Node
+            for (Component component : node.getComponents()) {
+                for (Interface inf : component.getInterfaces()) {
+                    allVertices.add(inf.getSwitchport());
+                    graph.addVertex(inf.getSwitchport());
+                }
+            }
+        }
         
         System.out.println("Initialising implicit edges");
         String[] vertex1Array;
@@ -147,12 +170,12 @@ public class Initialize implements ServletContextListener
         String v2c;
         
         
-        for (String vertex : vertices) {
+        for (String vertex : allVertices) {
             
             vertex1Array = vertex.split(";");
             v1 = vertex1Array[0];
             
-            for (String vertex2 : vertices) {
+            for (String vertex2 : allVertices) {
                 vertex2Array = vertex2.split(";");
                 v2 = vertex2Array[0];
                 if(v1.equals(v2) && !(vertex1Array[1].equals(vertex2Array[1]))) {
@@ -287,12 +310,13 @@ public class Initialize implements ServletContextListener
         nodeList.add(node1);
        // nodeList.add(node2);
         
-        Experiment exp = new Experiment("EXPERIMENT123", nodeList);
+        Experiment exp = new Experiment("EXPERIMENT123", "testUser");
+        
+        exp.setNodeList(nodeList);
         
         VLan vlan1 = new VLan(125);
         VLan vlan2 = new VLan(124);
         
-        exp.setUser("testUser");
         
        exp.addVLan(vlan1);
        exp.addVLan(vlan2);

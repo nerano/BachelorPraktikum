@@ -56,10 +56,11 @@ public class Interface {
         return vlanId;
     }
 
-
+    
     public void setVlanId(int vlanId) {
         this.vlanId = vlanId;
     }
+    
 
     public String toString() {
         

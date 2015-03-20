@@ -11,6 +11,7 @@ import mm.net.main.NetData;
 import mm.net.modeling.NetComponent;
 
 
+
 @Path("/delete")
 public class NetDelete {
 
@@ -46,7 +47,7 @@ public class NetDelete {
             responseString += "Could not free VLan" + id;
             return Response.status(500).entity(responseString).build();
         }
-        
+
         return Response.ok().build();
         
     }

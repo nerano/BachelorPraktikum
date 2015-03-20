@@ -20,11 +20,6 @@ public interface NetComponent {
 
     
 	
-	
-    
-    
-    
-	
 	public Response addPort(int port, int vlanId);
 	public Response addPort(List<Integer> port, int vlanId);
 	

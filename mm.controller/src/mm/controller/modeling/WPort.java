@@ -24,23 +24,11 @@ public class WPort {
     
   }
   
-  public Response setVLan(int vlanId) {
-    
-    //TODO implement setVLan for WPorts
-    
-    return null;
-  }
-  
-  public Response destryVLan(int vlanId) {
-    //TODO destroy the given vlan on this wport
-    return null;
-  }
-  
-  public Response destroyVLan() {
-    //TODO destroy all vlans on this wport
-    return null;
-  }
 
+public String getPort() {
+    return this.port;
+}
+  
 public String getId() {
     return this.id;
 }
