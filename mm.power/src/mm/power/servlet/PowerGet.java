@@ -26,7 +26,7 @@ public class PowerGet {
   @GET
   @Path("{incoming}")
   @Produces({MediaType.TEXT_PLAIN, "json/application"})
-    public Response getById(@PathParam("incoming") String incoming) {
+    public Response getStatus(@PathParam("incoming") String incoming) {
 
 	  LinkedList<PowerSource> returnList = new LinkedList<PowerSource>();
 	  PowerSupply ps;

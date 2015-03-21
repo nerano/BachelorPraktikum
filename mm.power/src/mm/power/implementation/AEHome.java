@@ -25,8 +25,7 @@ import mm.power.modeling.PowerSupply;
  */
 public class AEHome implements PowerSupply {
 
-  private static final int socket = 3; // Three sockets on a Anel Elektronik
-  // Home version
+  private static final int socket = 3; // Three sockets on a Anel Elektronik Home version
   private String id;
   private String host;
   private String type;
@@ -122,7 +121,6 @@ public class AEHome implements PowerSupply {
       responseString = "UnknownHostException in PowerSupply: "
           + this.toString();
       e.printStackTrace();
-
       return Response.status(500).entity(responseString).build();
 
     } catch (MalformedURLException e) {
@@ -325,9 +323,6 @@ public class AEHome implements PowerSupply {
    * @param socket
    *          one from the following values [1/2/3]
    * @return A String with the state of the socket
-   * @throws ProtocolException .
-   * @throws IOException .
-   * @throws TransferNotCompleteException
    * 
    */
   public Response status(int socket) {

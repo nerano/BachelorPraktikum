@@ -84,30 +84,11 @@ public class ControllerPowerGet {
 						buffer.append(";");
 					}
 				}
-			
 			}
-
 		}
-
 		buffer.append("end");
 
 		return URLEncoder.encode(buffer.toString(), "UTF-8");
-	}
-
-	public LinkedList<PowerSource> getAll() {
-
-		String powerString = powerTarget.path("get").request()
-				.get(String.class);
-
-		LinkedList<PowerSource> nodeList; 
-		
-		Type type = new TypeToken<LinkedList<PowerSource>>() {
-		}.getType();
-
-		nodeList = gson.fromJson(powerString, type);
-
-		return nodeList;
-
 	}
 
 	private static URI getBaseUri() {

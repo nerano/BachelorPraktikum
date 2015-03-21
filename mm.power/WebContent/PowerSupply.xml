@@ -6,7 +6,7 @@
 	<type>AeHome</type>
 
 	<id>AeHome2</id>
-	<host>TESTFAILHOST2</host>
+	<host>aehome1</host>
 	<type>AeHome</type>
 
 	<id>AeHome3</id>

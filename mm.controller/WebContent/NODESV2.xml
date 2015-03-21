@@ -63,14 +63,14 @@
 	<component type = "Typ X">
 		<powerSource>PowerSourceX;1</powerSource>
 		<name>X-NAME</name>
-		<port>X-PORT</port>
+		<port>X-PORT;1</port>
 		<role>ROLLE X</role>
 	</component>	
 	
 	<component type = "Typ Z">
 		<powerSource>PowerSourceZ;2</powerSource>
 		<name>Z-NAME</name>
-		<port>Z-PORT</port>
+		<port>Z-PORT;2</port>
 		<role>ROLLE Z</role>
 	</component>
 	
