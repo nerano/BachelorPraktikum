@@ -25,9 +25,9 @@ public class AuthMain {
    * <p>
    * Possible HTTP status codes:
    * 
-   * <li>200: The given pair of user name and password are valid and saved in users.
+   * <li>200: The given pair of user name and password are valid and saved in users.</li>
    * <li>403: False user name or password.
-   *          User name and password does not match the saved information.
+   *          User name and password does not match the saved information. </li>
    * 
    * @param user is the authorized user
    * @param pw is password of this active user
@@ -49,8 +49,8 @@ public class AuthMain {
    * <p>
    * Possible HTTP status codes:
    * 
-   * <li>200: If the user name is registered and the role is send.
-   * <li>403: Status error if the user name does not exist.
+   * <li>200: If the user name is registered and the role is send.</li>
+   * <li>403: Status error if the user name does not exist. </li>
    * 
    * @param user name for which the role is needed.
    * @return Response with status 200 if user name is known and its role as entity,

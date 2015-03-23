@@ -65,8 +65,6 @@ public class XmlParser {
      *            contains a String which locates the XML file to be parsed
      * @return HashMap including the NodeID as key and an Node Object as the
      *         value
-     * @throws SAXException
-     *             or IOException if the committed file can not be found.
      */
     public HashMap<String, NodeObjects> parseXml(String file) {
 

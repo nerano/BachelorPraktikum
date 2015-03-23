@@ -32,7 +32,6 @@ public class XmlParser {
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
     * Changes the name space to true.
     * @param path the path of the XML file.
-    * @throws ParserConfigurationException if the documentBuilder can not be instantiated.
     */
   public XmlParser(String path) {
     this.file = path;

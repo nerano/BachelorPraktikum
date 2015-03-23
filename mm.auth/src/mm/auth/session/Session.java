@@ -40,9 +40,9 @@ public class Session {
    * The hash map provides the possibility for more than one "active" user at the same time. 
    * 
    * Possible HTTP status codes: 
-   * <li>200: A valid sessionId is build and returned.
+   * <li>200: A valid sessionId is build and returned. </li>
    * <li>403: LogIn failed, either the user name or the password does not fit the
-   *          saved values.
+   *          saved values. </li>
    * 
    * @param user name 
    * @param pw password 
@@ -128,9 +128,9 @@ public class Session {
    * 
    * Possible HTTP status codes:
    * 
-   * <li> 200: The given SessionID is still valid.
-   * <li> 401: Unauthorized: Header does not contain a sessionId. 
-   * <li> 408: Request timeout. The given sessionId is expired a new log in is required.
+   * <li> 200: The given SessionID is still valid. </li>
+   * <li> 401: Unauthorized: Header does not contain a sessionId.  </li>
+   * <li> 408: Request timeout. The given sessionId is expired a new log in is required. </li>
    * 
    * @param sessionId holding a 128bit sessionId with the form 
    *     xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, with x = [a-z,0-9].

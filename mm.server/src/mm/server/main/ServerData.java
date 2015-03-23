@@ -12,7 +12,7 @@ public class ServerData {
 
   /**
    * Initialize the HashMap of instances.
-   * @param serverList the given HashMap.
+   * @param pars parser for parsing the HashMap of instances.
    */
   public ServerData(XmlParser pars) {
     PARSER = pars;

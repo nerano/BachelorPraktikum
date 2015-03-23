@@ -32,11 +32,11 @@ public class ControllerPowerPut {
 	 * <p>
 	 * Possible HTTP status codes in the returned Response Object:
 	 * 
-	 * <li> 200: Everything went as expected and the PowerSources are now turned on
+	 * <li> 200: Everything went as expected and the PowerSources are now turned on </li>
 	 * <li> 404: Only one or multiple PowerSources do not exist in the PowerSources under
-	 * the given identifier
+	 * the given identifier </li>
 	 * <li> 500: Some other error occurred(and possible 404s), the response body contains a specified error description
-	 *   A 500 ResponseCode overwrites a 404 code.
+	 *   A 500 ResponseCode overwrites a 404 code. </li>
 	 *   
 	 * @param parameter A String with all PowerSources to turn on, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
 	 * @return an Outbound Response Object with a status code and message body
@@ -69,11 +69,11 @@ public class ControllerPowerPut {
    * Possible HTTP status codes in the returned Response Object:
    * 
    * <li> 200: Everything went as expected and the PowerSources are now turned off.
-   *           The message body/entity is empty.
-   * <li> 404: Only one or multiple PowerSources do not exist in the PowerSources under
+   *           The message body/entity is empty. </li>
+   * <li> 404: Only one or multiple PowerSources do not exist in the PowerSources under </li>
    *           the given identifier. The message body contains a String with further information.
    * <li> 500: Some other error occurred(and possible 404s), the response body contains a specified error description
-   *   A 500 ResponseCode overwrites a 404 code.
+   *   A 500 ResponseCode overwrites a 404 code. </li>
    *   
    * @param parameter A String with all PowerSources to turn off, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
    * @return an Outbound Response Object with a status code and message body

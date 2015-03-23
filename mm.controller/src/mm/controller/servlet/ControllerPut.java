@@ -36,8 +36,8 @@ public class ControllerPut {
 	 * 
 	 * Possible HTTP status codes:
 	 * 
-	 * <li>201: Experiment was successfully created. <li>409: Experiment with
-	 * this ID already exists.
+	 * <li>201: Experiment was successfully created. </li>
+	 * <li>409: Experiment with this ID already exists. </li>
 	 * 
 	 * @param data
 	 *            experiment to create in the controller
@@ -64,6 +64,12 @@ public class ControllerPut {
 		boolean success = true;
 		String successString = "";
 		Response response;
+		
+		if(oldExp.getId().contains("ä") || 
+		   oldExp.getId().contains("ö") || 
+		   oldExp.getId().contains("ü")) {
+		    return Response.status(500).entity("Umlaut not allowed!").build();
+		}
 		
 		System.out.println(data);
 
@@ -245,10 +251,10 @@ public class ControllerPut {
 	 * <p>
 	 * Possible HTTP status codes:
 	 * 
-	 * <li>200: All components of the node were turned on. No further data.
-	 * <li>404: The node was not found. Additional Data in the message body.
+	 * <li>200: All components of the node were turned on. No further data. </li>
+	 * <li>404: The node was not found. Additional Data in the message body. </li>
 	 * <li>500: Overwrites a 404 status code. Something else happened and the
-	 * node could not be turned on. Additional data in the message body.
+	 * node could not be turned on. Additional data in the message body. </li>
 	 * 
 	 * @param data
 	 *            Identifier for the node in the message body.
@@ -295,11 +301,11 @@ public class ControllerPut {
 	 * <p>
 	 * Possible HTTP status codes:
 	 * 
-	 * <li>200: The component was turned on. No additional data provided.
+	 * <li>200: The component was turned on. No additional data provided. </li>
 	 * <li>404: The node or the specified component was not found. Additional
-	 * Data in the message body.
+	 * Data in the message body. </li>
 	 * <li>500: Overwrites a 404 status code. Something else happened and the
-	 * component could not be turned off. Additional data in the message body.
+	 * component could not be turned off. Additional data in the message body. </li>
 	 * 
 	 * @param data
 	 *            Identifier for the node in the message body.

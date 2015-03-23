@@ -139,6 +139,19 @@ public class NetGearGS108Tv2 implements NetComponent {
 
     }
 
+    public Response reset() {
+        
+        String pvidString = ".1.3.6.1.4.1.4526.11.1.3.9.0";
+        
+        Variable variable = new Integer32(1);
+        
+        ResponseEvent responseEvent = set(pvidString, variable);
+        
+        return setHandler(responseEvent, "reset()");
+        
+    }
+    
+    
     /**
      * Sets the egress (outgoing) ports on VLan with the provided VLan ID.
      * 
@@ -166,14 +179,24 @@ public class NetGearGS108Tv2 implements NetComponent {
      */
     public Response setEgressPorts(int vlanId, String varString) {
 
-        if (!(varString.length() != 8 || varString.length() != 2)) {
+        switch (varString.length()) {
+        case 2:
+            if(!varString.matches("[01234567879ABCDEFabcdef]{2}")) {
+                return errorHandler("setEgressPorts","not valid hex");
+            }
+            break;
+
+        case 8:
+            if(!varString.matches("[01]{8}")) {
+                return errorHandler("setEgressPorts","not valid binary");
+            }
+            varString = String.format("%02x", Integer.parseInt(varString, 2));
+            
+            break;
+        default:
             return errorHandler("setEgressPorts",
                     "Invalid format, should be 2 in hexadecimal or 8 in binary,"
                             + " but was '" + varString + "' \n");
-        }
-
-        if (varString.length() == 8) {
-            varString = String.format("%02x", Integer.parseInt(varString, 2));
         }
 
         String egress = ".1.3.6.1.2.1.17.7.1.4.3.1.2." + vlanId;
@@ -213,14 +236,24 @@ public class NetGearGS108Tv2 implements NetComponent {
      */
     public Response setUntaggedPorts(int vlanId, String varString) {
 
-        if (!(varString.length() != 8 || varString.length() != 2)) {
-            return errorHandler("setUntaggedPorts",
-                    "Invalid format, should be 2 in hexadecimal or 8 in binary, "
-                            + "but was '" + varString + "' \n");
-        }
+        switch (varString.length()) {
+        case 2:
+            if(!varString.matches("[01234567879ABCDEFabcdef]{2}")) {
+                return errorHandler("setUntaggedPorts","not valid hex");
+            }
+            break;
 
-        if (varString.length() == 8) {
+        case 8:
+            if(!varString.matches("[01]{8}")) {
+                return errorHandler("setUntaggedPorts","not valid binary");
+            }
             varString = String.format("%02x", Integer.parseInt(varString, 2));
+            
+            break;
+        default:
+            return errorHandler("setEgressPorts",
+                    "Invalid format, should be 2 in hexadecimal or 8 in binary,"
+                            + " but was '" + varString + "' \n");
         }
 
         String egress = ".1.3.6.1.2.1.17.7.1.4.3.1.4." + vlanId;
@@ -233,11 +266,6 @@ public class NetGearGS108Tv2 implements NetComponent {
 
     }
 
-    /**
-     * public Response setVLan(int port, boolean global, int vlanId, String
-     * name) { LinkedList<Integer> list = new LinkedList<Integer>();
-     * list.add(port); return setVLan(list, global, vlanId, name); }
-     **/
 
     public Response setTrunkPort(int port, int vlanId, String name) {
         LinkedList<Integer> list = new LinkedList<Integer>();
@@ -1033,7 +1061,7 @@ public class NetGearGS108Tv2 implements NetComponent {
         return trunks;
     }
 
-    public String toString(int vlanId) {
+   /**  public String toString(int vlanId) {
 
         String name = (String) getStaticName(vlanId).getEntity();
         String egress = (String) getEgressPorts(vlanId).getEntity();
@@ -1045,7 +1073,7 @@ public class NetGearGS108Tv2 implements NetComponent {
         sb.append("Egress : '" + egress + "' \n");
         sb.append("Untagged : '" + untagged + "' \n");
         return sb.toString();
-    }
+    } **/
 
     public String toString() {
 
