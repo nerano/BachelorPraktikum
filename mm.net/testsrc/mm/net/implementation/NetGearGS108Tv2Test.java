@@ -36,13 +36,13 @@ public class NetGearGS108Tv2Test {
     }
 
     
-    @Test
+   /** @Test
     public void testSetTrunkPort(int port, int vlanId, String name) {
         
         
         
         
-    }
+    } **/
     
     
     
@@ -405,6 +405,11 @@ public class NetGearGS108Tv2Test {
     @Test
     public void reset() {
 
+        
+        NetGearGS108Tv2 ng = new  NetGearGS108Tv2("netgear3", "netgeargs2", null);
+        ng.start();
+        System.out.println(ng.isFree(100));
+        ng.stop();
         // Response response = nc.getEgressPorts(0);
 
         // System.out.println("STATUS: " + response.getStatus());

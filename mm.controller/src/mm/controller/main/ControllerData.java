@@ -38,20 +38,37 @@ public class ControllerData {
 	               UndirectedGraph<String, DefaultEdge> topology, String startVertex,
 	               Set<Config> configSet,
 	               Set<WPort> portSet) {
-	ALL_NODES = allNodes;
+	//ALL_NODES = allNodes;
 	
 	PORT_TO_INTERFACE = portToInterface;
 	
-	TOPOLOGY = topology;
+	///TOPOLOGY = topology;
 	
-	ALL_CONFIGS = configSet;
+	//ALL_CONFIGS = configSet;
 	
-	ALL_WPORTS = portSet;
+	//ALL_WPORTS = portSet;
 	
-	BFSP = new BellmanFordShortestPath<String, DefaultEdge>(TOPOLOGY, startVertex);
+	//BFSP = new BellmanFordShortestPath<String, DefaultEdge>(TOPOLOGY, startVertex);
+	
+	
+	setwPorts(portSet);
+	setConfigs(configSet);
+	setAllNodes(allNodes);
+	setTopology(topology, startVertex);
+	
 	
 	}
 	
+	protected static void setTopology(UndirectedGraph<String, DefaultEdge> topology, String startVertex) {
+	    
+	    TOPOLOGY = topology;
+	    
+	    BFSP = new BellmanFordShortestPath<String, DefaultEdge>(TOPOLOGY, startVertex);
+	}
+	
+	protected static void setwPorts(Set<WPort> portSet) {
+        ALL_WPORTS = portSet;
+    }
 	
 	public static Interface getInterfaceByPort(String port) {
 	    return PORT_TO_INTERFACE.get(port);
@@ -116,6 +133,9 @@ public class ControllerData {
         }
 	    
 	}
+	
+	
+	
 	
 	protected static void setConfigs(Set<Config> configs) {
 	  

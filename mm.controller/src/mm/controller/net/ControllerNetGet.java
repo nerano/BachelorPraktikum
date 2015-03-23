@@ -18,6 +18,7 @@ import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.VLan;
 
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.internal.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,7 +33,6 @@ public class ControllerNetGet {
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	/* -- PUBLIC METHODS -- */
-	
 	
 	/**
 	 * 
@@ -50,25 +50,25 @@ public class ControllerNetGet {
 	    return gson.fromJson(response.readEntity(String.class), type);
 	}
 	
-
-
-
-	public LinkedList<VLan> getVLanFromId(int id) {
-
-		LinkedList<VLan> returnList;
-		String vlanString, parameter;
-
-		parameter = Integer.toString(id) + ";end";
-
-		vlanString = target.path(parameter).request().get(String.class);
-
-		Type type = new TypeToken<LinkedList<VLan>>() {}.getType();
-
-		returnList = gson.fromJson(vlanString, type);
-
-		return returnList;
+	public static String isConsistent(VLan vlan) {
+	    
+	    String encoded = Base64.encodeAsString(gson.toJson(vlan));
+	    
+	    Response response = target.path("consistency").path(encoded)
+	            
+	            .request().get(Response.class);
+	    
+	    return response.readEntity(String.class);
 	}
-
+	
+	public static String staticConsistency(String net) {
+	    
+	    Response response = target.path("staticConsistency").path(net)
+                
+                .request().get(Response.class);
+        
+        return response.readEntity(String.class);
+	}
 	
 	/**
 	 * Returns a new and free global VLan from the NetService.
@@ -96,7 +96,6 @@ public class ControllerNetGet {
 	
 	/* -- PRIVATE METHODS -- */
 	
-	
 	private static String turnNodeToPortString(NodeObjects node) {
 	    
 	    StringBuffer sb = new StringBuffer();
@@ -122,10 +121,6 @@ public class ControllerNetGet {
         return null;
 	}
 	
-	
-	
-	
-
 	private static URI getBaseUri() {
 		return UriBuilder.fromUri("http://localhost:8080/mm.net/rest/get")
 				.build();

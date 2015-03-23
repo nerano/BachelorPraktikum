@@ -30,7 +30,6 @@ public class XmlParser {
   /**
     * Constructor, creates a new instance of DocumentBuilderFactory and DocuemtnBuilder.
     * Changes the Namespace- and XIncludeawareness to true.
-    * @throws ParserConfigurationException if the documentBuilder can not be instantiated.
     */
   public XmlParser() {
     
@@ -53,7 +52,6 @@ public class XmlParser {
    * 
    * @param file contains a String which locates the XML file to be parsed
    * @return true if the file was parsed, else false
-   * @throws SAXException or IOException if the committed file can not be found.
    */
   public boolean parseXml(String file) {
     

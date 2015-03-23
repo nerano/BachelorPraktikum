@@ -216,5 +216,7 @@ public interface NetComponent {
      *  with possible errorstring
 	 */
     public Response destroyVlan(int vlanId);
+    
+    public boolean isFree(int vlanId);
 
 }

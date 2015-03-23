@@ -122,6 +122,63 @@ public class NetData {
     return nc;
 
   }
+  
+  
+  public static VLan getStaticVlan(String net) {
+      
+      switch (net) {
+    case "power":
+        return getPowerVlan();
+    case "management":
+        return getManagementVlan();
+    default:
+        return null;
+    }
+      
+      
+  }
+  
+  private static VLan getPowerVlan() {
+      VLan vlan = new VLan(POWER_VLAN_ID);
+      LinkedList<String> portList = new LinkedList<String>();
+      
+      for (NetComponent nc : new LinkedList<NetComponent> (ALL_NETCOMPONENT.values())) {
+        
+          for(Integer port : nc.getTrunks()) {
+              portList.add(nc.getId() + ";" + port);
+          }
+    }
+      
+      
+      for (StaticComponent sc : STATIC_COMPONENTS) {
+        if(sc.getType().equals("power")) {
+            portList.add(sc.getPort());
+        }
+    }
+      vlan.addPorts(portList);
+      return vlan;
+  }
+  
+  private static VLan getManagementVlan() {
+      VLan vlan = new VLan(MANAGE_VLAN_ID);
+      LinkedList<String> portList = new LinkedList<String>();
+      
+      for (NetComponent nc : new LinkedList<NetComponent> (ALL_NETCOMPONENT.values())) {
+        
+          for(Integer port : nc.getTrunks()) {
+              portList.add(nc.getId() + ";" + port);
+          }
+    }
+      
+      
+      for (StaticComponent sc : STATIC_COMPONENTS) {
+        if(sc.getType().equals("management")) {
+            portList.add(sc.getPort());
+        }
+    }
+      vlan.addPorts(portList);
+      return vlan;
+  }
 
   public static int getGLOBAL_VLAN_RANGE_MAX() {
     return GLOBAL_VLAN_RANGE_MAX;

@@ -14,7 +14,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -24,6 +23,7 @@ import mm.controller.main.ControllerData;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.PowerSource;
+import mm.controller.net.ControllerNetGet;
 /**
  * Class for all GET methods in the controller servlet
  * 
@@ -31,7 +31,6 @@ import mm.controller.modeling.PowerSource;
 @Path("/get")
 @Singleton
 public class ControllerGet {
-    
     
     @GET
     @Path("/test")
@@ -48,7 +47,7 @@ public class ControllerGet {
     }
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+	
 	/**
 	 * Returns all nodes.
 	 * <p>
@@ -128,64 +127,6 @@ public class ControllerGet {
     }
     
 	/**
-	 * 
-	 * @param id
-	 * @return
-	 * @throws CloneNotSupportedException
-	 * @throws UnsupportedEncodingException
-	 */
-	/**@GET
-	@Produces({ "json/application", "text/plain" })
-	@Path("/activeExp/{id}")
-	public Response getActiveNodesByExpId(@PathParam("id") String id)
-			throws CloneNotSupportedException, UnsupportedEncodingException {
-		
-		String responseString;
-		Response response;
-		
-		
-
-		if (!(ControllerData.existsExp(id))) {
-			responseString = "404, Experiment not found";
-			response = Response.status(404).entity(responseString).build();
-			return response;
-		}
-		
-		Experiment exp = ControllerData.getExpById(id);
-
-		LinkedList<PowerSource> statusList = powerGet.status(exp);
-		
-		LinkedList<VLan> vlanList = netGet.getVLanFromExperiment(exp);
-
-		// VLan vlan = netGet.getVlan(id);
-
-		exp.updateNodeStatusPower(statusList);
-		exp.updateNodeStatusVLan(vlanList);
-		
-		System.out.println(gson.toJson(statusList));
-		System.out.println(gson.toJson(vlanList));
-		
-		Experiment returnExp = exp.clone();
-		LinkedList<NodeObjects> list = returnExp.getList();
-		
-		for (Iterator<NodeObjects> nodeObject = list.iterator(); nodeObject.hasNext();) {
-
-			NodeObjects object = nodeObject.next();
-
-			System.out.println(returnExp.isNodeActive(object));
-			if (!(returnExp.isNodeActive(object))) {
-				
-				nodeObject.remove();
-			}
-
-		} 
-		
-		responseString = gson.toJson(returnExp);
-		response = Response.status(200).entity(responseString).build();
-		return response;
-	}**/
-
-	/**
 	 * Returns an experiment.
 	 * <p>
 	 * Returns an experiment with the given ID in JSON format, the ID is passed through the URI
@@ -233,11 +174,40 @@ public class ControllerGet {
 	}
 	
 	/**
+	 * 
+	 * @param net
+	 * @return
+	 */
+	@GET
+    @Produces({ "json/application", "text/plain" })
+    @Path("/staticConsistency/{net}")
+	public Response getStaticConsistency(@PathParam("net") String net) {
+	    return Response.ok( ControllerNetGet.staticConsistency(net)).build();
+	}
+	
+	/**
+     * 
+     * @param net
+     * @return
+     */
+    @GET
+    @Produces({ "json/application", "text/plain" })
+    @Path("/expConsistency/{id}")
+    public Response getExpConsistency(@PathParam("id") String id) {
+        
+        Experiment exp = ControllerData.getExpById(id);
+        String consistency = exp.isConsistent();
+        
+        return Response.ok(consistency).build();
+    }
+	
+	
+	/**
 	 * Returns a list of all experiments.
 	 * <p>
 	 * Returns a list of all currently existing experiments in JSON format. 
 	 * No input Parameters are required.
-	 * URI: baseuri:port/mm.controller/rest/get/exp
+	 * URI: <code>baseuri:port/mm.controller/rest/get/exp</code>
 	 * <p>
 	 * Possible HTTP status codes:
 	 * <li> 200: Header contains valid sessionId.
@@ -252,6 +222,10 @@ public class ControllerGet {
 		/**
 		 * test case if the role management works.
 		 **/
+	 
+	  System.out.println(sessionId);
+	  
+	    
 	  WebAuthTest auth = new WebAuthTest();
 	  Response response = auth.checkSession(sessionId);
 	  if (sessionId != null) {
@@ -297,4 +271,8 @@ public class ControllerGet {
 	  }
 	  return Response.ok(responseString).build();
 	}
+
+	
+
+
 }

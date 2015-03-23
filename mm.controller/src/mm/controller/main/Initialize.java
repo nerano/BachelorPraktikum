@@ -52,7 +52,6 @@ public class Initialize implements ServletContextListener
        
        /* Parsing all Nodes */
        parser.parseXml(NODE_PATH);
-       //ControllerData.setAllNodes(parser.getNodeObjects());
        HashMap<String, NodeObjects> allNodes = parser.getNodeObjects2();
        
        /* Parsing all wPorts */
@@ -115,6 +114,53 @@ public class Initialize implements ServletContextListener
       }
       return true;
     }
+    
+    public static boolean reloadAllNodes() {
+       try{
+        XmlParser parser = new XmlParser();
+        parser.parseXml(NODE_PATH);
+        ControllerData.setAllNodes(parser.getNodeObjects2()); 
+       } catch(Exception e) {
+           e.printStackTrace();
+           return false;
+       }
+        return true;
+    }
+    
+    public static boolean reloadTopology() {
+        
+        try{
+         XmlParser parser = new XmlParser();
+         
+         parser.parseXml(NODE_PATH);
+         HashMap<String, NodeObjects> allNodes = parser.getNodeObjects2();
+         
+         parser.parseXml(TOPOLOGY_PATH);
+         
+         UndirectedGraph<String, DefaultEdge> topology = 
+         initTopology(parser.getVertices(), parser.getEdges(), allNodes);
+         String startVertex = parser.getStartVertex();
+
+           ControllerData.setTopology(topology, startVertex);
+           
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+         return true;
+     }
+    
+    public static boolean reloadAllwPorts() {
+        try{
+         XmlParser parser = new XmlParser();
+         parser.parseXml(WPORT_PATH);
+         ControllerData.setwPorts(parser.parseWports());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+         return true;
+     }
     
     private static UndirectedGraph<String, DefaultEdge> initTopology
                     (LinkedList<String> vertices, LinkedList<String> edges,

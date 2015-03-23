@@ -802,6 +802,35 @@ public class NetGearGS108Tv2 implements NetComponent {
 
     }
 
+    public boolean isFree(int vlanId) {
+        
+        String staticOID = ".1.3.6.1.2.1.17.7.1.4.3.1.1." + vlanId;
+        
+        ResponseEvent event = get(staticOID);
+        
+        System.out.println(event.toString());
+        System.out.println(event.getResponse());
+        
+        
+        if(event != null) {
+            String varString = event.getResponse().get(0).getVariable().toString();
+       
+            System.out.println(event.getResponse());
+            
+            System.out.println(varString);
+            
+            if(varString.equals("noSuchInstance")) {
+                return true;
+            }
+            
+        }
+        
+        return false;
+        
+    }
+    
+    
+    
     /**
      * Returns the name of a given VLan ID.
      *

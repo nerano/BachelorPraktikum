@@ -238,9 +238,44 @@ public class ControllerPut {
       if(bool) {
         return Response.status(200).entity("Configs were reloaded.").build();
       } else {
-        return Response.status(500).entity("Reload Configs failed!").build();
+        return Response.status(500).entity("Reloading Configs failed!").build();
       }
-      
+    }
+    
+    @GET
+    @Path("/reloadTopology")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response reloadTopology() {
+      boolean bool = Initialize.reloadTopology();
+      if(bool) {
+        return Response.status(200).entity("Topology was reloaded.").build();
+      } else {
+        return Response.status(500).entity("Reloading Topology failed!").build();
+      }
+    }
+    
+    @GET
+    @Path("/reloadNodes")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response reloadNodes() {
+      boolean bool = Initialize.reloadAllNodes();
+      if(bool) {
+        return Response.status(200).entity("Nodes were reloaded.").build();
+      } else {
+        return Response.status(500).entity("Reloading Nodes failed!").build();
+      }
+    }
+    
+    @GET
+    @Path("/reloadwPorts")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response reloadwPorts() {
+      boolean bool = Initialize.reloadAllwPorts();
+      if(bool) {
+        return Response.status(200).entity("wPorts were reloaded.").build();
+      } else {
+        return Response.status(500).entity("Reloading wPorts failed!").build();
+      }
     }
     
 	/**

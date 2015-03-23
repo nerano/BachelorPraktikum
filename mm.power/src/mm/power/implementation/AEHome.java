@@ -149,8 +149,6 @@ public class AEHome implements PowerSupply {
    * @param socket
    *          A number from the Range of {1, 2 , 3}
    * @return boolean true if the toggle was successful and false if not
-   * @throws ProtocolException .
-   * @throws IOException .
    */
   public Response toggle(int socket) {
 
@@ -219,8 +217,6 @@ public class AEHome implements PowerSupply {
    * @param socket
    *          The socket to turn off, one from the following values[1/2/3]
    * @return true if the socket is on afterwards, false if not.
-   * @throws IOException .
-   * @throws TransferNotCompleteException
    * 
    */
   public Response turnOff(int socket) {
@@ -266,8 +262,6 @@ public class AEHome implements PowerSupply {
    * @param socket
    *          The socket to turn on, one from the following values[1/2/3]
    * @return true if the socket is on afterwards, false if not.
-   * @throws IOException .
-   * @throws TransferNotCompleteException
    * 
    */
   public Response turnOn(int socket) {
@@ -309,9 +303,6 @@ public class AEHome implements PowerSupply {
    * "[0/1][0/1][0/1]", where 0 is off and 1 is on.
    * 
    * @return A String with all states from the sockets
-   * @throws ProtocolException .
-   * @throws IOException .
-   * @throws TransferNotCompleteException .
    */
   public Response status() {
     return getStates();
@@ -356,67 +347,6 @@ public class AEHome implements PowerSupply {
     }
 
   }
-
-  /**
-   * If this method is called the given socket is turned on. If the socket is
-   * already turned on the state does not change. If the socket does not exist
-   * on the hardware false is returned. This method uses a UDP Connection
-   * 
-   * @param socket
-   *          The socket to turn on, one from the following values[1/2/3]
-   * @return True if socket is turned on or was already turned on. False if the
-   *         socket does not exist
-   * @throws IOException .
-   */
-  /**
-   * public boolean turnOnUdp(int socket) throws IOException,
-   * SocketDoesNotExistException {
-   * 
-   * if (socket > AEHome.socket) { throw new SocketDoesNotExistException(
-   * "Socketnumber exceeds existing sockets on: " + this.id); }
-   * 
-   * String sentence = "Sw_on" + socket + TEST_USER; byte[] sendData =
-   * sentence.getBytes();
-   * 
-   * DatagramPacket packet = new DatagramPacket(sendData, sendData.length, ip,
-   * port);
-   * 
-   * 
-   * udpSocket.send(packet);
-   * 
-   * return true; }
-   **/
-
-  /**
-   * If this method is called the given socket is turned off. If the socket is
-   * already turned off the state does not change. If the socket does not exist
-   * on the hardware false is returned. This method uses a UDP connection.
-   *
-   * @param socket
-   *          The socket to turn off, one from the following values[1/2/3]
-   * @return True if socket is turned off or was already turned off. False if
-   *         the socket does not exist
-   * @throws IOException .
-   */
-  /**
-   * public boolean turnOffUdp(int socket) throws IOException,
-   * SocketDoesNotExistException {
-   * 
-   * if (socket > AEHome.socket) { throw new SocketDoesNotExistException(
-   * "Socketnumber exceeds existing sockets on : " + this.id); }
-   * 
-   * String sentence = "Sw_off" + socket + TEST_USER; byte[] sendData =
-   * sentence.getBytes();
-   * 
-   * DatagramPacket packet = new DatagramPacket(sendData, sendData.length, ip,
-   * port);
-   * 
-   * udpSocket.send(packet);
-   * 
-   * return true;
-   * 
-   * }
-   **/
 
   public String getId() {
     return this.id;

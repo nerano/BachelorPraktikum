@@ -26,7 +26,8 @@ public class Experiment implements Cloneable {
 	 * List of VLans in the Experiment
 	 */
 	private LinkedList<VLan> vlans = new LinkedList<VLan>();
-	private LinkedList<VLan> globalVLans = new LinkedList<VLan>();
+	//private LinkedList<VLan> globalVLans = new LinkedList<VLan>();
+	private VLan globalVLans;
 	private LinkedList<WPort> wports;
 	private HashMap<String, Config> nodeConfigs = new HashMap<String, Config>();
 	//TODO VMs
@@ -161,30 +162,7 @@ public class Experiment implements Cloneable {
 		return node;
 	}
 
-	public boolean isNodeActive(NodeObjects node) {
-	  //TODO UMSCHREIBEN NODEACTIVE BENUTZT DAS GLEICHE WIE OB NODE FREI IST 
-		LinkedList<Component> compList = node.getComponents();
-
-		for (Component component : compList) {
-			if (isVLanIdInExperiment(component.getvLanId())) {
-				return true;
-			}
-		}
-		
-		
-		return false;
-
-	}
-
-	private boolean isVLanIdInExperiment(int id) {
-		
-		for (VLan vlan : vlans) {
-			if (vlan.getId() == id) {
-				return true;
-			}
-		}
-		return false;
-	}
+	
 	
 	/**
 	 * Deletes all the data in the network from this experiment. 
@@ -232,7 +210,8 @@ public class Experiment implements Cloneable {
 	       VLan vlan = gson.fromJson((String) response.getEntity(), VLan.class);
 	       vlan.setName("Global " + this.id + "VLan");
 	       vlans.add(vlan);
-	       globalVLans.add(vlan);
+	       //globalVLans.add(vlan);
+	       globalVLans = vlan;
 	       System.out.println("Added VLan " + vlan.getId() + " to experiment " + this.id);
 	       return Response.ok().build(); 
 	    } else {
@@ -246,15 +225,15 @@ public class Experiment implements Cloneable {
 	 */
 	public Response deployAllTrunks() {
 	    
-	    VLan vlan = null;
+	    VLan vlan = globalVLans;
 	    
 	    //TODO must be changed accordingly
-	    for (VLan vLan: globalVLans) {
+	    /** for (VLan vLan: globalVLans) {
 	        if(vLan.isGlobal()) {
 	            vlan = vLan;
 	            break;
 	        }
-        }
+        } **/
 	    
 	    LinkedList<String> path;
 	    
@@ -542,7 +521,8 @@ public class Experiment implements Cloneable {
 	                    portList.add(port);
                     }
 	                
-	                vlan = globalVLans.getFirst(); //TODO probably changed later on
+	                //vlan = globalVLans.getFirst(); //TODO probably changed later on
+	                vlan = globalVLans;
 	                vlan.addPorts(portList);
 	                
 	                response =  ControllerNetPut.addPort(portList, vlan.getId());
@@ -642,4 +622,20 @@ public class Experiment implements Cloneable {
 	    this.setStatus("running");
 	    return Response.status(status).entity(responseString).build();
 	}
+	
+	public String isConsistent() {
+	    
+	    switch (status) {
+        case "running":
+            return null;
+        case "paused":
+            return null;
+        case "stopped":
+            return ControllerNetGet.isConsistent(globalVLans);
+        default:
+            return null;
+	    }
+	}
+	
+	
 }
