@@ -23,14 +23,16 @@ public class SessionData {
   }
   
   /**
-   * Constructor setting sessionId and user role.
+   * Constructor setting sessionId user role and user name.
    * 
    * @param sessionId as initialization for these object.
    * @param role of the user using the sessionId
+   * @param user name.
    */
-  public SessionData(String sessionId, String role) {
+  public SessionData(String sessionId, String role, String user) {
     this.sessionId = sessionId;
     this.role = role;
+    this.user = user;
   }
   
   public Date getExpire() {

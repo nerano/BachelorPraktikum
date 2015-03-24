@@ -61,7 +61,8 @@ public class Session {
             new SessionData(this.expire, user, response.getEntity().toString()));
       }
       return Response.ok(gson.toJson(
-          new SessionData(this.sessionId.toString(), response.getEntity().toString()))).build();
+          new SessionData(this.sessionId.toString(), 
+              response.getEntity().toString(), user))).build();
     }
     return Response.status(403).entity("LogIn failed!").build();
   }
@@ -157,19 +158,33 @@ public class Session {
    * Returns the user role associated to the given sessionId.
    * The sessionId is located in a Header.
    * 
+   * Possible HTTP status codes:
+   * 
+   * <li> 200: A sessionId exists and the user role is returned.
+   * <li> 401: Unauthorized: Header does not contain a sessionId.
+   * 
    * @param sessionId to which the user role is associated.
    * @return Response with status 200 and the user role as entity.
    */
   @GET
   @Path("getRole")
   public Response getRole(@HeaderParam("sessionId") String sessionId) {
-    UUID temp = UUID.fromString(sessionId);
-    return Response.ok(this.ids.get(temp).getRole()).build();
+    if (sessionId != null) {
+      UUID temp = UUID.fromString(sessionId);
+      return Response.ok(this.ids.get(temp).getRole()).build();
+    } else {
+      return Response.status(401).entity("Header does not contain a sessionId!").build();
+    }
   }
   
   /**
    * Returns the user name associated to the given sessionId.
    * The sessionId is located in a Header.
+   * 
+   * Possible HTTP status codes:
+   * 
+   * <li> 200: A sessionId exists and the user name is returned.
+   * <li> 401: Unauthorized: Header does not contain a sessionId.
    * 
    * @param sessionId to which the user name is associated.
    * @return Response with status 200 and the user user as entity.
@@ -177,7 +192,15 @@ public class Session {
   @GET
   @Path("getUser")
   public Response getUser(@HeaderParam("sessionId") String sessionId) {
-    UUID temp = UUID.fromString(sessionId);
-    return Response.ok(this.ids.get(temp).getUser()).build();
+    if (sessionId != null) {
+      UUID temp = UUID.fromString(sessionId);
+      return Response.ok(this.ids.get(temp).getUser()).build();
+    } else {
+      return Response.status(401).entity("Header does not contain a sessionId!").build();
+    }
+  }
+  
+  public HashMap<UUID, SessionData> getIdMap() {
+    return this.ids;
   }
 }
