@@ -77,7 +77,9 @@ public class Experiment implements Cloneable {
 		this.id = user + name;
 	}
 	
-	
+	public String getName() {
+	    return this.name;
+	}
 
 	public LinkedList<PowerSource> status() throws UnsupportedEncodingException {
 	    
@@ -208,7 +210,7 @@ public class Experiment implements Cloneable {
 	    
 	    if(response.getStatus() == 200) {
 	       VLan vlan = gson.fromJson((String) response.getEntity(), VLan.class);
-	       vlan.setName("Global " + this.id + "VLan");
+	       vlan.setName(this.id);
 	       vlans.add(vlan);
 	       //globalVLans.add(vlan);
 	       globalVLans = vlan;
@@ -539,7 +541,7 @@ public class Experiment implements Cloneable {
 	                
 	                if(response.getStatus() == 200) {
 	                   vlan2 = gson.fromJson((String) response.getEntity(), VLan.class);
-	                   vlan2.setName("Local " + this.id + "VLan");
+	                   vlan2.setName(this.id);
 	                   System.out.println("Added local VLan: Local " + this.id + "VLan");
 	                   vlan2.setPortList(new HashSet<String>());
 	                   
@@ -625,11 +627,16 @@ public class Experiment implements Cloneable {
 	
 	public String isConsistent() {
 	    
+	    String returnString; 
 	    switch (status) {
         case "running":
-            return null;
+            returnString = ControllerNetGet.isConsistent(globalVLans);
+           //TODO check local vlans 
+            return returnString;
         case "paused":
-            return null;
+            returnString = ControllerNetGet.isConsistent(globalVLans);
+            //TODO check local vlans 
+            return returnString;
         case "stopped":
             return ControllerNetGet.isConsistent(globalVLans);
         default:

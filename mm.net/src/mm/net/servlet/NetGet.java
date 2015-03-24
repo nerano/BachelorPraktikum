@@ -132,9 +132,13 @@ public class NetGet {
         
         String responseString = "Consistency Check on the " + net + " Net\n";
         
-        responseString += NetData.getStaticVlan(net).isConsistent();
-        
-        return Response.ok(responseString).build();
+        VLan vlan = NetData.getStaticVlan(net);
+        if(vlan != null) {
+            responseString += NetData.getStaticVlan(net).isConsistent();
+            return Response.ok(responseString).build();
+        } else {
+            return Response.status(404).entity("Static Net " + net + " not found!").build();
+        }
     }
     
     @GET

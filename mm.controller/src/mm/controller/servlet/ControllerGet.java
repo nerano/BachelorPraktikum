@@ -196,6 +196,11 @@ public class ControllerGet {
     public Response getExpConsistency(@PathParam("id") String id) {
         
         Experiment exp = ControllerData.getExpById(id);
+        
+        if(exp == null) {
+            return Response.status(404).entity("404, Experiment not found!").build();
+        }
+        
         String consistency = exp.isConsistent();
         
         return Response.ok(consistency).build();

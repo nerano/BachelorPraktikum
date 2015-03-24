@@ -58,7 +58,7 @@ public class ControllerPut {
 	  Experiment oldExp = gson.fromJson(data, Experiment.class);
 	    Config config;
 	    String responseString;
-		String id = oldExp.getId();
+		String name = oldExp.getName();
 		String user = oldExp.getUser();
 		String nodeId;
 		boolean success = true;
@@ -73,13 +73,13 @@ public class ControllerPut {
 		
 		System.out.println(data);
 
-		if (data != null && ControllerData.existsExp(user+id)) {
+		if (data != null && ControllerData.existsExp(user+name)) {
 			responseString = "Experiment with this ID already exists!";
 			return Response.status(409).entity(responseString).build();
 		} else {
 		    
 		    // Create new Experiment with full Data
-		    Experiment experiment = new Experiment(id, user);
+		    Experiment experiment = new Experiment(name, user);
 	        experiment.setStatus("stopped");
 	        
 	        LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
@@ -134,7 +134,7 @@ public class ControllerPut {
             }
 	        
 	        ControllerData.addExp(experiment);
-			responseString = "New Experiment posted/created with ID : " + id;
+			responseString = "New Experiment posted/created with ID : " + name;
 			System.out.println(responseString);
 			return Response.status(201).entity(responseString).build();
 		}
