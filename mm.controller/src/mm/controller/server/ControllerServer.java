@@ -1,5 +1,7 @@
 package mm.controller.server;
 
+import java.net.URI;
+
 import org.glassfish.jersey.client.ClientConfig;
 
 import javax.ws.rs.Consumes;
@@ -17,6 +19,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * This class will by called by the user via a WebInterface and calls the
@@ -28,7 +31,6 @@ import javax.ws.rs.core.Response;
 @Path("server")
 public class ControllerServer {
 
-  private static final String url = "http://localhost:8080/mm.server/rest/server";
   private ClientConfig config;
   private Client client;
   private WebTarget target;
@@ -42,19 +44,23 @@ public class ControllerServer {
   /**
    * Returns a list of all instances on the server.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @return the list of all instances on the ganeti server.
    */
   @GET
   @Path("{vmserver}")
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstances(@PathParam("vmserver") String vmserver) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     return target.path(vmserver).request().get(String.class);
   }
 
   /**
    * Returns a list of all attributes of a given instance.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param instance
    *          the name of the instance which attributes will be shown.
    * @return the list of all attributes of an instances.
@@ -64,13 +70,15 @@ public class ControllerServer {
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstanceInfo(@PathParam("vmserver") String vmserver,
       @PathParam("instance") String instance) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     return target.path(vmserver).path(instance).request().get(String.class);
   }
 
   /**
    * Returns the status of a given parameter of an instances on the server.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param instance
    *          name of the instance which parameter will be shown.
    * @param param
@@ -82,7 +90,7 @@ public class ControllerServer {
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstanceInfoParam(@PathParam("vmserver") String vmserver,
       @PathParam("instance") String instance, @PathParam("param") String param) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     return target.path(vmserver).path(instance).path(param).request()
         .get(String.class);
   }
@@ -90,6 +98,8 @@ public class ControllerServer {
   /**
    * Creates an instance with the given parameters.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param params
    *          a String of a JSONObject with all requested settings of the new
    *          instance.
@@ -99,7 +109,7 @@ public class ControllerServer {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createInstance(@PathParam("vmserver") String vmserver,
       String params) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     builder = target.path(vmserver).request()
         .header("Content-Type", "application/json");
     return builder.accept("application/json").post(Entity.json(params));
@@ -108,6 +118,8 @@ public class ControllerServer {
   /**
    * Deletes a given Instance from the server.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param instance
    *          name of the instance which should be deleted.
    */
@@ -115,13 +127,15 @@ public class ControllerServer {
   @Path("{vmserver}/{instance}")
   public Response deleteInstance(@PathParam("vmserver") String vmserver,
       @PathParam("instance") String instance) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     return target.path(vmserver).path(instance).request().delete();
   }
 
   /**
    * Reboots a given instance.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param instance
    *          name of the VM which should reboot.
    * @param type
@@ -133,7 +147,7 @@ public class ControllerServer {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response rebootInstance(@PathParam("vmserver") String vmserver,
       @PathParam("instance") String instance, String type) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     builder = target.path(vmserver).path(instance).request()
         .header("Content-Type", "application/json");
     return builder.accept("application/json").post(Entity.json(type));
@@ -142,6 +156,8 @@ public class ControllerServer {
   /**
    * Starts a given instance.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param instance
    *          name of the instance that will be started.
    * @param type
@@ -152,7 +168,7 @@ public class ControllerServer {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response startInstance(@PathParam("vmserver") String vmserver,
       @PathParam("instance") String instance, String type) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     builder = target.path(vmserver).path(instance).path("start").request()
         .header("Content-Type", "application/json");
     return builder.put(Entity.json(type));
@@ -161,6 +177,8 @@ public class ControllerServer {
   /**
    * Stops a given instance.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param instance
    *          name of the VM which should be stopped.
    * @param type
@@ -171,7 +189,7 @@ public class ControllerServer {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response stopInstance(@PathParam("vmserver") String vmserver,
       @PathParam("instance") String instance, String type) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     builder = target.path(vmserver).path(instance).path("stop").request()
         .header("Content-Type", "application/json");
     return builder.accept("application/json").put(Entity.json(type));
@@ -180,6 +198,8 @@ public class ControllerServer {
   /**
    * Renames a given instance with a new name.
    * 
+   * @param vmserver
+   *          the name of the vm server
    * @param instance
    *          name of the VM which should be renamed.
    * @param newName
@@ -190,7 +210,7 @@ public class ControllerServer {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response renameInstance(@PathParam("vmserver") String vmserver,
       @PathParam("instance") String instance, String newName) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     builder = target.path(vmserver).path(instance).path("rename").request()
         .header("Content-Type", "application/json");
     return builder.accept("application/json").put(Entity.json(newName));
@@ -205,7 +225,7 @@ public class ControllerServer {
   @Path("template")
   @Produces({ MediaType.APPLICATION_JSON })
   public String getTemplate() {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     return target.path("template").request().get(String.class);
   }
 
@@ -220,9 +240,14 @@ public class ControllerServer {
   @PUT
   @Path("template")
   public Response updateTemplate() {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     builder = target.path("template").request()
         .header("Content-Type", "text/plain");
     return builder.accept("text/plain").put(Entity.json(""));
+  }
+  
+  private static URI getBaseUri() {
+    return UriBuilder.fromUri("http://localhost:8080/mm.server/rest/server")
+        .build();
   }
 }

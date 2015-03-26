@@ -12,6 +12,7 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * This class will be called by the RestInterface class and communicates with
@@ -41,7 +43,6 @@ import javax.ws.rs.core.Response;
 @Path("/server")
 public class Ganeti implements VmServer {
   // benedikt:ben2305@
-  private static final String url = "http://localhost:5080/2";
   private ClientConfig config;
   private Client client;
   private Invocation.Builder builder;
@@ -100,7 +101,7 @@ public class Ganeti implements VmServer {
   @Path("ganeti")
   @Produces(MediaType.APPLICATION_JSON)
   public String getInstances() {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     String list = "";
     try {
       list = target.path("instances").request().get(String.class);
@@ -121,7 +122,7 @@ public class Ganeti implements VmServer {
   @GET
   @Path("ganeti/{instance}")
   public String getInstanceInfo(@PathParam("instance") String instance) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     String list = "";
     try {
       list = target.path("instances").path(instance).request()
@@ -146,7 +147,7 @@ public class Ganeti implements VmServer {
   @Path("ganeti/{instance}/{param}")
   public String getInstanceInfoParam(@PathParam("instance") String instance,
       @PathParam("param") String param) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     String list = "";
     try {
       list = target.path("instances").path(instance).request()
@@ -161,17 +162,26 @@ public class Ganeti implements VmServer {
   /**
    * Creates an instance on the ganeti server.
    * 
+   * Possible HTTP status codes:
+   * 
+   * <li> 200: The creation of the instance was successful.
+   * <li> 409: The given parameters are incorrect.
    * 
    * @param param
    *          is the JSONObject with all parameters from the controller to
    *          create an instance.
+   *          <li> template: the name of the template which should be loaded.
+   *          <li> name: the instance name for the ganeti instance.
+   *          <li> bridge: the name of the bridge interface.
+   *          <li> size: the size of the disk of the instance.
+   *          <li> ip: the address for the instance, but can be empty.
    * @return the HTTP Response of the ganeti server.
    */
   @POST
   @Path("ganeti")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(String param) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     Template temp = null;
     Response resp = null;
     if (param.isEmpty()) {
@@ -226,7 +236,7 @@ public class Ganeti implements VmServer {
   @Path("ganeti/{instance}/start")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response startup(@PathParam("instance") String instance, String type) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("startup")
@@ -251,7 +261,7 @@ public class Ganeti implements VmServer {
   @Path("ganeti/{instance}/stop")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response shutdown(@PathParam("instance") String instance, String type) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("shutdown")
@@ -273,7 +283,7 @@ public class Ganeti implements VmServer {
   @DELETE
   @Path("ganeti/{instance}")
   public Response delete(@PathParam("instance") String instance) {
-    target = client.target(url);
+    target = client.target(getBaseUri());
     Response resp = null;
     try {
       resp = target.path("instances").path(instance).request().delete();
@@ -300,7 +310,7 @@ public class Ganeti implements VmServer {
     if (!type.equals("soft") || !type.equals("hard") || !type.equals("full")) {
       return Response.status(409).entity("The given type is wrong").build();
     }
-    target = client.target(url);
+    target = client.target(getBaseUri());
     Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("reboot")
@@ -328,7 +338,7 @@ public class Ganeti implements VmServer {
     if (newName.isEmpty()) {
       return Response.status(409).entity("There is no newName").build();
     }
-    target = client.target(url);
+    target = client.target(getBaseUri());
     Response resp = null;
     try {
       builder = target.path("instances").path(instance).path("rename")
@@ -338,5 +348,10 @@ public class Ganeti implements VmServer {
       e.printStackTrace();
     }
     return resp;
+  }
+  
+  private static URI getBaseUri() {
+    return UriBuilder.fromUri("http://localhost:5080/2")
+        .build();
   }
 }
