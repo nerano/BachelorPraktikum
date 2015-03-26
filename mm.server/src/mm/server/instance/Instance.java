@@ -5,107 +5,104 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Represents an template of an instance with its attributes.
+ * Represents an instance with its attributes.
  * 
  * @author Benedikt Bakker
  * 
  */
 public class Instance {
 
-  private int __version__;
-  private String disk_template;
-  private String file_driver;
-  private String file_storage_dir;
-  private String hypervisor;
-  private String iallocator;
-  private String instance_name;
-  private String mode;
-  private String os_type;
-  private String pnode;
-  private String pnode_uuid;
-  private String source_instance_name;
-  private String source_x509_ca;
-  private String src_node;
-  private String src_node_uuid;
-  private String src_path;
-//private boolean force_variant;
-  //private boolean identify_defaults;
-  //private boolean ignore_ipolicy;
-  private boolean ip_check = true;
-  private boolean name_check = true;
-  //private boolean no_install;
-  //private boolean opportinistic_locking;
-  private boolean conflicts_check = true;
-  private boolean start = true;
-  //private boolean wait_for_sync = true;
-  private int source_shutdown_timeout = 120;
-  private HashMap<String, String> osparams;
-  private HashMap<String, String> hvparams;
-  private HashMap<String, String> beparams;
-  transient HashMap<String, String> nicLink;
-  transient HashMap<String, String> nicIp;
-  transient HashMap<String, String> nicMac;
-  transient HashMap<String, String> nicName;
-  transient HashMap<String, String> nicMode;
-  transient HashMap<String, String> nicNetwork;
-  transient HashMap<String, Object> disksMode;
-  transient HashMap<String, Object> disksSize;
+  private HashMap<String, Object> attribute;
+  private transient HashMap<String, Boolean> boolmap;
+  private transient HashMap<String, String> osparams;
+  private transient HashMap<String, String> hvparams;
+  private transient HashMap<String, String> beparams;
+  private transient HashMap<String, String> nicLink;
+  private transient HashMap<String, String> nicIp;
+  private transient HashMap<String, String> nicMac;
+  private transient HashMap<String, String> nicName;
+  private transient HashMap<String, String> nicMode;
+  private transient HashMap<String, String> nicNetwork;
+  private transient HashMap<String, Object> disksMode;
+  private transient HashMap<String, Object> disksSize;
   private List<HashMap<String, String>> nics;
   private List<HashMap<String, Object>> disks;
-  private List<String> tags;
+  private int version;
+  private transient List<String> tags;
 
   /**
-   * Initialize the Lists and JSONObject.
+   * Initialize the attribute map.
    */
   public Instance() {
+    this.attribute = new HashMap<String, Object>();
+  }
 
+  public void setAttribute(String key, Object value) {
+    this.attribute.put(key, value);
+  }
+
+  public void removeAttribute(String key) {
+    this.attribute.remove(key);
   }
 
   /**
-   * Sets boolean values to its attributes.
+   * Removes the lists of nics and disks, in case they have to be updated.
+   */
+  public void removeLists() {
+    if (this.attribute.containsKey("nics")) {
+      this.attribute.remove("nics");
+    }
+    if (this.attribute.containsKey("disks")) {
+      this.attribute.remove("disks");
+    }
+    this.attribute.remove("__version__");
+  }
+
+  /**
+   * Adds a boolean attribute to the map.
    * 
    * @param key
    *          name of the key.
    * @param value
-   *          true or false.
+   *          of the key.
    */
   public void setBoolean(String key, boolean value) {
-    switch (key) {
-      /*case "force_variant": force_variant = value;
-        break;
-      case "identify_defaults": identify_defaults = value;
-        break;
-      case "ignore_ipolicy": ignore_ipolicy = value;
-        break;*/
-      case "ip_check": ip_check = value;
-        break;
-      case "name_check": name_check = value;
-        break;
-      /*case "no_install": no_install = value;
-        break;
-      case "opportinistic_locking": opportinistic_locking = value;
-        break;*/
-      case "conflicts_check": conflicts_check = value;
-        break;
-      case "start": start = value;
-        break;
-      /*case "wait_for_sync": wait_for_sync = value;
-        break;*/
-      default:
-        break;
+    if (boolmap == null) {
+      boolmap = new HashMap<String, Boolean>();
     }
-  }
-  
-  public List<HashMap<String, String>> getNics() {
-    return nics;
+    this.boolmap.put(key, value);
   }
 
-  public List<HashMap<String, Object>> getDisks() {
-    return disks;
+  /**
+   * Adds all dictionaries and lists to the attribute map.
+   */
+  public void setLists() {
+    if (nics != null) {
+      this.attribute.put("nics", nics);
+    }
+    if (disks != null) {
+      this.attribute.put("disks", disks);
+    }
+    if (osparams != null) {
+      this.attribute.put("osparams", osparams);
+    }
+    if (hvparams != null) {
+      this.attribute.put("hvparams", hvparams);
+    }
+    if (beparams != null) {
+      this.attribute.put("beparams", beparams);
+    }
+    if (tags != null) {
+      this.attribute.put("tags", tags);
+    }
+    if (boolmap != null) {
+      this.attribute.putAll(boolmap);
+    }
+    this.attribute.put("__version__", version);
   }
 
-  public HashMap<String, String> getNicLink() {
-    return nicLink;
+  public void setVersion(int version) {
+    this.version = version;
   }
 
   /**
@@ -124,10 +121,6 @@ public class Instance {
     this.nics.add(nicLink);
   }
 
-  public HashMap<String, String> getNicIp() {
-    return nicIp;
-  }
-
   /**
    * Adds a ip address to the nics list. Creates nics object if this was not
    * initialized.
@@ -142,10 +135,6 @@ public class Instance {
       nics = new ArrayList<HashMap<String, String>>();
     }
     this.nics.add(nicIp);
-  }
-
-  public HashMap<String, String> getNicMac() {
-    return nicMac;
   }
 
   /**
@@ -164,10 +153,6 @@ public class Instance {
     this.nics.add(nicMac);
   }
 
-  public HashMap<String, String> getNicName() {
-    return nicName;
-  }
-
   /**
    * Adds a name parameter to the nics list. Creates nics object if this was not
    * initialized.
@@ -182,10 +167,6 @@ public class Instance {
       nics = new ArrayList<HashMap<String, String>>();
     }
     this.nics.add(nicName);
-  }
-
-  public HashMap<String, String> getNicMode() {
-    return nicMode;
   }
 
   /**
@@ -204,10 +185,6 @@ public class Instance {
     this.nics.add(nicMode);
   }
 
-  public HashMap<String, String> getNicNetwork() {
-    return nicNetwork;
-  }
-
   /**
    * Adds a network parameter to the nics list. Creates nics object if this was
    * not initialized.
@@ -222,10 +199,6 @@ public class Instance {
       nics = new ArrayList<HashMap<String, String>>();
     }
     this.nics.add(nicNetwork);
-  }
-
-  public HashMap<String, Object> getDisksMode() {
-    return disksMode;
   }
 
   /**
@@ -244,10 +217,6 @@ public class Instance {
     this.disks.add(disksMode);
   }
 
-  public HashMap<String, Object> getDisksSize() {
-    return disksSize;
-  }
-
   /**
    * Adds size to the disks list. Creates disks object if this was not
    * initialized.
@@ -264,126 +233,6 @@ public class Instance {
     this.disks.add(disksSize);
   }
 
-  public int get__version__() {
-    return __version__;
-  }
-
-  public String getDisk_template() {
-    return disk_template;
-  }
-
-  public String getFile_driver() {
-    return file_driver;
-  }
-
-  public String getFile_storage_dir() {
-    return file_storage_dir;
-  }
-
-  public String getHypervisor() {
-    return hypervisor;
-  }
-
-  public String getIallocator() {
-    return iallocator;
-  }
-
-  public String getInstance_name() {
-    return instance_name;
-  }
-
-  public String getMode() {
-    return mode;
-  }
-
-  public String getOs_type() {
-    return os_type;
-  }
-
-  public String getPnode() {
-    return pnode;
-  }
-
-  public String getPnode_uuid() {
-    return pnode_uuid;
-  }
-
-  public String getSource_instance_name() {
-    return source_instance_name;
-  }
-
-  public String getSource_x509_ca() {
-    return source_x509_ca;
-  }
-
-  public String getSrc_node() {
-    return src_node;
-  }
-
-  public String getSrc_node_uuid() {
-    return src_node_uuid;
-  }
-
-  public String getSrc_path() {
-    return src_path;
-  }
-/*
-  public boolean isForce_variant() {
-    return force_variant;
-  }
-
-  public boolean isIdentify_defaults() {
-    return identify_defaults;
-  }
-
-  public boolean isIgnore_ipolicy() {
-    return ignore_ipolicy;
-  }
-  
-  public boolean isNo_install() {
-    return no_install;
-  }
-
-  public boolean isOpportinistic_locking() {
-    return opportinistic_locking;
-  }
-  
-  public boolean isWait_for_sync() {
-    return wait_for_sync;
-  }
-*/
-  public boolean isIp_check() {
-    return ip_check;
-  }
-
-  public boolean isName_check() {
-    return name_check;
-  }
-
-  public boolean isConflicts_check() {
-    return conflicts_check;
-  }
-
-  public boolean isStart() {
-    return start;
-  }
-
-  public int getSource_shutdown_timeout() {
-    return source_shutdown_timeout;
-  }
-
-  public HashMap<String, String> getOsparams() {
-    return osparams;
-  }
-
-  public HashMap<String, String> getHvparams() {
-    return hvparams;
-  }
-
-  public HashMap<String, String> getBeparams() {
-    return beparams;
-  }
-
   /**
    * Adds a parameter to the tags list.
    * 
@@ -395,10 +244,6 @@ public class Instance {
       this.tags = new ArrayList<String>();
     }
     this.tags.add(tag);
-  }
-
-  public List<String> getTags() {
-    return tags;
   }
 
   /**
@@ -446,111 +291,7 @@ public class Instance {
     this.beparams.put(key, value);
   }
 
-  public void set__version__(int __version__) {
-    this.__version__ = __version__;
-  }
-
-  public void setDisk_template(String disk_template) {
-    this.disk_template = disk_template;
-  }
-
-  public void setFile_driver(String file_driver) {
-    this.file_driver = file_driver;
-  }
-
-  public void setFile_storage_dir(String file_storage_dir) {
-    this.file_storage_dir = file_storage_dir;
-  }
-
-  public void setHypervisor(String hypervisor) {
-    this.hypervisor = hypervisor;
-  }
-
-  public void setIallocator(String iallocator) {
-    this.iallocator = iallocator;
-  }
-
-  public void setInstance_name(String instance_name) {
-    this.instance_name = instance_name;
-  }
-
-  public void setMode(String mode) {
-    this.mode = mode;
-  }
-
-  public void setOs_type(String os_type) {
-    this.os_type = os_type;
-  }
-
-  public void setPnode(String pnode) {
-    this.pnode = pnode;
-  }
-
-  public void setPnode_uuid(String pnode_uuid) {
-    this.pnode_uuid = pnode_uuid;
-  }
-
-  public void setSource_instance_name(String source_instance_name) {
-    this.source_instance_name = source_instance_name;
-  }
-
-  public void setSource_x509_ca(String source_x509_ca) {
-    this.source_x509_ca = source_x509_ca;
-  }
-
-  public void setSrc_node(String src_node) {
-    this.src_node = src_node;
-  }
-
-  public void setSrc_node_uuid(String src_node_uuid) {
-    this.src_node_uuid = src_node_uuid;
-  }
-
-  public void setSrc_path(String src_path) {
-    this.src_path = src_path;
-  }
-/*
-  public void setForce_variant(boolean force_variant) {
-    this.force_variant = force_variant;
-  }
-
-  public void setIdentify_defaults(boolean identify_defaults) {
-    this.identify_defaults = identify_defaults;
-  }
-
-  public void setIgnore_ipolicy(boolean ignore_ipolicy) {
-    this.ignore_ipolicy = ignore_ipolicy;
-  }
-
-  public void setNo_install(boolean no_install) {
-    this.no_install = no_install;
-  }
-
-  public void setOpportinistic_locking(boolean opportinistic_locking) {
-    this.opportinistic_locking = opportinistic_locking;
-  }
-
-  public void setWait_for_sync(boolean wait_for_sync) {
-    this.wait_for_sync = wait_for_sync;
-  }*/
-
-  public void setIp_check(boolean ip_check) {
-    this.ip_check = ip_check;
-  }
-
-  public void setName_check(boolean name_check) {
-    this.name_check = name_check;
-  }
-
-  public void setConflicts_check(boolean conflicts_check) {
-    this.conflicts_check = conflicts_check;
-  }
-
-  public void setStart(boolean start) {
-    this.start = start;
-  }
-
-  public void setSource_shutdown_timeout(int source_shutdown_timeout) {
-    this.source_shutdown_timeout = source_shutdown_timeout;
+  public HashMap<String, Object> getAttribute() {
+    return this.attribute;
   }
 }

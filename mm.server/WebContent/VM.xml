@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Instances>
 	<id>Instanz1</id>
+	<server>ganeti</server>
 	<__version__>1</__version__>
 	<name_check>false</name_check>
 	<pnode>pxhost01.seemoo.tu-darmstadt.de</pnode>
@@ -13,6 +14,7 @@
 	<start>false</start>
 
 	<id>Instanz2</id>
+	<server>ganeti</server>
 	<__version__>1</__version__>
 	<name_check>false</name_check>
 	<pnode>pxhost01.seemoo.tu-darmstadt.de</pnode>
@@ -25,6 +27,7 @@
 	<start>false</start>
 
 	<id>Instanz3</id>
+	<server>ganeti</server>
 	<__version__>1</__version__>
 	<name_check>false</name_check>
 	<pnode>pxhost01.seemoo.tu-darmstadt.de</pnode>
