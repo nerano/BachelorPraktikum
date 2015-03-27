@@ -14,40 +14,40 @@ public class ControllerServerTest {
     String createInstance = "{\"name\":\"" + instance + "\",\"template\":\"Instanz2\",\"bridge\":\"br0\",\"size\":5012,\"ip\":\"10.10.11.4\"}";
     try {
       assertEquals("Die Instanz " + instance + " ist nicht auf dem Server",
-          false, conser.getInstances().contains(instance));
-      conser.createInstance(createInstance);
+          false, conser.getInstances("ganeti").contains(instance));
+      conser.createInstance("ganeti", instance, "Instanz2", 5012, 0, "10.10.11.4");
       
       Thread.sleep(10000);
       
       assertEquals("Die Instanz " + instance + " ist auf dem Server",
-          true, conser.getInstances().contains(instance));
+          true, conser.getInstances("ganeti").contains(instance));
       
       assertEquals("Die Instanz " + instance + " wurde nicht gestartet",
-          false, conser.getInstanceInfoParam(instance, "status")
+          false, conser.getInstanceInfoParam("ganeti", instance, "status")
           .contains("running"));
       
-      conser.startInstance(instance, "");
+      conser.startInstance("ganeti", instance, "");
       
       Thread.sleep(10000);
       
       assertEquals("Die Instanz " + instance + " wurde gestartet",
-         true, conser.getInstanceInfoParam(instance, "status")
+         true, conser.getInstanceInfoParam("ganeti", instance, "status")
          .contains("running"));
       
-      conser.stopInstance(instance, "");
+      conser.stopInstance("ganeti", instance, "");
       
       Thread.sleep(10000);
       
       assertEquals("Die Instanz " + instance + " wurde nicht gestartet",
-        false, conser.getInstanceInfoParam(instance, "status")
+        false, conser.getInstanceInfoParam("ganeti", instance, "status")
         .contains("running"));
       
-      conser.deleteInstance(instance);
+      conser.deleteInstance("ganeti", instance);
       
       Thread.sleep(10000);
       
       assertEquals("Die Instanz " + instance + " ist auf dem Server",
-          false, conser.getInstances().contains(instance));
+          false, conser.getInstances("ganeti").contains(instance));
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

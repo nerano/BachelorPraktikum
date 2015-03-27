@@ -34,7 +34,7 @@ public class GetTemplate {
   /**
    * Updates the HashMap of templates when there are changes in the XML file.
    * 
-   * @return the HTTP Response.
+   * @return the HTTP Response
    */
   @PUT
   @Path("template")
@@ -48,7 +48,7 @@ public class GetTemplate {
    * Calls the method which returns a List of all instance templates with their
    * attributes.
    * 
-   * @return List with all instance names and attributes.
+   * @return List with all instance names and attributes
    */
   @GET
   @Path("template")

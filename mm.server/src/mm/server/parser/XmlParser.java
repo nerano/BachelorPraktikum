@@ -35,7 +35,7 @@ public class XmlParser {
    * DocuemtnBuilder. Changes the name space to true.
    * 
    * @param path
-   *          the path of the XML file.
+   *          the path of the XML file
    */
   public XmlParser(String path) {
     this.file = path;
@@ -60,7 +60,7 @@ public class XmlParser {
   /**
    * Parse the XML File and saves the entries for an Instance to its reference.
    * 
-   * @return a HashMap with every configured Instances.
+   * @return a HashMap with every configured Instances
    */
   public HashMap<String, Template> parse() {
     NodeList nodeList = doc.getElementsByTagName("*");
@@ -143,7 +143,7 @@ public class XmlParser {
    * Updates the HashMap of templates by building a new document instance and
    * parse this file.
    * 
-   * @return the updated HashMap of templates.
+   * @return the updated HashMap of templates
    */
   public HashMap<String, Template> update() {
     this.buildDoc();

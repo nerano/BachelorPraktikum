@@ -21,7 +21,7 @@ public class ServerData {
    * Initialize the HashMap of instances.
    * 
    * @param pars
-   *          parser for parsing the HashMap of instances.
+   *          parser for parsing the HashMap of instances
    */
   public ServerData(XmlParser pars) {
     PARSER = pars;
@@ -31,7 +31,7 @@ public class ServerData {
   /**
    * Returns the template list of instances.
    * 
-   * @return a HashMap wit all instances of a XML file.
+   * @return a HashMap wit all instances of a XML file
    */
   public static HashMap<String, Template> getTemplateList() {
     return SERVER_MAP;
@@ -40,7 +40,7 @@ public class ServerData {
   /**
    * Updates the HashMap of templates when there are changes in the XML file.
    * 
-   * @return the HasMap of templates.
+   * @return the HasMap of templates
    */
   public static HashMap<String, Template> updateTemplateList() {
     SERVER_MAP = PARSER.update();

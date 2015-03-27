@@ -46,12 +46,25 @@ public class Template {
   }
 
   /**
+   * Removes the lists of nics and disks, in case they have to be updated.
+   */
+  public void removeLists() {
+    if (this.attribute.containsKey("nics")) {
+      this.attribute.remove("nics");
+    }
+    if (this.attribute.containsKey("disks")) {
+      this.attribute.remove("disks");
+    }
+    this.attribute.remove("__version__");
+  }
+
+  /**
    * Adds a boolean attribute to the map.
    * 
    * @param key
-   *          name of the key.
+   *          name of the key
    * @param value
-   *          of the key.
+   *          of the key
    */
   public void setBoolean(String key, boolean value) {
     if (boolmap == null) {
@@ -224,7 +237,7 @@ public class Template {
    * Adds a parameter to the tags list.
    * 
    * @param tag
-   *          name of the parameter.
+   *          name of the parameter
    */
   public void setTags(String tag) {
     if (this.tags == null) {
@@ -237,9 +250,9 @@ public class Template {
    * Adds a key with its value to the osparams HashMap.
    * 
    * @param key
-   *          name of the key.
+   *          name of the key
    * @param value
-   *          of the key.
+   *          of the key
    */
   public void setOsparams(String key, String value) {
     if (this.osparams == null) {
@@ -252,9 +265,9 @@ public class Template {
    * Adds a key with its value to the hvparams HashMap.
    * 
    * @param key
-   *          name of the key.
+   *          name of the key
    * @param value
-   *          of the key.
+   *          of the key
    */
   public void setHvparams(String key, String value) {
     if (this.hvparams == null) {
@@ -267,9 +280,9 @@ public class Template {
    * Adds a key with its value to the beparams HashMap.
    * 
    * @param key
-   *          name of the key.
+   *          name of the key
    * @param value
-   *          of the key.
+   *          of the key
    */
   public void setBeparams(String key, String value) {
     if (this.beparams == null) {
