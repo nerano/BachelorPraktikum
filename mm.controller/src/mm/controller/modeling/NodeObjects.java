@@ -17,12 +17,13 @@ public class NodeObjects {
     private String id;
     private String typeName;
     private LinkedList<Component> components = new LinkedList<Component>();
+    private LinkedList<Config> applicableConfigs = new LinkedList<Config>();
     private String building;
     private String room;
     private String latitude;
     private String longitude;
     private boolean status = false;
-    private String trunk;
+    //private String trunk;
     private Config config;
     
     
@@ -45,14 +46,18 @@ public class NodeObjects {
 
     /**
 	 * Updates a the PowerStatus of the Node with the information from the given
-	 * list of PowerSources
+	 * list of PowerSources. Changes the power status in every component and the
+	 * power status inside of the node itself.
+	 * 
+	 * power status inside the node is true, when at least one component from this 
+	 * node has the power status true
 	 * 
 	 * @param statusList
 	 *            a list with PowerSources
 	 */
 	public void updateNodeStatusPower(LinkedList<PowerSource> statusList) {
 
-	    boolean nodeStatus = true;
+	    boolean nodeStatus = false;
 	    
 		for (PowerSource powerSource : statusList) {
 			for (Component component : components) {
@@ -60,7 +65,7 @@ public class NodeObjects {
 					component.setStatus(powerSource.getStatus());
 					
 					if(!powerSource.getStatus()) {
-					    nodeStatus = false;
+					    nodeStatus = true;
 					}
 				}
 			}
@@ -117,6 +122,23 @@ public class NodeObjects {
 	}
 	
 	/**
+	 * Returns the Trunkport which is serving the role in the node. 
+	 * @param role  the role you want to access via the returned trunkport
+	 * @return  the trunkport of the role, null if there is no such role in the node
+	 */
+	public String getTrunkPortByRole(String role) {
+	    
+	    for (Component component : components) {
+            for (Interface inf : component.getInterfaces()) {
+                if(inf.getRole().equals(role)) {
+                    return component.getTrunkport();
+                }
+            }
+        }
+       return null;
+	}
+	
+	/**
 	 * Checks if a Config is applicable for the node.
 	 * 
 	 * Every Role from the Config has to be present in the Node.
@@ -124,10 +146,6 @@ public class NodeObjects {
 	 * @return
 	 */
 	public boolean isApplicable(Config config) {
-	    
-	    
-	    
-	    
 	    
 	    Set<String> configRoles = config.getRoles();
 	    Set<String> nodeRoles = this.getRoles();
@@ -141,6 +159,22 @@ public class NodeObjects {
             }
 	    }
 	    return true;
+	}
+	
+	/**
+	 * Gets the list of all Configs and calculates all applicable Configs for the node
+	 * and adds them to the internal list
+	 */
+	public void calcApplicableConfigs() {
+	    
+	    applicableConfigs.clear();
+	    
+	    for(Config config : ControllerData.getAllConfigs()) {
+	        if(this.isApplicable(config)) {
+	            applicableConfigs.add(config);
+	        }
+	    }
+	    
 	}
 	
 	/**
@@ -370,12 +404,12 @@ public String toString() {
         return sb.toString();
     }
 
-    public void setTrunk(String trunk) {
-        this.trunk = trunk;
+    /** public void setTrunk(String trunk) {
+       this.trunk = trunk;
     }
     
     public String getTrunk() {
-        return this.trunk;
-    }
+      return this.trunk;
+    } **/
 	
 }

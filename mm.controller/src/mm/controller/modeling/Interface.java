@@ -5,6 +5,7 @@ public class Interface {
     String name;
     String switchport;
     String role;
+    String failure;
     int vlanId;
     
     

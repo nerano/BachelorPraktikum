@@ -17,11 +17,11 @@ public class ControllerPowerPut {
 
 	
 	
-	private ClientConfig config = new ClientConfig();
-	private  Client client = ClientBuilder.newClient(config);
+	private static ClientConfig config = new ClientConfig();
+	private static  Client client = ClientBuilder.newClient(config);
 
 
-	private WebTarget putTarget = client.target(getPowerPutUri());
+	private static WebTarget putTarget = client.target(getPowerPutUri());
 	
 	/**
 	 * Turns on a set of PowerSources. 
@@ -41,7 +41,7 @@ public class ControllerPowerPut {
 	 * @param parameter A String with all PowerSources to turn on, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
 	 * @return an Outbound Response Object with a status code and message body
 	 */
-	public Response turnOn(String parameter) {
+	public static Response turnOn(String parameter) {
 	
 		// String testString = "TESTAEHOME#1;1;end";
 		
@@ -78,7 +78,7 @@ public class ControllerPowerPut {
    * @param parameter A String with all PowerSources to turn off, divided by ";", ending with "end". e.g. [PowerSource1;5;]end
    * @return an Outbound Response Object with a status code and message body
    */
-	public Response turnOff(String parameter) {
+	public static Response turnOff(String parameter) {
 		
 	  
 	  

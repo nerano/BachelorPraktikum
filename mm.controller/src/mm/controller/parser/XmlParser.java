@@ -259,10 +259,6 @@ public class XmlParser {
                 nodeobject.setNodeType(node.getTextContent());
             }
 
-            if (node.getNodeName().equals("trunk")) {
-                nodeobject.setTrunk(node.getTextContent());
-            }
-
             if (node.getNodeName().equals("component")) {
 
                 comp = new Component(((Element) node).getAttribute("type"));
@@ -271,6 +267,10 @@ public class XmlParser {
 
             }
 
+            if (node.getNodeName().equals("trunk")) {
+                comp.setTrunk(node.getTextContent());
+            }
+            
             if (node.getNodeName().equals("powerSource")) {
                 comp.setPowerSource(node.getTextContent());
             }

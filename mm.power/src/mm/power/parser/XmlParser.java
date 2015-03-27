@@ -40,7 +40,6 @@ public class XmlParser {
     try {
       docBuilder = docFactory.newDocumentBuilder();
     } catch (ParserConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -60,7 +59,6 @@ public class XmlParser {
     try {
       doc = docBuilder.parse(file);
     } catch (SAXException | IOException e) {
-      // TODO Auto-generated catch block
       parse = false;
       e.printStackTrace();
     }

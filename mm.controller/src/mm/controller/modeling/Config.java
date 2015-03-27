@@ -5,10 +5,11 @@ import java.util.Set;
 
 public class Config {
 
-    String name;
-    Set<Wire> wires;
-    int globals = 0;
-    int locals = 0;
+    private String name;
+    private Set<Wire> wires;
+    private Wire globalWire;
+    private int globals = 0;
+    private int locals = 0;
     
     
     public Config(String name, Set<Wire> wires) {
@@ -19,6 +20,7 @@ public class Config {
             
            if (wire.hasUplink()) {
                globals++;
+               globalWire = wire;
            } else {
                locals++;
            }
@@ -33,6 +35,9 @@ public class Config {
         return wires;
     }
     
+    public Wire getGlobalWire() {
+        return globalWire;
+    }
     
     public Set<String> getRoles() {
         

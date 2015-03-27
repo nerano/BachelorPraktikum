@@ -32,6 +32,15 @@ public class VLan {
         return this.global;
     }
     
+    
+    public void removePorts(LinkedList<String> list) {
+        portList.removeAll(list);
+    }
+    
+    public void removePorts(Set<String> list) {
+        portList.removeAll(list);
+    }
+    
     public void addPorts(LinkedList<String> list) {
 
         portList.addAll(list);

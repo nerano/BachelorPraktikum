@@ -106,6 +106,20 @@ public class ControllerNetPut {
         return Response.status(response.getStatus()).entity(responseString).build();
     }
     
+    
+    /**
+     * Removes the ports from the VLAN.
+     * 
+     * <p>
+     * Expects a VLAN object, all ports in this VLAN are removed
+     * from the given VLAN ID and are no longer members of this VLAN. Does not
+     * destroy the VLAN, even when all members were removed, the VLAN still
+     * exists on the NetComponent. PVID/Native ID of the ports is changed to 1.
+     * 
+     * @param incoming
+     *            a VLAN 
+     * @return an outbound response object with status code and message body
+     */
     public static Response removePort(VLan vlan) {
         
         String data = gson.toJson(vlan);
@@ -121,7 +135,20 @@ public class ControllerNetPut {
         
     }
     
-    
+    /**
+     * Removes the submitted VLAN.
+     * 
+     * <p>
+     * Every port is not longer a member of this VLAN, because the VLAN does not
+     * exist anymore after calling this method. Does not remove the VLAN from
+     * all NetComponents per se, but only from a NetComponent if it was a member
+     * of the submitted VLAN. Sets the PVID of all ports in this VLAN on 1.
+     * </p>
+     * 
+     * @param incoming
+     *            a VLAN 
+     * @return an outbound response object with status code and message body
+     */
    public static Response removeVlan(VLan vlan) {
       
        String data = gson.toJson(vlan);

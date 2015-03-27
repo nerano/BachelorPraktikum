@@ -50,6 +50,13 @@ public class ControllerNetGet {
 	    return gson.fromJson(response.readEntity(String.class), type);
 	}
 	
+	/**
+	 * Returns a status String holding the result of the consistency check of the given VLAN.
+	 * 
+	 * 
+	 * @param vlan
+	 * @return
+	 */
 	public static String isConsistent(VLan vlan) {
 	    
 	    String encoded = Base64.encodeAsString(gson.toJson(vlan));
@@ -61,6 +68,11 @@ public class ControllerNetGet {
 	    return response.readEntity(String.class);
 	}
 	
+	/**
+	 * 
+	 * @param net
+	 * @return
+	 */
 	public static String staticConsistency(String net) {
 	    
 	    Response response = target.path("staticConsistency").path(net)
@@ -115,7 +127,6 @@ public class ControllerNetGet {
 	    try {
             return URLEncoder.encode(sb.toString(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;

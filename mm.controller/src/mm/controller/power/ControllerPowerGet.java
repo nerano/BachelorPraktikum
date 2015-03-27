@@ -47,7 +47,7 @@ public class ControllerPowerGet {
 	}
 
 	public static LinkedList<PowerSource> status(LinkedList<NodeObjects> nodes)
-			throws UnsupportedEncodingException {
+			 {
 
 		LinkedList<PowerSource> returnList = new LinkedList<PowerSource>();
 
@@ -64,8 +64,7 @@ public class ControllerPowerGet {
 
 	}
 
-	private static String turnNodeListToStatusString(LinkedList<NodeObjects> list)
-			throws UnsupportedEncodingException {
+	private static String turnNodeListToStatusString(LinkedList<NodeObjects> list) {
 
 		StringBuffer buffer = new StringBuffer();
 
@@ -88,7 +87,12 @@ public class ControllerPowerGet {
 		}
 		buffer.append("end");
 
-		return URLEncoder.encode(buffer.toString(), "UTF-8");
+		try {
+            return URLEncoder.encode(buffer.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "This will probably never happen, thanks to the JVM";
+        }
 	}
 
 	private static URI getBaseUri() {

@@ -61,7 +61,6 @@ public class ControllerAuthGet {
     try {
       Thread.sleep(11000);
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }*/
     

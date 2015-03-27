@@ -36,9 +36,9 @@ import java.net.URI;
 @Singleton
 public class WebAuthTest implements ContainerResponseFilter {
    
-  private ClientConfig config = new ClientConfig();
-  Client client = ClientBuilder.newClient(config);
-  WebTarget target = client.target(getBaseUri());
+  private static ClientConfig config = new ClientConfig();
+  static Client client = ClientBuilder.newClient(config);
+  static WebTarget target = client.target(getBaseUri());
   
   @POST
   @Path("/login")
@@ -65,19 +65,19 @@ public class WebAuthTest implements ContainerResponseFilter {
     return "Hello there! + TestHeaderKey: " + test;
   }
 
-  public Response getUserRole(String sessionId) {
-    return this.target.path("getRole").request().header("sessionId", sessionId).get(Response.class);
+  public static Response getUserRole(String sessionId) {
+    return target.path("getRole").request().header("sessionId", sessionId).get(Response.class);
   }
   
-  public Response getUser(String sessionId) {
-    return this.target.path("getUser").request().header("sessionId", sessionId).get(Response.class);
+  public static Response getUser(String sessionId) {
+    return target.path("getUser").request().header("sessionId", sessionId).get(Response.class);
   }
   
-  public Response checkSession(String sessionId) {
-    return this.target.path("validation").request().header("sessionId", sessionId).get(Response.class);
+  public static Response checkSession(String sessionId) {
+    return target.path("validation").request().header("sessionId", sessionId).get(Response.class);
   }
   
-  public URI getBaseUri() {
+  public static URI getBaseUri() {
     return UriBuilder.fromUri("http://localhost:8080/mm.auth/rest/session").build();
   }
 

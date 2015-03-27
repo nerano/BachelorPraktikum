@@ -14,7 +14,7 @@ public class Component {
     private String powerSource;
 	private boolean status;
 	private int vLanIds;
-	private transient ControllerPowerPut powerPut = new ControllerPowerPut();
+	private String trunkPort;
 
 	public Component(String type) {
 		this.type = type;
@@ -22,10 +22,17 @@ public class Component {
 		// this.statusfalse;
 	}
 
+	public void setTrunk(String trunk) {
+	    this.trunkPort = trunk;
+	}
+	
+	public String getTrunkport() {
+	    return this.trunkPort;
+	}
+	
 	public void addInterface(Interface interf) {
         interfaces.add(interf);
     }
-    
     
     public LinkedList<Interface> getInterfaces() {
         return interfaces;
@@ -34,7 +41,6 @@ public class Component {
     public void setInterfaces(LinkedList<Interface> interfaces) {
         this.interfaces = interfaces;
     }
-	
 	
 	public void setPowerSource(String powerSource) {
 		this.powerSource = powerSource;
@@ -76,9 +82,6 @@ public class Component {
 		this.ports = port;
 	}
 	
-
-	    
-	    
 	
 	/**
 	 * Turns off this component.
@@ -99,7 +102,7 @@ public class Component {
 
 		buffer.append("end");
 
-		Response response = powerPut.turnOn(buffer.toString());
+		Response response = ControllerPowerPut.turnOn(buffer.toString());
 		
 		return response;
 
@@ -124,14 +127,13 @@ public class Component {
 
 		buffer.append("end");
 
-		Response response = powerPut.turnOff(buffer.toString());
+		Response response = ControllerPowerPut.turnOff(buffer.toString());
 
 		return response;
 
 	}
 	
-	
-public String toString() {
+	public String toString() {
         
         StringBuffer sb = new StringBuffer();
         
@@ -145,14 +147,4 @@ public String toString() {
         return sb.toString();
         
     }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 }
