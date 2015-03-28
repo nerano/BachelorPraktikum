@@ -226,6 +226,32 @@ public class XmlParser {
         return list;
     }
 
+    public HashMap<String, String> parseStartupInfo() {
+        NodeList nodeList = doc.getElementsByTagName("*");
+        Node node;
+        int count = 0;
+        HashMap<String, String> ret = new HashMap<String, String>();
+        
+        while (count < nodeList.getLength()) {
+            node = nodeList.item(count);
+            
+            if (node.getNodeName().equals("reloadOnStartup")) {
+                ret.put("reloadOnStartup", node.getTextContent());
+                System.out.println(node.getTextContent());
+            }
+            
+            if (node.getNodeName().equals("reloadFile")) {
+                ret.put("reloadFile", node.getTextContent());
+                System.out.println(node.getTextContent());
+            }
+            
+            count++;
+        }
+    
+        return ret;
+    }
+    
+    
     public HashMap<String, NodeObjects> getNodeObjects2() {
         int times = 0;
         NodeList nodeList = doc.getElementsByTagName("*");

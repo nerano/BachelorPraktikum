@@ -52,9 +52,12 @@ public class ControllerPut {
 
         
         // TODO VMs anlegen
-
+        
+        System.out.println(data);
+        
         Experiment oldExp = gson.fromJson(data, Experiment.class);
         Config config;
+        Config defaultConfig = ControllerData.getConfig("APU1");//ControllerData.getConfig(oldExp.getDefaultConfig().getName());
         String responseString;
         String name = oldExp.getName();
         String user = oldExp.getUser();
@@ -63,7 +66,7 @@ public class ControllerPut {
         String successString = "";
         Response response;
 
-        if (oldExp.getId().contains("ä") ||
+        if (oldExp.getName().contains("ä") ||
                 oldExp.getId().contains("ö") ||
                 oldExp.getId().contains("ü")) {
             return Response.status(500).entity("Umlaut not allowed!").build();
@@ -77,7 +80,7 @@ public class ControllerPut {
         } else {
 
             // Create new Experiment with full Data
-            Experiment experiment = new Experiment(name, user);
+            Experiment experiment = new Experiment(name, user, defaultConfig);
             experiment.setStatus("stopped");
 
             LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
@@ -87,10 +90,17 @@ public class ControllerPut {
             for (NodeObjects node : oldExp.getList()) {
 
                 // TODO DELETE the next line, only for testing purposes
-                node.setConfig(ControllerData.getConfig("WARP+APU"));
+                node.setConfig(ControllerData.getConfig("APU1"));
                 // ////////////////////////////////////////////////////
                 nodeId = node.getId();
                 config = node.getConfig();
+                
+                if(config == null) {
+                    config = defaultConfig;
+                 } else {
+                     config = ControllerData.getConfig(config.getName());
+                 }
+                
                 nodeList.add(ControllerData.getNodeById(nodeId));
                 experiment.addNodeConfig(nodeId, config);
             }
@@ -130,6 +140,7 @@ public class ControllerPut {
             }
 
             ControllerData.addExp(experiment);
+            Initialize.saveToDisk();
             responseString = "New Experiment posted/created with ID : " + name;
             System.out.println(responseString);
             return Response.status(201).entity(responseString).build();

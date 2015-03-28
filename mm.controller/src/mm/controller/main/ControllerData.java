@@ -30,7 +30,7 @@ public class ControllerData {
 
     private static Set<Config>                                  ALL_CONFIGS;
 
-    private static UndirectedGraph<String, DefaultEdge>         TOPOLOGY;                                               // =
+    private static UndirectedGraph<String, DefaultEdge>         TOPOLOGY;                                              // =
                                                                                                                         // new
                                                                                                                         // SimpleGraph<String,
                                                                                                                         // DefaultEdge>
@@ -92,7 +92,6 @@ public class ControllerData {
         try {
             Set<String> set = new HashSet<String>();
 
-
             if (vertex.equals(START_VERTEX)) {
                 set.add(vertex);
                 return new LinkedList<String>(set);
@@ -108,12 +107,15 @@ public class ControllerData {
             System.out.println(new LinkedList<String>(set));
 
             return new LinkedList<String>(set);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return null;
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            return new LinkedList<String>();
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
-            return new LinkedList<String>();
+            return null;
         }
 
     }
@@ -203,6 +205,10 @@ public class ControllerData {
 
     }
 
+    protected static void setAllExperiments(LinkedList<Experiment> expList) {
+        EXPERIMENT_LIST = expList;
+    }
+    
     public static HashMap<String, NodeObjects> getAllNodes() {
         return ALL_NODES;
     }

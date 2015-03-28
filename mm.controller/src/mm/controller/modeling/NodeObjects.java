@@ -22,7 +22,7 @@ public class NodeObjects {
     private String room;
     private String latitude;
     private String longitude;
-    private boolean status = false;
+    private boolean status;
     //private String trunk;
     private Config config;
     
@@ -34,7 +34,9 @@ public class NodeObjects {
 		this.id = id;
 	}
 	
-	
+	public boolean getStatus() {
+	    return this.status;
+	}
 	
 	public Config getConfig() {
         return config;

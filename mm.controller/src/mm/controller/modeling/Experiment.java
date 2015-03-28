@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
@@ -29,11 +30,27 @@ public class Experiment implements Cloneable {
     private String                  user;
     private String                  name;
     private String                  status;
+    private Config                  defaultConfig;
 
+    public Experiment(String name, String user, Config defaultConfig) {
+
+        this.name = name;
+        this.user = user;
+        this.defaultConfig = defaultConfig;
+
+        this.id = user + name;
+    }
+    
+    
+    
     public void addNodeConfig(String nodeId, Config config) {
         nodeConfigs.put(nodeId, config);
     }
 
+    public Config getDefaultConfig() {
+        return this.defaultConfig;
+    }
+    
     public LinkedList<WPort> getWports() {
         return wports;
     }
@@ -54,13 +71,7 @@ public class Experiment implements Cloneable {
         return this.user;
     }
 
-    public Experiment(String name, String user) {
-
-        this.name = name;
-        this.user = user;
-
-        this.id = user + name;
-    }
+    
 
     public String getName() {
         return this.name;
@@ -81,10 +92,6 @@ public class Experiment implements Cloneable {
 
     public Config getNodeConfig(String nodeId) {
         return nodeConfigs.get(nodeId);
-    }
-
-    public void addVLan(VLan vlan) {
-        localVlans.add(vlan);
     }
 
     public String getId() {
@@ -110,10 +117,7 @@ public class Experiment implements Cloneable {
             System.out.println("GLOBAL VLAN IS NULL ON GET ALL VLAN IDS");
         }
         list.add(globalVlan.getId());
-        
-       
-        
-        
+
         return list;
     }
 
@@ -308,12 +312,22 @@ public class Experiment implements Cloneable {
         // Calculating the Path to each target trunk port
         for (String targetTrunkPort : targetTrunkPorts) {
             path = ControllerData.getPath(targetTrunkPort);
+            if(path == null) {
+                System.out.println("PATH EQUALS NULL");
+                return Response.status(403).entity("Could not determine path to Trunk '"
+                        + targetTrunkPort).build();
+            }
+            
             vlan.addPorts(path);
         }
 
         // Requesting the Path for the wPorts and adding the Ports to the VLan
         for (WPort wPort : wports) {
             path = ControllerData.getPath(wPort.getTrunk());
+            if(path == null) {
+                return Response.status(500).entity(Entity.text("Could not determine path to Trunk '"
+                        + wPort.getTrunk())).build();
+            }
             vlan.addPorts(path);
         }
 

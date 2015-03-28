@@ -18,6 +18,7 @@ import mm.controller.auth.WebAuthTest;
 import mm.controller.exclusion.NoStatusNodeStrat;
 import mm.controller.exclusion.OnlyConfigName;
 import mm.controller.main.ControllerData;
+import mm.controller.main.Initialize;
 import mm.controller.modeling.Experiment;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.PowerSource;
@@ -32,7 +33,15 @@ import mm.controller.net.ControllerNetGet;
 public class ControllerGet {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+    
+    @GET
+    @Path("/test")
+    public Response test() {
+        Initialize.saveToDisk();
+        return Response.ok().build();
+    }
+    
+    
     /**
      * Returns all nodes.
      *
