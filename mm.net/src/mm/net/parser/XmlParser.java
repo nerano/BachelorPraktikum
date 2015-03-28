@@ -184,7 +184,6 @@ private DOMSource source;
     String[] trunkArray;
     LinkedList<Integer> trunks = null;
     int counter = 0;
-    //TODO trunks richtig einlesen
     while (counter < nodeList.getLength()) {
       node = nodeList.item(counter);
       if (node.getNodeName().equals("id")) {

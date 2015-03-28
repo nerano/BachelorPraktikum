@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 
 import mm.controller.main.ControllerData;
 import mm.controller.net.ControllerNetDelete;
@@ -29,8 +30,19 @@ public class Experiment implements Cloneable {
     // TODO VMs
     private String                  user;
     private String                  name;
-    private String                  status;
-    private Config                  defaultConfig;
+
+    public static enum PossibleState
+    {
+        @SerializedName("stopped")
+        stopped,
+        @SerializedName("running")
+        running,
+        @SerializedName("paused")
+        paused
+    };
+
+    private PossibleState status = PossibleState.stopped;
+    private Config         defaultConfig;
 
     public Experiment(String name, String user, Config defaultConfig) {
 
@@ -40,9 +52,7 @@ public class Experiment implements Cloneable {
 
         this.id = user + name;
     }
-    
-    
-    
+
     public void addNodeConfig(String nodeId, Config config) {
         nodeConfigs.put(nodeId, config);
     }
@@ -50,7 +60,7 @@ public class Experiment implements Cloneable {
     public Config getDefaultConfig() {
         return this.defaultConfig;
     }
-    
+
     public LinkedList<WPort> getWports() {
         return wports;
     }
@@ -59,19 +69,17 @@ public class Experiment implements Cloneable {
         this.wports = wports;
     }
 
-    public String getStatus() {
+    public PossibleState getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PossibleState status) {
         this.status = status;
     }
 
     public String getUser() {
         return this.user;
     }
-
-    
 
     public String getName() {
         return this.name;
@@ -111,9 +119,9 @@ public class Experiment implements Cloneable {
         for (VLan vlan : localVlans) {
             list.add(vlan.getId());
         }
-        
+
         System.out.println(gson.toJson(this));
-        if(globalVlan == null) {
+        if (globalVlan == null) {
             System.out.println("GLOBAL VLAN IS NULL ON GET ALL VLAN IDS");
         }
         list.add(globalVlan.getId());
@@ -312,21 +320,22 @@ public class Experiment implements Cloneable {
         // Calculating the Path to each target trunk port
         for (String targetTrunkPort : targetTrunkPorts) {
             path = ControllerData.getPath(targetTrunkPort);
-            if(path == null) {
+            if (path == null) {
                 System.out.println("PATH EQUALS NULL");
                 return Response.status(403).entity("Could not determine path to Trunk '"
                         + targetTrunkPort).build();
             }
-            
+
             vlan.addPorts(path);
         }
 
         // Requesting the Path for the wPorts and adding the Ports to the VLan
         for (WPort wPort : wports) {
             path = ControllerData.getPath(wPort.getTrunk());
-            if(path == null) {
-                return Response.status(500).entity(Entity.text("Could not determine path to Trunk '"
-                        + wPort.getTrunk())).build();
+            if (path == null) {
+                return Response.status(500)
+                        .entity(Entity.text("Could not determine path to Trunk '"
+                                + wPort.getTrunk())).build();
             }
             vlan.addPorts(path);
         }
@@ -351,11 +360,59 @@ public class Experiment implements Cloneable {
         return null;
     }
 
+    /**
+     * Adds a Node in the experiment state "stopped".
+     * 
+     * 
+     * @param node
+     *            node to add
+     * @param config
+     *            config for the to be added node
+     * @return
+     */
     private Response addNodeStopped(NodeObjects node, Config config) {
-
+        Response response;
         // TODO globale vlans
+        Set<String> portsToAdd = new HashSet<String>();
 
-        nodeConfigs.put(node.getId(), config);
+        // Getting all trunkports which could possibly be added
+        for (Wire wire : config.getWires()) {
+            for (String role : wire.getEndpoints()) {
+                portsToAdd.add(node.getTrunkPortByRole(role));
+            }
+        }
+        portsToAdd.removeAll(globalVlan.getPortList());
+        System.out.println("PORTS TO ADD IN ADDNODE " + portsToAdd);
+        // Check if VLAN is available on the new NetComponents
+
+        if (portsToAdd.isEmpty()) {
+            nodes.add(node);
+            nodeConfigs.put(node.getId(), config);
+            return Response.ok("Added Node " + node.getId()).build();
+        }
+
+        boolean available = ControllerNetGet.isFreeOnNc(portsToAdd, globalVlan.getId());
+
+        if (available) {
+            response = ControllerNetPut.setTrunkPort(portsToAdd, globalVlan.getId());
+
+            if (response.getStatus() != 200) {
+                return Response.status(500).entity("Failed adding Node "
+                        + node.getId() + "because of \n " +
+                        (String) response.getEntity()).build();
+            }
+
+            globalVlan.addPorts(portsToAdd);
+            nodes.add(node);
+            nodeConfigs.put(node.getId(), config);
+
+            return Response.ok("Added Node " + node.getId()).build();
+        } else {
+
+        }
+
+        // TODO
+
         return null;
     }
 
@@ -366,11 +423,12 @@ public class Experiment implements Cloneable {
         }
 
         switch (status) {
-        case "running":
-            return Response.status(400).entity("Can not do this in status " + status).build();
-        case "paused":
+        case running:
+            return Response.status(400).entity("Can not do this in status " + status.toString())
+                    .build();
+        case paused:
             return addNodePaused(node, config);
-        case "stopped":
+        case stopped:
             return addNodeStopped(node, config);
         default:
             return Response.status(500).entity("Could not determine status of experiment").build();
@@ -438,7 +496,7 @@ public class Experiment implements Cloneable {
 
         // TODO vms starten
 
-        this.setStatus("paused");
+        this.setStatus(PossibleState.paused);
         return Response.status(status).entity(responseString).build();
     }
 
@@ -499,18 +557,18 @@ public class Experiment implements Cloneable {
         for (WPort wPort : wports) {
             switchports.add(wPort.getPort());
         }
-        
+
         vlanports.addAll(globalVlan.getPortList());
 
         vlanports.retainAll(switchports);
-        
+
         vlan = new VLan(globalVlan.getId(), true);
-        
+
         vlan.setPortList(vlanports);
-        
+
         System.out.println(gson.toJson(vlan));
         response = ControllerNetPut.removePort(vlan);
-        
+
         if (response.getStatus() != 200) {
             responseStatus = 500;
             responseString += "Error on stopping Experiment '" + this.id + "'\n"
@@ -520,7 +578,7 @@ public class Experiment implements Cloneable {
             globalVlan.removePorts(vlanports);
             System.out.println("Removed from Experiment : " + vlanports);
         }
-        
+
         for (VLan vLan : localVlans) {
 
             System.out.println(gson.toJson(vLan));
@@ -541,12 +599,12 @@ public class Experiment implements Cloneable {
 
         // Turning off the Power
         // response = this.turnOff();
-        //    if(response.getStatus() != 200) {
-         //       responseString += (String) response.getEntity();
-         //       responseStatus = 500;
-         //   }
+        // if(response.getStatus() != 200) {
+        // responseString += (String) response.getEntity();
+        // responseStatus = 500;
+        // }
 
-        this.setStatus("stopped");
+        this.setStatus(PossibleState.stopped);
         return Response.status(responseStatus).entity(responseString).build();
     }
 
@@ -584,7 +642,7 @@ public class Experiment implements Cloneable {
                     for (WPort wport : wports) {
                         portList.add(wport.getPort());
                     }
-                    
+
                     vlan = globalVlan;
                     vlan.addPorts(portList);
 
@@ -594,14 +652,13 @@ public class Experiment implements Cloneable {
                         responseStatus = 500;
                         responseString += (String) response.getEntity();
                     }
-                    
+
                 } else {
                     // Local VLan
                     VLan vlan2 = null;
-                    response = ControllerNetGet.getLocalVlan(); 
+                    response = ControllerNetGet.getLocalVlan();
                     if (response.getStatus() == 200) {
-                      
-                        
+
                         vlan2 = gson.fromJson((String) response.getEntity(), VLan.class);
                         vlan2.setName(this.id);
                         System.out.println("Added local VLan: Local " + this.id + "VLan");
@@ -612,51 +669,58 @@ public class Experiment implements Cloneable {
 
                         boolean first = true;
                         String firstEndpoint = null;
-                        // Calculating the Path from one local Port to all the other local ports
+                        // Calculating the Path from one local Port to all the
+                        // other local ports
                         for (String endpoint : wire.getEndpoints()) {
-                           
-                            if(first) {
-                                firstEndpoint = node.getTrunkPortByRole(endpoint);;
+
+                            if (first) {
+                                firstEndpoint = node.getTrunkPortByRole(endpoint);
+                                ;
                                 first = false;
                             } else {
-                                System.out.println("TRUNKPORT LIST ADD " + ControllerData.getPath(firstEndpoint, node.getTrunkPortByRole(endpoint)));
+                                System.out.println("TRUNKPORT LIST ADD "
+                                        + ControllerData.getPath(firstEndpoint,
+                                                node.getTrunkPortByRole(endpoint)));
                                 trunkPortList.addAll(
-                                        ControllerData.getPath(firstEndpoint, node.getTrunkPortByRole(endpoint)));
+                                        ControllerData.getPath(firstEndpoint,
+                                                node.getTrunkPortByRole(endpoint)));
                             }
-                            System.out.println("SWITCHPORT LIST ADD " + node.getPortByRole(endpoint));
+                            System.out.println("SWITCHPORT LIST ADD "
+                                    + node.getPortByRole(endpoint));
                             switchPortList.add(node.getPortByRole(endpoint));
                         }
-                        
+
                         vlan2.addPorts(trunkPortList);
                         String outString = gson.toJson(vlan2);
                         System.out.println("SWITCHPORTLIST " + switchPortList);
                         System.out.println("TRUNKPORTLIST " + trunkPortList);
                         System.out.println("VLAN2 DIE ERSTE TRUNKS: " + outString);
-                        
-                        if(!trunkPortList.isEmpty()) {
+
+                        if (!trunkPortList.isEmpty()) {
                             ControllerNetPut.setTrunkPort(vlan2);
                             vlan2.clear();
-                        
+
                             vlan2.addPorts(switchPortList);
                             ControllerNetPut.addPort(vlan2);
-                            
+
                             vlan2.addPorts(trunkPortList);
                             vlan2.addPorts(switchPortList);
                             localVlans.add(vlan2);
-                        
+
                         } else {
                             vlan2.addPorts(switchPortList);
                             ControllerNetPut.setPort(vlan2);
-                        
+
                             vlan2.addPorts(switchPortList);
                             localVlans.add(vlan2);
                         }
-                        
-                         outString = gson.toJson(vlan2);
+
+                        outString = gson.toJson(vlan2);
                         System.out.println("VLAN2 DIE ZWEITE SWITCHPORTS: " + outString);
-                        System.out.println("Going to Add VLan: " + trunkPortList + switchPortList + " on ID: "
+                        System.out.println("Going to Add VLan: " + trunkPortList + switchPortList
+                                + " on ID: "
                                 + vlan2.getId());
-                    
+
                     } else {
                         responseStatus = 500;
                         responseString += "Could not get a local VLan for '" + node.getId()
@@ -712,7 +776,7 @@ public class Experiment implements Cloneable {
          * if(response.getStatus() != 200) { return response; }
          */
 
-        this.setStatus("running");
+        this.setStatus(PossibleState.running);
         return Response.status(status).entity(responseString).build();
     }
 
@@ -720,19 +784,19 @@ public class Experiment implements Cloneable {
 
         String returnString;
         switch (status) {
-        case "running":
+        case running:
             returnString = ControllerNetGet.isConsistent(globalVlan);
             for (VLan vLan : localVlans) {
-                returnString+= ControllerNetGet.isConsistent(vLan);
+                returnString += ControllerNetGet.isConsistent(vLan);
             }
             return returnString;
-        case "paused":
+        case paused:
             returnString = ControllerNetGet.isConsistent(globalVlan);
             for (VLan vLan : localVlans) {
-                returnString+= ControllerNetGet.isConsistent(vLan);
+                returnString += ControllerNetGet.isConsistent(vLan);
             }
             return returnString;
-        case "stopped":
+        case stopped:
             return ControllerNetGet.isConsistent(globalVlan);
         default:
             return null;
@@ -740,4 +804,64 @@ public class Experiment implements Cloneable {
     }
     // TODO consistency check auch auf ports
     // TODO: testen mit mehrern lokalen vlans
+
+    public void changeDefaultConfig(Config newDefaultConfig) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void addPorts(Set<WPort> addedPorts) {
+        // TODO Auto-generated method stub
+        
+        
+        
+        
+        
+    }
+    
+    /**
+     * Removes the set of WPorts from this experiment.
+     * 
+     * To remove the WPorts the 
+     * @param removePorts
+     * @return
+     */
+    public Response removePorts(Set<WPort> removePorts) {
+        switch (status) {
+        case paused:
+            return removePortsPaused(removePorts);
+        case stopped:
+            return removePortsStopped(removePorts);
+        default:
+            return Response.status(500).entity("Can not do that in state " + status.toString()).build();
+        }
+    }
+
+    private Response removePortsStopped(Set<WPort> removePorts) {
+
+        wports.remove(removePorts);
+        return Response.ok().build();
+   
+    }
+
+    private Response removePortsPaused(Set<WPort> removePorts) {
+
+        Response response;
+        LinkedList<String> switchportsToRemove = new LinkedList<String>();
+        
+        for (WPort wPort : removePorts) {
+            switchportsToRemove.add(wPort.getPort());
+        }
+        
+        response = ControllerNetPut.removePort(switchportsToRemove, globalVlan.getId());
+        
+        if(response.getStatus() != 200) {
+            return response;
+        } else {
+            wports.remove(removePorts);
+            globalVlan.removePorts(switchportsToRemove);
+            return Response.ok().build();
+        }
+    }
+
 }

@@ -127,6 +127,22 @@ public class NetGet {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
+    @Path("/isFreeOnNc/{enc}")
+    public Response isFree(@PathParam("enc") String encoded) {
+        
+        String decoded = Base64.decodeAsString(encoded);
+        VLan vlan = gson.fromJson(decoded, VLan.class);
+        
+        if(vlan.isFreeOnNC()) {
+            return Response.ok("true").build();
+        } else {
+            return Response.ok("false").build();
+        }
+        
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("/staticConsistency/{net}")
     public Response getPowerConsistency(@PathParam("net") String net) {
         

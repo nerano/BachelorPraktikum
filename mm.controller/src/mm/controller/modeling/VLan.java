@@ -42,9 +42,11 @@ public class VLan {
     }
     
     public void addPorts(LinkedList<String> list) {
-
         portList.addAll(list);
-
+    }
+    
+    public void addPorts(Set<String> list) {
+        portList.addAll(list);
     }
     
     public void setName(String name) {

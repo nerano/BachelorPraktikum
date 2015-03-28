@@ -127,7 +127,7 @@ public class VLan {
             Response response = nc.getEgressAndUntaggedPorts(id);
             
             if (response.getStatus() != 200) {
-                // TODO errorhandling
+                returnBuilder.append(((String[]) response.getEntity())[0]);
             } else {
                 String[] sa = (String[]) response.getEntity();
                 egress = sa[0];
@@ -137,7 +137,7 @@ public class VLan {
             response = nc.getAllPvids();
             
             if (response.getStatus() != 200) {
-                // TODO errorhandling
+                returnBuilder.append((String) response.getEntity());
             } else {
                 pvids = (int[]) response.getEntity();
             }
@@ -190,17 +190,47 @@ public class VLan {
     }
     
     /**
+     * Checks if a VLAN ID is free on all NetComponents.
      * 
-     * @return
+     * @return  true if VLAN ID is free on all NetComponents, false otherwise
      */
     public boolean isFree() {
         System.out.println("IS FREE ACALLED");
         LinkedList<NetComponent> ncList = NetData.getAllNetComponents();
         
-        
         System.out.println(Arrays.asList(ncList).toString());
         
         for (NetComponent nc : ncList) {
+            nc.start();
+            System.out.println("NCID " + nc.getId());
+            System.out.println("vlanId " + id);
+            if(!nc.isFree(id)) {
+                System.out.println("On " + nc.getId() +"vlan " + id + " is " + nc.isFree(id));
+                nc.stop();
+                return false;
+            }
+            nc.stop();
+        }
+        return true;
+    }
+    
+    /**
+     * Checks if a VLAN ID is free on the list of NetComponents which are in the
+     * portList of this VLAN.
+     * 
+     * @return true if VLAN ID is free on all NetComponents, false otherwise
+     */
+    public boolean isFreeOnNC() {
+       
+        System.out.println("IS FREEONNC ACALLED");
+        
+        HashMap<String, LinkedList<Integer>> map = portListToHashMap(portList);
+        NetComponent nc;
+        
+        for (Entry<String, LinkedList<Integer>> entry : map.entrySet()) {
+            
+            String ncId = entry.getKey();
+            nc = NetData.getNetComponentById(ncId);
             nc.start();
             System.out.println("NCID " + nc.getId());
             System.out.println("vlanId " + id);

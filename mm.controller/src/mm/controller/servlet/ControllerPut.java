@@ -1,6 +1,8 @@
 package mm.controller.servlet;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,6 +17,7 @@ import mm.controller.main.ControllerData;
 import mm.controller.main.Initialize;
 import mm.controller.modeling.Config;
 import mm.controller.modeling.Experiment;
+import mm.controller.modeling.Experiment.PossibleState;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.WPort;
 
@@ -25,6 +28,91 @@ import com.google.gson.GsonBuilder;
 public class ControllerPut {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    /**
+     * 
+     * @param data
+     * @return
+     */
+    @PUT
+    @Path("/editExp")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
+    public Response editExp(String data) {
+
+        Experiment newExp = gson.fromJson(data, Experiment.class);
+        Experiment oldExp = (ControllerData.getExpById(newExp.getId()));
+
+        if (oldExp == null) {
+            return Response.status(404).entity("Could not find Experiment with name "
+                    + newExp.getName()).build();
+        }
+
+        PossibleState expState = oldExp.getStatus();
+
+        switch (expState) {
+        case running:
+            return Response.status(403).
+                    entity("Can not do this in status " + expState.toString()).build();
+        case stopped:
+            return editExpStopped(oldExp, newExp);
+        case paused:
+            return editExpPaused(oldExp, newExp);
+        default:
+            return Response.status(500).entity("Could not determine status").build();
+        }
+    }
+
+    /**
+     * 
+     * @param oldExp
+     * @param newExp
+     * @return
+     */
+    private Response editExpStopped(Experiment oldExp, Experiment newExp) {
+
+        // Changing Default Config //
+        Config oldDefaultConfig = oldExp.getDefaultConfig();
+        Config newDefaultConfig = ControllerData.getConfig(newExp.getDefaultConfig().getName());
+
+        if (!oldDefaultConfig.equals(newDefaultConfig)) {
+            oldExp.changeDefaultConfig(newDefaultConfig);
+        }
+
+        // Adding and removing WPORTS //
+        LinkedList<WPort> oldWports = oldExp.getWports();
+        LinkedList<WPort> newWports = new LinkedList<WPort>();
+        for (WPort wPort : newExp.getWports()) {
+            newWports.add(ControllerData.getWportById(wPort.getId()));
+        }
+
+        Set<WPort> addedPorts = new HashSet<WPort>();
+        Set<WPort> removedPorts = new HashSet<WPort>();
+
+        for (WPort wPort : newWports) {
+            if (!oldWports.contains(wPort)) {
+                addedPorts.add(wPort);
+            }
+        }
+
+        for (WPort wPort : oldWports) {
+            if (!newWports.contains(wPort)) {
+                removedPorts.add(wPort);
+            }
+        }
+
+        oldExp.addPorts(addedPorts);
+        oldExp.removePorts(removedPorts);
+
+        // Adding and removing Nodes //
+
+        return null;
+    }
+
+    private Response editExpPaused(Experiment oldExp, Experiment newExp) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /**
      * Creates a new Experiment.
@@ -50,14 +138,13 @@ public class ControllerPut {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
     public Response addNewExperiment(String data) {
 
-        
         // TODO VMs anlegen
-        
+
         System.out.println(data);
-        
+
         Experiment oldExp = gson.fromJson(data, Experiment.class);
         Config config;
-        Config defaultConfig = ControllerData.getConfig("APU1");//ControllerData.getConfig(oldExp.getDefaultConfig().getName());
+        Config defaultConfig = ControllerData.getConfig(oldExp.getDefaultConfig().getName());
         String responseString;
         String name = oldExp.getName();
         String user = oldExp.getUser();
@@ -81,7 +168,6 @@ public class ControllerPut {
 
             // Create new Experiment with full Data
             Experiment experiment = new Experiment(name, user, defaultConfig);
-            experiment.setStatus("stopped");
 
             LinkedList<NodeObjects> nodeList = new LinkedList<NodeObjects>();
             LinkedList<WPort> wPortList = new LinkedList<WPort>();
@@ -89,18 +175,15 @@ public class ControllerPut {
             // Transfer all Nodes from the sent experiment to the new experiment
             for (NodeObjects node : oldExp.getList()) {
 
-                // TODO DELETE the next line, only for testing purposes
-                node.setConfig(ControllerData.getConfig("APU1"));
-                // ////////////////////////////////////////////////////
                 nodeId = node.getId();
                 config = node.getConfig();
-                
-                if(config == null) {
+
+                if (config == null) {
                     config = defaultConfig;
-                 } else {
-                     config = ControllerData.getConfig(config.getName());
-                 }
-                
+                } else {
+                    config = ControllerData.getConfig(config.getName());
+                }
+
                 nodeList.add(ControllerData.getNodeById(nodeId));
                 experiment.addNodeConfig(nodeId, config);
             }
@@ -179,9 +262,9 @@ public class ControllerPut {
     @Produces(MediaType.TEXT_PLAIN)
     public Response startExp(String expId) {
         System.out.println("START EXPERIMENT");
-        
+
         Experiment exp = ControllerData.getExpById(expId);
-        
+
         if (exp == null) {
             String responseString = "404, Experiment not found!";
             return Response.status(404).entity(responseString).build();
@@ -194,16 +277,16 @@ public class ControllerPut {
     @Path("/unpause")
     @Produces(MediaType.TEXT_PLAIN)
     public Response unpauseExp(String expId) {
-        
+
         Experiment exp = ControllerData.getExpById(expId);
-        
+
         if (exp == null) {
             String responseString = "404, Experiment not found!";
             return Response.status(404).entity(responseString).build();
         } else {
-          
+
             // Ckeck if experiment is paused
-            if(!exp.getStatus().equals("paused")) {
+            if (!exp.getStatus().equals(Experiment.PossibleState.paused)) {
                 return Response.status(400).entity("Can not do this in the state "
                         + exp.getStatus()).build();
             }
@@ -233,11 +316,11 @@ public class ControllerPut {
             return Response.status(404).entity(responseString).build();
         }
 
-        if (ControllerData.getExpById(expId).getStatus().equals("stopped")) {
+        if (ControllerData.getExpById(expId).getStatus().equals(Experiment.PossibleState.stopped)) {
             return exp.firstPause();
         }
 
-        if (ControllerData.getExpById(expId).getStatus().equals("running")) {
+        if (ControllerData.getExpById(expId).getStatus().equals(Experiment.PossibleState.running)) {
             return exp.pause();
         }
 
@@ -423,7 +506,7 @@ public class ControllerPut {
             return Response.status(404).entity("404, Experiment not found").build();
         }
 
-        if (experiment.getStatus().equals("running")) {
+        if (experiment.getStatus().equals(Experiment.PossibleState.running)) {
             return Response.status(403).entity("Can not do this on status "
                     + experiment.getStatus()).build();
         }
@@ -449,7 +532,7 @@ public class ControllerPut {
             return Response.status(404).entity("404, Experiment not found").build();
         }
 
-        if (experiment.getStatus().equals("running")) {
+        if (experiment.getStatus().equals(Experiment.PossibleState.running)) {
             return Response.status(403).entity("Can not do this on status "
                     + experiment.getStatus()).build();
         }

@@ -36,18 +36,6 @@ public class NetGearGS108Tv2Test {
     }
 
     
-   /** @Test
-    public void testSetTrunkPort(int port, int vlanId, String name) {
-        
-        
-        
-        
-    } **/
-    
-    
-    
-    
-    
     /**
      * Tests the getter and setter for the PVID. Sets a PVID and then gets it
      * back and checks if they both are equals
@@ -405,11 +393,15 @@ public class NetGearGS108Tv2Test {
     @Test
     public void reset() {
 
-        
         NetGearGS108Tv2 ng = new  NetGearGS108Tv2("netgear3", "netgeargs2", null);
+        NetGearGS108Tv2 ng2 = new  NetGearGS108Tv2("netgear3", "netgeargs1", null);
         ng.start();
-        System.out.println(ng.isFree(100));
+        ng.reset();
         ng.stop();
+        
+        ng2.start();
+        ng2.reset();
+        ng2.stop();
         // Response response = nc.getEgressPorts(0);
 
         // System.out.println("STATUS: " + response.getStatus());

@@ -65,7 +65,7 @@ public class NetData {
 
   public static VLan getFreeGlobalVlan() {
 
-    VLan vlan = GLOBAL_VLAN_LIST.getFirst();
+    VLan vlan = GLOBAL_VLAN_LIST.getLast();
     GLOBAL_VLAN_LIST.remove(vlan);
     USED_GLOBAL_VLAN_LIST.add(vlan);
 

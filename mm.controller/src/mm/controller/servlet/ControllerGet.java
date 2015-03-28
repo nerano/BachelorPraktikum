@@ -189,7 +189,7 @@ public class ControllerGet {
             return Response.status(404).entity("404, Experiment not found!").build();
         }
 
-        if(!experiment.getStatus().equals("running")) {
+        if(!experiment.getStatus().equals(Experiment.PossibleState.running)) {
             return Response.status(403).entity("Can not do this while the experiment is " 
                     + experiment.getStatus()).build();
         }
@@ -339,6 +339,7 @@ public class ControllerGet {
             if (response.getStatus() == 200) {
                 String user = WebAuthTest.getUser(sessionId).readEntity(String.class);
                 if (WebAuthTest.getUserRole(sessionId).readEntity(String.class).equals("admin")) {
+                    System.out.println(gson.toJson(ControllerData.getAllExp()));
                     return Response.ok(gson.toJson(ControllerData.getAllExp())).build();
                 } else {
                     String responseString = gson.toJson(ControllerData.getExpByUser(user));

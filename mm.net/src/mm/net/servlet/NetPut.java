@@ -149,8 +149,10 @@ public class NetPut {
 
         VLan vlan = gson.fromJson(incoming, VLan.class);
         Response response;
+        String responseString = "";
+        int responseStatus = 200;
+        
         NetComponent nc;
-
         HashMap<String, LinkedList<Integer>> map = portListToHashMap(vlan.getPortList());
 
         for (Entry<String, LinkedList<Integer>> entry : map.entrySet()) {
@@ -167,13 +169,14 @@ public class NetPut {
             System.out.println("ENTITY ADDTRUNKPORT: " + (String) response.getEntity());
 
             if (response.getStatus() != 200) {
-                // TODO errorhandling
+                responseStatus = 500;
+                responseString += (String) response.getEntity();
             }
 
             nc.stop();
         }
 
-        return Response.ok().build();
+        return Response.status(responseStatus).entity(responseString).build();
     }
 
     /**
@@ -210,6 +213,8 @@ public class NetPut {
         System.out.println(incoming);
 
         Response response;
+        String responseString = "";
+        int responseStatus = 200;
 
         NetComponent nc;
 
@@ -223,12 +228,19 @@ public class NetPut {
             nc = NetData.getNetComponentById(ncId);
             nc.start();
             response = nc.setPort(portList, vlan.getId(), vlan.getName());
+           
+            if (response.getStatus() != 200) {
+                responseStatus = 500;
+                responseString += (String) response.getEntity();
+            }
+            
+            
             System.out.println("STATUS SETTRUNKPORT: " + response.getStatus());
             System.out.println("ENTITY SETTRUNKPORT: " + (String) response.getEntity());
             nc.stop();
         }
 
-        return Response.ok().build();
+        return Response.status(responseStatus).entity(responseString).build();
     }
 
     /**
@@ -264,8 +276,10 @@ public class NetPut {
 
         VLan vlan = gson.fromJson(incoming, VLan.class);
         Response response;
+        String responseString = "";
+        int responseStatus = 200;
+       
         NetComponent nc;
-
         System.out.println("ADDPORT INCOMING : " + incoming);
 
         HashMap<String, LinkedList<Integer>> map = portListToHashMap(vlan.getPortList());
@@ -283,13 +297,14 @@ public class NetPut {
             System.out.println("ENTITY ADDPORT: " + (String) response.getEntity());
 
             if (response.getStatus() != 200) {
-                // TODO errorhandling
+                responseStatus = 500;
+                responseString += (String) response.getEntity();
             }
 
             nc.stop();
         }
 
-        return Response.ok().build();
+        return Response.status(responseStatus).entity(responseString).build();
     }
 
     /**
@@ -302,7 +317,7 @@ public class NetPut {
      * Expects a VLAN object in JSON format, all ports in this VLAN are removed
      * from the given VLAN ID and are no longer members of this VLAN. Does not
      * destroy the VLAN, even when all members were removed, the VLAN still
-     * exists on the NetComponent.
+     * exists on the NetComponent. PVID/Native ID of the ports is changed to 1.
      * 
      * <li>200: Everything went right, all ports were removed</li>
      * <li>500: If an error occurred this status code is returned with an error
@@ -320,8 +335,10 @@ public class NetPut {
 
         VLan vlan = gson.fromJson(incoming, VLan.class);
         Response response;
+        String responseString = "";
+        int responseStatus = 200;
+        
         NetComponent nc;
-
         System.out.println("REMOVEPORT INCOMING : " + incoming);
 
         HashMap<String, LinkedList<Integer>> map = portListToHashMap(vlan.getPortList());
@@ -338,13 +355,13 @@ public class NetPut {
             System.out.println("ENTITY REMOVEPORT: " + (String) response.getEntity());
 
             if (response.getStatus() != 200) {
-                // TODO errorhandling
+                responseStatus = 500;
+                responseString += (String) response.getEntity();
             }
-
             nc.stop();
         }
 
-        return Response.ok().build();
+        return Response.status(responseStatus).entity(responseString).build();
     }
 
     /**
@@ -353,7 +370,7 @@ public class NetPut {
      * Every port is not longer a member of this VLAN, because the VLAN does not
      * exist anymore after calling this method. Does not remove the VLAN from
      * all NetComponents per se, but only from a NetComponent if it was a member
-     * of the submitted VLAN.
+     * of the submitted VLAN. Sets the PVID of all ports in this VLAN on 1.
      * 
      * <p>
      * URI: <code>baseuri:port/mm.net/rest/put/removePort</code>
@@ -406,12 +423,12 @@ public class NetPut {
             }
 
             if (response.getStatus() != 200) {
-                // TODO errorhandling
-            }
+                responseStatus = 500;
+                responseString += (String) response.getEntity();
+            } 
             nc.stop();
         }
-
-        return Response.ok().build();
+        return Response.status(responseStatus).entity(responseString).build();
     }
 
     /**

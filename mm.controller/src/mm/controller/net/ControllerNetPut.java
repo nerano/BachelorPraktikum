@@ -2,6 +2,7 @@ package mm.controller.net;
 
 import java.net.URI;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -50,6 +51,16 @@ public class ControllerNetPut {
         
     }
     
+    
+    public static Response setTrunkPort(Set<String> ports, int vlanId) {
+        
+        VLan vlan = new VLan(vlanId);
+        vlan.setPortList(ports);
+        return addTrunkPort(vlan);
+        
+    }
+    
+    
     /**
      * Adds the given VLan as TrunkPorts.
      * @param vlan  a VLan with ID and a list of Ports
@@ -70,7 +81,9 @@ public class ControllerNetPut {
         
     }
     
- public static Response setPort(VLan vlan) {
+    
+    
+    public static Response setPort(VLan vlan) {
         
         String data = gson.toJson(vlan);
         
@@ -106,6 +119,22 @@ public class ControllerNetPut {
         return Response.status(response.getStatus()).entity(responseString).build();
     }
     
+    
+   
+    /**
+     * Convenience method for removePort(VLan vlan).
+     * 
+     * @param ports  ports to remove
+     * @param vlanId  VLAN ID on which the ports should be removed
+     * @return
+     */
+    public static Response removePort(LinkedList<String> ports, int vlanId) {
+        
+        VLan vlan = new VLan(vlanId);
+        vlan.addPorts(ports);
+        return removePort(vlan);
+        
+    }
     
     /**
      * Removes the ports from the VLAN.

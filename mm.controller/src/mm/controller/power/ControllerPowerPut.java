@@ -55,9 +55,7 @@ public class ControllerPowerPut {
 		System.out.println("ControllerPowerPut status " + response.getStatus());
 		String responseString = response.readEntity(String.class);
         
-        Response returnR = Response.status(response.getStatus()).entity(responseString).build();
-        
-		return returnR;
+		return Response.status(response.getStatus()).entity(responseString).build();
 	}
 	/**
    * Turns off a set of PowerSources. 
@@ -80,11 +78,6 @@ public class ControllerPowerPut {
    */
 	public static Response turnOff(String parameter) {
 		
-	  
-	  
-	  
-		// String testString = "TESTAEHOME#1;1;end";
-		
 		Response response = putTarget.path("turnOff").request().accept(MediaType.TEXT_PLAIN)
 											.put(
 													Entity.entity(parameter, MediaType.TEXT_PLAIN),
@@ -95,12 +88,9 @@ public class ControllerPowerPut {
 		
 		String responseString = response.readEntity(String.class);
 		
-		Response returnR = Response.status(response.getStatus()).entity(responseString).build();
-		
-		
 		// System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
 
-		return returnR;
+		return Response.status(response.getStatus()).entity(responseString).build();
 	
 	}
 

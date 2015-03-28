@@ -1,6 +1,5 @@
 package mm.net.servlet;
 
-import java.util.LinkedList;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
@@ -8,7 +7,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import mm.net.main.NetData;
-import mm.net.modeling.NetComponent;
 
 
 
@@ -29,27 +27,14 @@ public class NetDelete {
     @Path("globalVLan/{id}")
     public Response freeGlobalVlan(@PathParam("id") int id) {
         
-        LinkedList<NetComponent> ncList = NetData.getAllNetComponents();
-        Response response;
-        String responseString = "";
-        for (NetComponent nc : ncList) {
-            response = nc.destroyVlan(id);
-        
-            if(response.getStatus() != 200) {
-                responseString += (String) response.getEntity();
-            }
-        
-        }
-        
         boolean bool = NetData.freeGlobalVlan(id);
         
         if(!bool) {
-            responseString += "Could not free VLan" + id;
+            String responseString = "Could not free global VLan" + id;
             return Response.status(500).entity(responseString).build();
         }
 
         return Response.ok().build();
-        
     }
 
 
@@ -57,26 +42,11 @@ public class NetDelete {
     @DELETE
     @Path("/localVLan/{id}")
     public Response destroyLocalVlan(@PathParam("id") int id) {
-        LinkedList<NetComponent> ncList = NetData.getAllNetComponents();
-        Response response;
-        String responseString = "";
-        for (NetComponent nc : ncList) {
-            response = nc.destroyVlan(id);
-        
-            for (int i = 1; i <= 6; i++) {
-                    nc.setPVID(i, 1);
-            }
-            
-            if(response.getStatus() != 200) {
-                responseString += (String) response.getEntity();
-            }
-        
-        }
         
         boolean bool = NetData.freeLocalVlan(id);
         
         if(!bool) {
-            responseString += "Could not free local VLan" + id;
+            String responseString = "Could not free local VLan" + id;
             return Response.status(500).entity(responseString).build();
         }
         

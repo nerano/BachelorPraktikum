@@ -7,8 +7,16 @@
 <wire>WARP A~APU 3~*</wire>
 </config>
 
-<config name = "APU">
+<config name = "APU3">
 <wire>APU 3~*</wire>
+</config>
+
+<config name = "APU2">
+<wire>APU 2~*</wire>
+</config>
+
+<config name = "APU1">
+<wire>APU 1~*</wire>
 </config>
 
 <config name = "WARP">
@@ -18,5 +26,11 @@
 <config name = "WARP Special">
 <wire>WARP B~APU 1~*</wire>
 </config>
+
+<config name = "Special">
+<wire>WARP B~WARP A</wire>
+<wire>APU 1~APU 2~APU 3</wire>
+</config>
+
 
 </configs>

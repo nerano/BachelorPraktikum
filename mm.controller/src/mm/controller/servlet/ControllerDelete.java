@@ -54,7 +54,7 @@ public class ControllerDelete {
         if (experiment != null) {
             
             // Check if experiment is stopped
-            if (!experiment.getStatus().equals("stopped")) {
+            if (!experiment.getStatus().equals(Experiment.PossibleState.stopped)) {
                 return Response.status(400).entity("Can not do this in the state "
                         + experiment.getStatus()).build();
             }

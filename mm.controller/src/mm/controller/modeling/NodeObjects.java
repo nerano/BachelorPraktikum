@@ -195,7 +195,7 @@ public class NodeObjects {
 			if (response.getStatus() != 200) {
 				bool = false;
 				sb.append("Error on " + component.getType() + "\n");
-				sb.append(response.readEntity(String.class)).append("\n");
+				sb.append((String) response.getEntity()).append("\n");
 			}
 		}
 		if (bool) {
@@ -221,7 +221,7 @@ public class NodeObjects {
 			if (response.getStatus() != 200) {
 				bool = false;
 				sb.append("Error on " + component.getType() + "\n");
-				sb.append(response.readEntity(String.class)).append("\n");
+				sb.append((String) response.getEntity()).append("\n");
 			}
 		}
 		if (bool) {
