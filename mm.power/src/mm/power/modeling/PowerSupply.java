@@ -4,7 +4,6 @@ package mm.power.modeling;
 import javax.ws.rs.core.Response;
 
 public interface PowerSupply {
-	
 
   public Response turnOn(int socket);
   

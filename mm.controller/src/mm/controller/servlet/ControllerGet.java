@@ -32,15 +32,7 @@ import mm.controller.net.ControllerNetGet;
 @Singleton
 public class ControllerGet {
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    
-    @GET
-    @Path("/test")
-    public Response test() {
-        Initialize.saveToDisk();
-        return Response.ok().build();
-    }
-    
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();    
     
     /**
      * Returns all nodes.
