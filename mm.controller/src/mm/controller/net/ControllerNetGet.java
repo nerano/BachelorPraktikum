@@ -17,6 +17,7 @@ import mm.controller.modeling.Component;
 import mm.controller.modeling.Interface;
 import mm.controller.modeling.NodeObjects;
 import mm.controller.modeling.VLan;
+import mm.controller.modeling.WPort;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.internal.util.Base64;
@@ -52,6 +53,31 @@ public class ControllerNetGet {
         return gson.fromJson(response.readEntity(String.class), type);
     }
 
+    /**
+     * Returns VLAN current VLAN information about the wport.
+     * 
+     * @param wport
+     * @return
+     */
+    public static LinkedList<Interface> getVlanInfo(WPort wport) {
+        
+       String parameter = wport.getPort() + ";end"; 
+       
+       parameter = getUrlEncoded(parameter); 
+        
+       Response response = target.path("vlanStatus").path(parameter).request().get(Response.class);
+
+       Type type = new TypeToken<LinkedList<Interface>>() {
+       }.getType();
+
+       
+       if(response.getStatus() == 200) {
+           return gson.fromJson(response.readEntity(String.class), type);
+       } else {
+           return null;
+       }
+    }
+    
     /**
      * Returns a status String holding the result of the consistency check of
      * the given VLAN.
@@ -170,14 +196,21 @@ public class ControllerNetGet {
         }
 
         sb.append("end");
+        
+        
+        return getUrlEncoded(sb.toString());
+    }
+
+    
+    private static String getUrlEncoded(String toEncode) {
         try {
-            return URLEncoder.encode(sb.toString(), "UTF-8");
+            return URLEncoder.encode(toEncode, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return null;
     }
-
+    
     private static URI getBaseUri() {
         return UriBuilder.fromUri("http://localhost:8080/mm.net/rest/get")
                 .build();

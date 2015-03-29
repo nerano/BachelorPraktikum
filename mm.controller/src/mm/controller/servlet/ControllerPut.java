@@ -40,8 +40,12 @@ public class ControllerPut {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
     public Response editExp(String data) {
 
+        System.out.println("DATA IN EDIT EXP " + data);
+
+        Initialize.saveToDisk();
         Experiment newExp = gson.fromJson(data, Experiment.class);
-        Experiment oldExp = (ControllerData.getExpById(newExp.getId()));
+        // Experiment oldExp = (ControllerData.getExpById(newExp.getId()));
+        Experiment oldExp = (ControllerData.getExpById(newExp.getUser() + newExp.getName()));
 
         if (oldExp == null) {
             return Response.status(404).entity("Could not find Experiment with name "
@@ -55,8 +59,10 @@ public class ControllerPut {
             return Response.status(403).
                     entity("Can not do this in status " + expState.toString()).build();
         case stopped:
+            Initialize.saveToDisk();
             return editExpStopped(oldExp, newExp);
         case paused:
+            Initialize.saveToDisk();
             return editExpPaused(oldExp, newExp);
         default:
             return Response.status(500).entity("Could not determine status").build();
@@ -75,13 +81,31 @@ public class ControllerPut {
         Config oldDefaultConfig = oldExp.getDefaultConfig();
         Config newDefaultConfig = ControllerData.getConfig(newExp.getDefaultConfig().getName());
 
-        if (!oldDefaultConfig.equals(newDefaultConfig)) {
+        boolean defaultConfigChanged = false;
+
+        if (oldDefaultConfig == null && newDefaultConfig == null) {
             oldExp.changeDefaultConfig(newDefaultConfig);
+        } else {
+            if (!oldDefaultConfig.equals(newDefaultConfig)) {
+                defaultConfigChanged = true;
+                oldExp.changeDefaultConfig(newDefaultConfig);
+            }
+        }
+
+        if (defaultConfigChanged) {
+
+            for (NodeObjects node : newExp.getNodes()) {
+                if (node.getConfig().getName().equals("")) {
+                    node.setConfig(newExp.getDefaultConfig());
+                }
+            }
+
         }
 
         // Adding and removing WPORTS //
         LinkedList<WPort> oldWports = oldExp.getWports();
         LinkedList<WPort> newWports = new LinkedList<WPort>();
+
         for (WPort wPort : newExp.getWports()) {
             newWports.add(ControllerData.getWportById(wPort.getId()));
         }
@@ -90,21 +114,97 @@ public class ControllerPut {
         Set<WPort> removedPorts = new HashSet<WPort>();
 
         for (WPort wPort : newWports) {
-            if (!oldWports.contains(wPort)) {
+            boolean toAdd = true;
+            for (WPort wport : oldWports) {
+                if (wport.getId().equals(wPort.getId())) {
+                    toAdd = false;
+                }
+            }
+            if (toAdd) {
                 addedPorts.add(wPort);
             }
         }
 
         for (WPort wPort : oldWports) {
-            if (!newWports.contains(wPort)) {
+            boolean toRemove = true;
+            for (WPort wport : newWports) {
+                if (wport.getId().equals(wPort.getId())) {
+                    toRemove = false;
+                }
+            }
+            if (toRemove) {
                 removedPorts.add(wPort);
             }
         }
+
+        System.out.println("OLD PORTS " + gson.toJson(oldWports));
+        System.out.println("NEW PORTS " + gson.toJson(newWports));
+
+        System.out.println("ADDED PORTS " + gson.toJson(addedPorts));
+        System.out.println("REMOVED PORTS " + gson.toJson(removedPorts));
+
+        System.out.println("OLD PORTS " + oldWports);
+        System.out.println("NEW PORTS " + newWports);
 
         oldExp.addPorts(addedPorts);
         oldExp.removePorts(removedPorts);
 
         // Adding and removing Nodes //
+        LinkedList<NodeObjects> oldNodes = oldExp.getNodes();
+        LinkedList<NodeObjects> newNodes = newExp.getNodes(); // new
+                                                              // LinkedList<NodeObjects>();
+
+        /**
+         * for (NodeObjects node : newExp.getNodes()) {
+         * newNodes.add(ControllerData.getNodeById(node.getId())); }
+         **/
+
+        Set<NodeObjects> addedNodes = new HashSet<NodeObjects>();
+        Set<NodeObjects> removedNodes = new HashSet<NodeObjects>();
+
+        for (NodeObjects node : oldNodes) {
+            boolean toRemove = true;
+            for (NodeObjects node2 : newNodes) {
+                if (node2.getId().equals(node.getId())) {
+                    toRemove = false;
+                    if (!node2.getConfig().getName()
+                            .equals(oldExp.getNodeConfig(node.getId()).getName())) {
+                        toRemove = true;
+                    }
+                }
+            }
+            if (toRemove) {
+                removedNodes.add(node);
+            }
+        }
+
+        for (NodeObjects node : newNodes) {
+            boolean toAdd = true;
+            for (NodeObjects node2 : oldNodes) {
+                if (node.getId().equals(node2.getId())) {
+                    toAdd = false;
+                    if (!oldExp.getNodeConfig(node.getId()).getName()
+                            .equals(node.getConfig().getName())) {
+                        System.out.println("OLD NODE CONFIG" + oldExp.getNodeConfig(node.getId()));
+                        System.out.println("NEW NODE CONFIG " + node.getConfig().getName());
+                        toAdd = true;
+                    }
+                }
+            }
+            if (toAdd) {
+                addedNodes.add(node);
+            }
+        }
+
+        oldExp.removeNodes(removedNodes);
+
+        for (NodeObjects node : addedNodes) {
+            oldExp.addNode(ControllerData.getNodeById(node.getId()),
+                    ControllerData.getConfig(node.getConfig().getName()));
+        }
+
+        System.out.println("REMOVED NODES " + gson.toJson(removedNodes));
+        System.out.println("ADDED NODES " + gson.toJson(addedNodes));
 
         return null;
     }
@@ -178,13 +278,14 @@ public class ControllerPut {
                 nodeId = node.getId();
                 config = node.getConfig();
 
-                if (config == null) {
-                    config = defaultConfig;
-                } else {
+                if (config != null) {
                     config = ControllerData.getConfig(config.getName());
+                } else {
+                    config = ControllerData.getConfig(defaultConfig.getName());
                 }
 
                 nodeList.add(ControllerData.getNodeById(nodeId));
+                System.out.println("added config " + config.getName() + " to node " + nodeId);
                 experiment.addNodeConfig(nodeId, config);
             }
             experiment.setNodeList(nodeList);
@@ -222,6 +323,7 @@ public class ControllerPut {
                 return response;
             }
 
+            experiment.setStatus(PossibleState.stopped);
             ControllerData.addExp(experiment);
             Initialize.saveToDisk();
             responseString = "New Experiment posted/created with ID : " + name;
@@ -248,7 +350,9 @@ public class ControllerPut {
             String responseString = "404, Experiment not found!";
             return Response.status(404).entity(responseString).build();
         }
-        return exp.stop();
+        Response response = exp.stop();
+        Initialize.saveToDisk();
+        return response;
     }
 
     /**
@@ -269,7 +373,9 @@ public class ControllerPut {
             String responseString = "404, Experiment not found!";
             return Response.status(404).entity(responseString).build();
         }
-        return exp.start();
+        Response response = exp.start();
+        Initialize.saveToDisk();
+        return response;
 
     }
 
@@ -290,7 +396,9 @@ public class ControllerPut {
                 return Response.status(400).entity("Can not do this in the state "
                         + exp.getStatus()).build();
             }
-            return exp.unpause();
+            Response response = exp.unpause();
+            Initialize.saveToDisk();
+            return response;
         }
     }
 
@@ -317,11 +425,16 @@ public class ControllerPut {
         }
 
         if (ControllerData.getExpById(expId).getStatus().equals(Experiment.PossibleState.stopped)) {
-            return exp.firstPause();
+
+            Response response = exp.firstPause();
+            Initialize.saveToDisk();
+            return response;
         }
 
         if (ControllerData.getExpById(expId).getStatus().equals(Experiment.PossibleState.running)) {
-            return exp.pause();
+            Response response = exp.pause();
+            Initialize.saveToDisk();
+            return response;
         }
 
         return Response.status(500).entity("Status was not stopped or running, did nothing")
@@ -463,6 +576,8 @@ public class ControllerPut {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
     public Response turnCompOn(String data, @PathParam("comp") String comp) {
 
+        System.out.println("TurnOn Node/Component was called");
+
         NodeObjects node = ControllerData.getNodeById(data);
         String responseString;
 
@@ -500,19 +615,29 @@ public class ControllerPut {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
     public Response turnAllNodesOn(String expId) {
 
+        System.out.println("TurnOn Experiment was called");
+        String responseString;
         Experiment experiment = ControllerData.getExpById(expId);
 
         if (experiment == null) {
             return Response.status(404).entity("404, Experiment not found").build();
         }
 
-        if (experiment.getStatus().equals(Experiment.PossibleState.running)) {
+        if (!experiment.getStatus().equals(Experiment.PossibleState.running)) {
             return Response.status(403).entity("Can not do this on status "
                     + experiment.getStatus()).build();
         }
 
-        return experiment.turnOn();
+        Response response = experiment.turnOn();
 
+        if (response.getStatus() == 200) {
+            responseString = "All Components in the Node turned off";
+            return Response.status(200).entity(responseString).build();
+        } else {
+            responseString = "WARNING: Not all Components were turned off! \n";
+            responseString += (String) response.getEntity();
+            return Response.status(500).entity(responseString).build();
+        }
     }
 
     /**
@@ -526,17 +651,29 @@ public class ControllerPut {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
     public Response turnAllNodesOff(String expId) {
 
+        System.out.println("TurnOff Experiment was called");
+        String responseString;
         Experiment experiment = ControllerData.getExpById(expId);
 
         if (experiment == null) {
             return Response.status(404).entity("404, Experiment not found").build();
         }
 
-        if (experiment.getStatus().equals(Experiment.PossibleState.running)) {
+        if (!experiment.getStatus().equals(Experiment.PossibleState.running)) {
             return Response.status(403).entity("Can not do this on status "
                     + experiment.getStatus()).build();
         }
-        return experiment.turnOff();
+
+        Response response = experiment.turnOff();
+
+        if (response.getStatus() == 200) {
+            responseString = "All Components in the Node turned off";
+            return Response.status(200).entity(responseString).build();
+        } else {
+            responseString = "WARNING: Not all Components were turned off! \n";
+            responseString += (String) response.getEntity();
+            return Response.status(500).entity(responseString).build();
+        }
 
     }
 
@@ -616,6 +753,8 @@ public class ControllerPut {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
     public Response turnCompOff(String data, @PathParam("comp") String comp) {
 
+        System.out.println("TurnOff Node/Component was called");
+
         NodeObjects node = ControllerData.getNodeById(data);
         String responseString;
 
@@ -643,7 +782,6 @@ public class ControllerPut {
             responseString = "404, Node not found! Node: " + data;
             return Response.status(404).entity(responseString).build();
         }
-
     }
 
 }

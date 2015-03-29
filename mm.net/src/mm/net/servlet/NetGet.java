@@ -164,9 +164,8 @@ public class NetGet {
        
         String decoded = Base64.decodeAsString(encoded);
         VLan vlan = gson.fromJson(decoded, VLan.class);
-     
-        String responseString = "Consistency check on ID " + vlan.getId();
-        responseString += vlan.isConsistent();
+        
+        String responseString = vlan.isConsistent();
         
         return Response.status(200).entity(responseString).build();
         

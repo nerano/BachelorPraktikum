@@ -66,7 +66,7 @@ public class NodeObjects {
 				if (component.getPowerSource().equals(powerSource.getId())) {
 					component.setStatus(powerSource.getStatus());
 					
-					if(!powerSource.getStatus()) {
+					if(powerSource.getStatus()) {
 					    nodeStatus = true;
 					}
 				}
@@ -310,9 +310,9 @@ public class NodeObjects {
                 if(exp == null) {
                     responseStatus = 403;
                     responseString = "Node is currently used, but could not identify the user, "
-                            + "because the VLan ID '" + vlanId + "' is not in the system.";
+                            + "because the VLan ID '" + vlanId + "' is not in the system.\n";
                 } else {
-                responseString = "Node '" + this.id + "' is currently used by User: '" + exp.getUser() + "'";
+                responseString = "Node '" + this.id + "' is currently used by User: '" + exp.getUser() + "'\n";
                 responseStatus = 403;
                     }
                 break;

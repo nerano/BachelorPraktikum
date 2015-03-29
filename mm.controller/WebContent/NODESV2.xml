@@ -7,20 +7,20 @@
 	
 	<component type = "WARP">
 		<trunk>NetGear2;1</trunk>
-		<powerSource>AeHome1;3</powerSource>
+		<powerSource>AeHome1;1</powerSource>
 		
 		<name>eth0</name>
-		<port>NetGear2;3</port>
+		<port>NetGear2;2</port>
 		<role>WARP A</role>
 	
 		<name>eth1</name>
-		<port>NetGear2;4</port>
+		<port>NetGear2;3</port>
 		<role>WARP B</role>
 	</component>
 	
 	<component type = "APU">
 		<trunk>NetGear2;1</trunk>
-		<powerSource>AeHome1;1</powerSource>
+		<powerSource>AeHome1;2</powerSource>
 		
 		<name>eth2</name>
 		<port>NetGear2;4</port>
@@ -44,7 +44,7 @@
 		
 	<component type = "APU">
 		<trunk>NetGear1;1</trunk>
-		<powerSource>Cisco1;115</powerSource>
+		<powerSource>AeHome1;3</powerSource>
 		<name>eth0</name>
 		<port>NetGear1;2</port>
 		<role>APU 1</role>

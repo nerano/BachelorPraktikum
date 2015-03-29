@@ -42,18 +42,8 @@ public class ControllerData {
             UndirectedGraph<String, DefaultEdge> topology, String startVertex,
             Set<Config> configSet,
             Set<WPort> portSet) {
-        // ALL_NODES = allNodes;
 
         PORT_TO_INTERFACE = portToInterface;
-
-        // /TOPOLOGY = topology;
-
-        // ALL_CONFIGS = configSet;
-
-        // ALL_WPORTS = portSet;
-
-        // BFSP = new BellmanFordShortestPath<String, DefaultEdge>(TOPOLOGY,
-        // startVertex);
 
         setAllNodes(allNodes);
         setwPorts(portSet);
@@ -254,7 +244,6 @@ public class ControllerData {
     /**
      * Returns the experiment with is affiliated with the given VLan ID.
      * 
-     * 
      * @param id
      * @return
      */
@@ -268,7 +257,7 @@ public class ControllerData {
         }
         return null;
     }
-
+    
     /**
      * Returns a list of all experiments of a user.
      *

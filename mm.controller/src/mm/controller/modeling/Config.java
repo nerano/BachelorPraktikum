@@ -8,8 +8,6 @@ public class Config {
     private String name;
     private Set<Wire> wires;
     private Wire globalWire;
-    private int globals = 0;
-    private int locals = 0;
     
     
     public Config(String name, Set<Wire> wires) {
@@ -19,11 +17,8 @@ public class Config {
         for (Wire wire : wires) {
             
            if (wire.hasUplink()) {
-               globals++;
                globalWire = wire;
-           } else {
-               locals++;
-           }
+           } 
         }
     }
     

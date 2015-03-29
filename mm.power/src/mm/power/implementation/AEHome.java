@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.ws.rs.core.Response;
 
@@ -101,7 +102,8 @@ public class AEHome implements PowerSupply {
       variables = response.toString().split(";");
 
       if (variables[variables.length - 2].equals("end")) {
-        states = variables[20] + variables[21] + variables[22];
+        System.out.println(Arrays.toString(variables));
+          states = variables[20] + variables[21] + variables[22];
       } else {
         responseString = "TransferNotComplete in PowerSupply: "
             + this.toString() + "Response: " + response + "%n";

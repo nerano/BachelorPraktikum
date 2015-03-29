@@ -69,7 +69,7 @@ public class VLan {
     
     public String isConsistent() {
         NetComponent nc;
-        StringBuilder returnBuilder = new StringBuilder("Consistency Check on " + id + "\n");
+        StringBuilder returnBuilder = new StringBuilder("Consistency check on ID " + id + "\n");
         
         HashMap<String, LinkedList<Integer>> map = portListToHashMap(portList);
 
@@ -144,7 +144,7 @@ public class VLan {
             
             nc.stop();
             
-            // Checking is expected configuration is actually present
+            // Checking if expected configuration is actually present
             for (int i = 0; i < consistPvids.length; i++) {
                 if(consistPvids[i] != -1) {
                     if(consistPvids[i] != 1 && pvids[i] != consistPvids[i]) {

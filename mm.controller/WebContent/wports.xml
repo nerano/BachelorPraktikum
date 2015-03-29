@@ -6,15 +6,22 @@
 		
 		<id>testport</id>
 		<port>NetGear1;3</port>
-		<trunk>NetGear1;2</trunk>
+		<trunk>NetGear1;1</trunk>
 		<building>building1</building>
 		<room>room1</room>
 	
 		<id>testport1</id>
 		<port>NetGear1;4</port>
-		<trunk>NetGear1;2</trunk>
+		<trunk>NetGear1;1</trunk>
 		<building>building1</building>
 		<room>room1</room>
 		
+		<id>testport2</id>
+		<port>NetGear2;4</port>
+		<trunk>NetGear2;1</trunk>
+		<building>building1</building>
+		<room>room1</room>
+		
+				
 	</wport>
 	

@@ -20,7 +20,6 @@ import mm.controller.power.ControllerPowerGet;
 
 public class Experiment implements Cloneable {
 
-    private transient Gson          gson        = new GsonBuilder().setPrettyPrinting().create();
     private String                  id;
     private LinkedList<NodeObjects> nodes       = new LinkedList<NodeObjects>();
     private LinkedList<VLan>        localVlans  = new LinkedList<VLan>();
@@ -41,8 +40,8 @@ public class Experiment implements Cloneable {
         paused
     };
 
-    private PossibleState status = PossibleState.stopped;
-    private Config         defaultConfig;
+    private PossibleState status;
+    private Config        defaultConfig;
 
     public Experiment(String name, String user, Config defaultConfig) {
 
@@ -120,7 +119,7 @@ public class Experiment implements Cloneable {
             list.add(vlan.getId());
         }
 
-        System.out.println(gson.toJson(this));
+        // System.out.println(gson.toJson(this));
         if (globalVlan == null) {
             System.out.println("GLOBAL VLAN IS NULL ON GET ALL VLAN IDS");
         }
@@ -234,7 +233,28 @@ public class Experiment implements Cloneable {
         int responseStatus = 200;
 
         // Destroy and free global VLAN
-        response = ControllerNetPut.removeVlan(globalVlan);
+        response = destroyGlobalVlan();
+
+        if (response.getStatus() != 200) {
+            System.out.println((String) response.getEntity());
+            responseString += (String) response.getEntity();
+            responseStatus = 500;
+        }
+
+        // TODO VMs l�schen
+        return Response.status(responseStatus).entity(responseString).build();
+
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private Response destroyGlobalVlan() {
+
+        String responseString = "";
+        int responseStatus = 200;
+        Response response = ControllerNetPut.removeVlan(globalVlan);
 
         if (response.getStatus() != 200) {
             System.out.println((String) response.getEntity());
@@ -244,23 +264,7 @@ public class Experiment implements Cloneable {
             response = ControllerNetDelete.freeGlobalVlan(globalVlan.getId());
         }
 
-        for (VLan vlan : this.localVlans) {
-
-            response = ControllerNetPut.removeVlan(vlan);
-
-            if (response.getStatus() != 200) {
-                System.out.println((String) response.getEntity());
-                responseString += (String) response.getEntity();
-                responseStatus = 500;
-            }
-
-            ControllerNetDelete.freeLocalVlan(vlan.getId());
-
-        }
-
-        // TODO VMs l�schen
         return Response.status(responseStatus).entity(responseString).build();
-
     }
 
     /**
@@ -270,6 +274,7 @@ public class Experiment implements Cloneable {
      */
     public Response addGlobalVlan() {
 
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Response response = ControllerNetGet.getGlobalVlan();
 
         if (response.getStatus() == 200) {
@@ -311,9 +316,10 @@ public class Experiment implements Cloneable {
             Config config = nodeConfigs.get(node.getId());
 
             Wire wire = config.getGlobalWire();
-
-            for (String role : wire.getEndpoints()) {
-                targetTrunkPorts.add(node.getTrunkPortByRole(role));
+            if (wire != null) {
+                for (String role : wire.getEndpoints()) {
+                    targetTrunkPorts.add(node.getTrunkPortByRole(role));
+                }
             }
         }
 
@@ -360,6 +366,7 @@ public class Experiment implements Cloneable {
         return null;
     }
 
+    
     /**
      * Adds a Node in the experiment state "stopped".
      * 
@@ -372,8 +379,11 @@ public class Experiment implements Cloneable {
      */
     private Response addNodeStopped(NodeObjects node, Config config) {
         Response response;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         // TODO globale vlans
         Set<String> portsToAdd = new HashSet<String>();
+        Set<String> trunkPortsToAdd = new HashSet<String>();
+        
 
         // Getting all trunkports which could possibly be added
         for (Wire wire : config.getWires()) {
@@ -381,20 +391,26 @@ public class Experiment implements Cloneable {
                 portsToAdd.add(node.getTrunkPortByRole(role));
             }
         }
-        portsToAdd.removeAll(globalVlan.getPortList());
-        System.out.println("PORTS TO ADD IN ADDNODE " + portsToAdd);
+        
+        for (String port : portsToAdd) {
+            trunkPortsToAdd.addAll(ControllerData.getPath(port));
+        }
+        
+        trunkPortsToAdd.removeAll(globalVlan.getPortList());
+        System.out.println("PORTS TO ADD IN ADDNODE " + trunkPortsToAdd);
+      
         // Check if VLAN is available on the new NetComponents
-
-        if (portsToAdd.isEmpty()) {
+        if (trunkPortsToAdd.isEmpty()) {
             nodes.add(node);
             nodeConfigs.put(node.getId(), config);
             return Response.ok("Added Node " + node.getId()).build();
         }
 
-        boolean available = ControllerNetGet.isFreeOnNc(portsToAdd, globalVlan.getId());
+        boolean available = ControllerNetGet.isFreeOnNc(trunkPortsToAdd, globalVlan.getId());
 
         if (available) {
-            response = ControllerNetPut.setTrunkPort(portsToAdd, globalVlan.getId());
+            response = ControllerNetPut.setTrunkPort(trunkPortsToAdd, globalVlan.getId(),
+                    globalVlan.getName());
 
             if (response.getStatus() != 200) {
                 return Response.status(500).entity("Failed adding Node "
@@ -402,18 +418,25 @@ public class Experiment implements Cloneable {
                         (String) response.getEntity()).build();
             }
 
-            globalVlan.addPorts(portsToAdd);
+            globalVlan.addPorts(trunkPortsToAdd);
             nodes.add(node);
             nodeConfigs.put(node.getId(), config);
 
             return Response.ok("Added Node " + node.getId()).build();
         } else {
-
+            nodes.add(node);
+            nodeConfigs.put(node.getId(), config);
+            System.out.println("ELSE ZWEIG ");
+            System.out.println(gson.toJson(node));
+            System.out.println(config);
+            destroyGlobalVlan();
+            this.addGlobalVlan();
+            response =  deployAllTrunks();
         }
-
+            
         // TODO
 
-        return null;
+        return response;
     }
 
     public Response addNode(NodeObjects node, Config config) {
@@ -543,6 +566,7 @@ public class Experiment implements Cloneable {
         // TODO errohandling
 
         // All Switchports from all Nodes
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Set<String> switchports = new HashSet<String>();
         Set<String> vlanports = new HashSet<String>();
         VLan vlan;
@@ -566,7 +590,7 @@ public class Experiment implements Cloneable {
 
         vlan.setPortList(vlanports);
 
-        System.out.println(gson.toJson(vlan));
+        // System.out.println(gson.toJson(vlan));
         response = ControllerNetPut.removePort(vlan);
 
         if (response.getStatus() != 200) {
@@ -579,6 +603,7 @@ public class Experiment implements Cloneable {
             System.out.println("Removed from Experiment : " + vlanports);
         }
 
+        LinkedList<VLan> localVlansToRemove = new LinkedList<VLan>();
         for (VLan vLan : localVlans) {
 
             System.out.println(gson.toJson(vLan));
@@ -592,11 +617,12 @@ public class Experiment implements Cloneable {
                         + (String) response.getEntity();
             } else {
                 // Remove all removed ports from the internal representation
-                localVlans.remove(vLan);
+                localVlansToRemove.add(vLan);
             }
             ControllerNetDelete.freeLocalVlan(vLan.getId());
         }
 
+        localVlans.removeAll(localVlansToRemove);
         // Turning off the Power
         // response = this.turnOff();
         // if(response.getStatus() != 200) {
@@ -609,15 +635,92 @@ public class Experiment implements Cloneable {
     }
 
     /**
+     * Deploys all Switchports from the nodes and ports.
+     * 
+     * Used when starting an experiment to connect all Nodes and WPorts. Does
+     * not deploy any Trunks, because they are deployed earlier on the creation
+     * of the experiment in deployAllTrunks().
+     * 
+     * @return
+     */
+    private Response deployGlobalVlan() {
+
+        Config config;
+        VLan vlan = null;
+        LinkedList<String> portList = new LinkedList<String>();
+        int responseStatus = 200;
+        String responseString = "";
+        String port;
+        Response response;
+
+        for (WPort wport : wports) {
+            portList.add(wport.getPort());
+        }
+
+        for (NodeObjects node : nodes) {
+
+            config = nodeConfigs.get(node.getId());
+
+            for (Wire wire : config.getWires()) {
+
+                if (wire.hasUplink()) {
+                    Set<String> endpoints = wire.getEndpoints();
+                    endpoints.remove("*");
+                    for (String endpoint : endpoints) {
+                        port = node.getPortByRole(endpoint);
+                        portList.add(port);
+                    }
+                }
+            }
+        }
+
+        vlan = globalVlan;
+        vlan.addPorts(portList);
+
+        response = ControllerNetPut.addPort(portList, vlan.getId(), vlan.getName());
+
+        if (response.getStatus() != 200) {
+            responseStatus = 500;
+            responseString += (String) response.getEntity();
+        }
+
+        return Response.status(responseStatus).entity(responseString).build();
+    }
+
+    /**
      * Deploys the Config-VLans
      * 
      * @return
      */
     private Response deployConfigVlans() {
 
+        int responseStatus = 200;
+        String responseString = "";
+        Response response;
+
+        response = deployGlobalVlan();
+
+        if (response.getStatus() != 200) {
+            responseStatus = 500;
+            responseString += (String) response.getEntity();
+        }
+
+        response = deployLocalVlans();
+
+        if (response.getStatus() != 200) {
+            responseStatus = 500;
+            responseString += (String) response.getEntity();
+        }
+
+        System.out.println("DEPLOY RESPONSE STATUS: " + responseStatus);
+
+        return Response.status(responseStatus).entity(responseString).build();
+    }
+
+    private Response deployLocalVlans() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        VLan vlan;
         Config config;
-        VLan vlan = null;
-        String port;
         int responseStatus = 200;
         String responseString = "";
 
@@ -629,40 +732,16 @@ public class Experiment implements Cloneable {
 
             for (Wire wire : config.getWires()) {
 
-                if (wire.hasUplink()) {
-                    // Global VLan
-                    LinkedList<String> portList = new LinkedList<String>();
-                    Set<String> endpoints = wire.getEndpoints();
-                    endpoints.remove("*");
-                    for (String endpoint : endpoints) {
-                        port = node.getPortByRole(endpoint);
-                        portList.add(port);
-                    }
-
-                    for (WPort wport : wports) {
-                        portList.add(wport.getPort());
-                    }
-
-                    vlan = globalVlan;
-                    vlan.addPorts(portList);
-
-                    response = ControllerNetPut.addPort(portList, vlan.getId());
-
-                    if (response.getStatus() != 200) {
-                        responseStatus = 500;
-                        responseString += (String) response.getEntity();
-                    }
-
-                } else {
+                if (!wire.hasUplink()) {
                     // Local VLan
-                    VLan vlan2 = null;
                     response = ControllerNetGet.getLocalVlan();
+
                     if (response.getStatus() == 200) {
 
-                        vlan2 = gson.fromJson((String) response.getEntity(), VLan.class);
-                        vlan2.setName(this.id);
+                        vlan = gson.fromJson((String) response.getEntity(), VLan.class);
+                        vlan.clear();
+                        vlan.setName(this.id);
                         System.out.println("Added local VLan: Local " + this.id + "VLan");
-                        vlan2.setPortList(new HashSet<String>());
 
                         LinkedList<String> trunkPortList = new LinkedList<String>();
                         LinkedList<String> switchPortList = new LinkedList<String>();
@@ -675,7 +754,6 @@ public class Experiment implements Cloneable {
 
                             if (first) {
                                 firstEndpoint = node.getTrunkPortByRole(endpoint);
-                                ;
                                 first = false;
                             } else {
                                 System.out.println("TRUNKPORT LIST ADD "
@@ -690,36 +768,36 @@ public class Experiment implements Cloneable {
                             switchPortList.add(node.getPortByRole(endpoint));
                         }
 
-                        vlan2.addPorts(trunkPortList);
-                        String outString = gson.toJson(vlan2);
+                        vlan.addPorts(trunkPortList);
+                        String outString = gson.toJson(vlan);
                         System.out.println("SWITCHPORTLIST " + switchPortList);
                         System.out.println("TRUNKPORTLIST " + trunkPortList);
                         System.out.println("VLAN2 DIE ERSTE TRUNKS: " + outString);
 
                         if (!trunkPortList.isEmpty()) {
-                            ControllerNetPut.setTrunkPort(vlan2);
-                            vlan2.clear();
+                            ControllerNetPut.setTrunkPort(vlan);
+                            vlan.clear();
 
-                            vlan2.addPorts(switchPortList);
-                            ControllerNetPut.addPort(vlan2);
+                            vlan.addPorts(switchPortList);
+                            ControllerNetPut.addPort(vlan);
 
-                            vlan2.addPorts(trunkPortList);
-                            vlan2.addPorts(switchPortList);
-                            localVlans.add(vlan2);
+                            vlan.addPorts(trunkPortList);
+                            vlan.addPorts(switchPortList);
+                            localVlans.add(vlan);
 
                         } else {
-                            vlan2.addPorts(switchPortList);
-                            ControllerNetPut.setPort(vlan2);
+                            vlan.addPorts(switchPortList);
+                            ControllerNetPut.setPort(vlan);
 
-                            vlan2.addPorts(switchPortList);
-                            localVlans.add(vlan2);
+                            vlan.addPorts(switchPortList);
+                            localVlans.add(vlan);
                         }
 
-                        outString = gson.toJson(vlan2);
+                        outString = gson.toJson(vlan);
                         System.out.println("VLAN2 DIE ZWEITE SWITCHPORTS: " + outString);
                         System.out.println("Going to Add VLan: " + trunkPortList + switchPortList
                                 + " on ID: "
-                                + vlan2.getId());
+                                + vlan.getId());
 
                     } else {
                         responseStatus = 500;
@@ -731,14 +809,28 @@ public class Experiment implements Cloneable {
             }
         }
 
-        System.out.println("DEPLOY RESPONSE STATUS: " + responseStatus);
-
         return Response.status(responseStatus).entity(responseString).build();
+
     }
 
     /**
+     * Starts the experiment.
      * 
-     * @return
+     * <p>
+     * To start the experiment first the availability of all nodes in the
+     * experiment is checked. If at least one node is not available currently,
+     * the starting process is aborted and this will be responded.
+     * </p>
+     * 
+     * <p>
+     * If all nodes are available all switchports from the WPorts and for the
+     * global VLAN are set. Also the Config VLANs are fetched from the
+     * NetService and set for every Node in the experiment. At last all nodes
+     * are powered on.
+     * </p>
+     * 
+     * @return an outbound response object with status code and possible error
+     *         string
      */
     public Response start() {
 
@@ -750,6 +842,15 @@ public class Experiment implements Cloneable {
         // Check availability of nodes
         for (NodeObjects node : nodes) {
             response = node.isAvailable();
+            if (response.getStatus() != 200) {
+                responseString += (String) response.getEntity();
+                status = 500;
+                success = false;
+            }
+        }
+
+        for (WPort wPort : wports) {
+            response = wPort.isAvailable();
             if (response.getStatus() != 200) {
                 responseString += (String) response.getEntity();
                 status = 500;
@@ -802,29 +903,161 @@ public class Experiment implements Cloneable {
             return null;
         }
     }
-    // TODO consistency check auch auf ports
-    // TODO: testen mit mehrern lokalen vlans
 
     public void changeDefaultConfig(Config newDefaultConfig) {
         // TODO Auto-generated method stub
-        
+
     }
 
-    public void addPorts(Set<WPort> addedPorts) {
-        // TODO Auto-generated method stub
-        
-        
-        
-        
-        
+    public Response addPorts(Set<WPort> removePorts) {
+        switch (status) {
+        case paused:
+            return addPortsPaused(removePorts);
+        case stopped:
+            return addPortsStopped(removePorts);
+        default:
+            return Response.status(500).entity("Can not do that in state " + status.toString())
+                    .build();
+        }
     }
-    
+
+    private Response addPortsPaused(Set<WPort> removePorts) {
+        // TODO Auto-generated method stub
+        // TODO ava check
+        return null;
+    }
+
+    /**
+     * Adds a Set of WPorts to the experiment in the stopped state.
+     * 
+     * <p>
+     * A path is calculated to the switchport of every WPort. The method checks
+     * if the global VLAN ID is free on alle the NetComponents on the path. If
+     * yes it adds the ports to the global VLAN.
+     * 
+     * If no the global VLAN is destroyed and a new is fetched from the
+     * NetService. This VLAN has to be free on all NetComponents. So it is safe
+     * to add all Trunkports to this VLAN.
+     * 
+     * @param addedPorts
+     *            a Set of WPorts to add to this experiment
+     * @return an outbound response with status code and possible error string
+     */
+    private Response addPortsStopped(Set<WPort> addedPorts) {
+        // TODO Auto-generated method stub
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Set<WPort> addPortList = new HashSet<WPort>();
+
+        for (WPort wPort : addedPorts) {
+            addPortList.add(ControllerData.getWportById(wPort.getId()));
+        }
+
+        Set<String> trunkPortsToAdd = new HashSet<String>();
+
+        for (WPort wPort : addPortList) {
+
+            System.out.println(gson.toJson(wPort));
+            trunkPortsToAdd.addAll(ControllerData.getPath(wPort.getTrunk()));
+
+        }
+
+        System.out.println("TRUNKPORTSTOADD: " + gson.toJson(trunkPortsToAdd));
+        trunkPortsToAdd.removeAll(globalVlan.getPortList());
+
+        System.out.println("TRUNKPORTSTOADD: " + gson.toJson(trunkPortsToAdd));
+        Response response;
+
+        boolean isFree = ControllerNetGet.isFreeOnNc(trunkPortsToAdd, globalVlan.getId());
+
+        if (isFree) {
+            response = ControllerNetPut.setTrunkPort(trunkPortsToAdd, globalVlan.getId(),
+                    globalVlan.getName());
+
+            if (response.getStatus() != 200) {
+                return response;
+            }
+
+            wports.addAll(addPortList);
+        } else {
+            wports.addAll(addPortList);
+            destroyGlobalVlan();
+            this.addGlobalVlan();
+            deployAllTrunks();
+        }
+
+        return Response.ok().build();
+    }
+
+    public Response removeNodes(Set<NodeObjects> removeNodes) {
+        switch (status) {
+        case paused:
+            return removeNodesPaused(removeNodes);
+        case stopped:
+            return removeNodesStopped(removeNodes);
+        default:
+            return Response.status(500).entity("Can not do that in state " + status.toString())
+                    .build();
+        }
+    }
+
+    private Response removeNodesPaused(Set<NodeObjects> removeNodes) {
+        return null;
+    }
+
+    /**
+     * Removes a Node from this experiment in the state "stopped".
+     * 
+     * <p>
+     * To remove a node in stopped state the node is removed from the internal
+     * representation. It is removed from the node list and the key:value pair
+     * from the hashmap nodeConfigs is also removed.
+     * </p>
+     *
+     * @param removeNodes
+     *            set of nodes to remove from this experiment
+     * @return an outbound response with status code and possible error string
+     */
+    private Response removeNodesStopped(Set<NodeObjects> removeNodes) {
+
+        LinkedList<NodeObjects> removeNodeList = new LinkedList<NodeObjects>();
+
+        for (NodeObjects node : removeNodes) {
+            for (NodeObjects nodeToRemove : nodes) {
+                if (nodeToRemove.getId().equals(node.getId())) {
+                    removeNodeList.add(nodeToRemove);
+                    nodeConfigs.remove(nodeToRemove.getId());
+                }
+            }
+        }
+
+        nodes.removeAll(removeNodeList);
+        return Response.ok().build();
+    }
+
     /**
      * Removes the set of WPorts from this experiment.
      * 
-     * To remove the WPorts the 
+     * <p>
+     * What to do to removing the WPorts depends on the state of the experiment.
+     * </p>
+     * 
+     * <p>
+     * In the stopped state there is little to do, the port is removed from the
+     * internal list of ports. The already set Trunkports can stay on the
+     * hardware, they are deleted on the deleting the whole experiment.
+     * </p>
+     * 
+     * <p>
+     * In the paused state the switchport from the WPort is freed and the
+     * switchports are removed from the globalVlan, also the port is removed
+     * from the internal representation.
+     * </p>
+     * 
      * @param removePorts
-     * @return
+     *            Set of WPorts to remove from this experiment
+     * @return an outbound response with status code and possible error string
      */
     public Response removePorts(Set<WPort> removePorts) {
         switch (status) {
@@ -833,35 +1066,75 @@ public class Experiment implements Cloneable {
         case stopped:
             return removePortsStopped(removePorts);
         default:
-            return Response.status(500).entity("Can not do that in state " + status.toString()).build();
+            return Response.status(500).entity("Can not do that in state " + status.toString())
+                    .build();
         }
     }
 
+    /**
+     * Removes the Set of Ports, when the experiment is stopped.
+     * 
+     * @param removePorts
+     * @return an outbound response with status code and possible error string
+     */
     private Response removePortsStopped(Set<WPort> removePorts) {
 
-        wports.remove(removePorts);
+        LinkedList<WPort> removePortList = new LinkedList<WPort>();
+
+        for (WPort wPort : removePorts) {
+            for (WPort wport : wports) {
+                if (wport.getId().equals(wPort.getId())) {
+                    removePortList.add(wport);
+                }
+            }
+        }
+
+        wports.removeAll(removePortList);
         return Response.ok().build();
-   
+
     }
 
+    /**
+     * Removes the Set of Ports, when the experiment is paused.
+     * 
+     * @param removePorts
+     * @return an outbound response with status code and possible error string
+     */
     private Response removePortsPaused(Set<WPort> removePorts) {
 
         Response response;
         LinkedList<String> switchportsToRemove = new LinkedList<String>();
-        
+        LinkedList<WPort> removePortList = new LinkedList<WPort>();
+
         for (WPort wPort : removePorts) {
             switchportsToRemove.add(wPort.getPort());
+
+            for (WPort wport : wports) {
+                if (wport.getId().equals(wPort.getId())) {
+                    removePortList.add(wport);
+                }
+            }
+
         }
-        
-        response = ControllerNetPut.removePort(switchportsToRemove, globalVlan.getId());
-        
-        if(response.getStatus() != 200) {
+
+        response = ControllerNetPut.removePort(switchportsToRemove, globalVlan.getId(),
+                globalVlan.getName());
+
+        if (response.getStatus() != 200) {
             return response;
         } else {
-            wports.remove(removePorts);
+            wports.remove(removePortList);
             globalVlan.removePorts(switchportsToRemove);
             return Response.ok().build();
         }
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public LinkedList<NodeObjects> getNodes() {
+        return this.nodes;
     }
 
 }

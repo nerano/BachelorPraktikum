@@ -43,18 +43,15 @@ public class ControllerPowerPut {
 	 */
 	public static Response turnOn(String parameter) {
 	
-		// String testString = "TESTAEHOME#1;1;end";
 		
 		Response response = putTarget.path("turnOn").request().accept(MediaType.TEXT_PLAIN)
 											.put(
 													Entity.entity(parameter, MediaType.TEXT_PLAIN),
 																						Response.class);	
 	
-		//System.out.println(parameter);
-		// System.out.println("POWERTEST " + response.getStatus() + response.readEntity(String.class));
 		System.out.println("ControllerPowerPut status " + response.getStatus());
 		String responseString = response.readEntity(String.class);
-        
+        System.out.println(responseString);
 		return Response.status(response.getStatus()).entity(responseString).build();
 	}
 	/**

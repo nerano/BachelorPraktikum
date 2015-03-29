@@ -52,11 +52,11 @@ public class ControllerNetPut {
     }
     
     
-    public static Response setTrunkPort(Set<String> ports, int vlanId) {
+    public static Response setTrunkPort(Set<String> ports, int vlanId, String name) {
         
-        VLan vlan = new VLan(vlanId);
+        VLan vlan = new VLan(name, vlanId);
         vlan.setPortList(ports);
-        return addTrunkPort(vlan);
+        return setTrunkPort(vlan);
         
     }
     
@@ -98,9 +98,9 @@ public class ControllerNetPut {
     }
     
     
-    public static Response addPort(LinkedList<String> ports, int vlanId) {
+    public static Response addPort(LinkedList<String> ports, int vlanId, String name) {
         
-        VLan vlan = new VLan(vlanId);
+        VLan vlan = new VLan(name, vlanId);
         vlan.addPorts(ports);
         return addPort(vlan);
         
@@ -128,9 +128,9 @@ public class ControllerNetPut {
      * @param vlanId  VLAN ID on which the ports should be removed
      * @return
      */
-    public static Response removePort(LinkedList<String> ports, int vlanId) {
+    public static Response removePort(LinkedList<String> ports, int vlanId, String name) {
         
-        VLan vlan = new VLan(vlanId);
+        VLan vlan = new VLan(name, vlanId);
         vlan.addPorts(ports);
         return removePort(vlan);
         

@@ -22,9 +22,10 @@ public class VLan {
         this.id = id;
     }
 
-    public VLan(String name, int id, boolean global) {
+    public VLan(String name, int id) {
 
         this.id = id;
+        this.name = name;
     }
 
     
@@ -51,6 +52,10 @@ public class VLan {
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getName() {
+        return this.name;
     }
     
     public void clear() {

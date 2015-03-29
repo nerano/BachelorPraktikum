@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import mm.controller.main.ControllerData;
+import mm.controller.main.Initialize;
 import mm.controller.modeling.Experiment;
 
 @Path("/delete")
@@ -51,10 +52,11 @@ public class ControllerDelete {
 
         Response response;
         String responseString;
+        
         if (experiment != null) {
             
             // Check if experiment is stopped
-            if (!experiment.getStatus().equals(Experiment.PossibleState.stopped)) {
+            if(!Experiment.PossibleState.stopped.equals(experiment.getStatus())) {
                 return Response.status(400).entity("Can not do this in the state "
                         + experiment.getStatus()).build();
             }
@@ -62,6 +64,7 @@ public class ControllerDelete {
             // Destroy all data from the experiment
             experiment.destroy();
             ControllerData.removeExp(experiment);
+            Initialize.saveToDisk();
             responseString = "Experiment with ID '" + id + "' was removed";
             response = Response.status(200).entity(responseString).build();
             return response;
