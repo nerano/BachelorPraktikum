@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import mm.controller.auth.WebAuthTest;
+import mm.controller.auth.Authentification;
 import mm.controller.exclusion.NoStatusNodeStrat;
 import mm.controller.exclusion.OnlyConfigName;
 import mm.controller.main.ControllerData;
@@ -232,7 +232,7 @@ public class ControllerGet {
             @PathParam("id") String id) {
 
         String responseString;
-        Response response = WebAuthTest.checkSession(sessionId);
+        Response response = Authentification.checkSession(sessionId);
         if (sessionId != null) {
             if (response.getStatus() == 200) {
                 if (!(ControllerData.existsExp(id))) {
@@ -334,11 +334,11 @@ public class ControllerGet {
 
         System.out.println(sessionId);
 
-        Response response = WebAuthTest.checkSession(sessionId);
+        Response response = Authentification.checkSession(sessionId);
         if (sessionId != null) {
             if (response.getStatus() == 200) {
-                String user = WebAuthTest.getUser(sessionId).readEntity(String.class);
-                if (WebAuthTest.getUserRole(sessionId).readEntity(String.class).equals("admin")) {
+                String user = Authentification.getUser(sessionId).readEntity(String.class);
+                if (Authentification.getUserRole(sessionId).readEntity(String.class).equals("admin")) {
                     System.out.println(gson.toJson(ControllerData.getAllExp()));
                     return Response.ok(gson.toJson(ControllerData.getAllExp())).build();
                 } else {

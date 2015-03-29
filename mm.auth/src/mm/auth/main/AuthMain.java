@@ -15,7 +15,7 @@ public class AuthMain {
     users = new HashMap<String, UserData>();
     users.put("test", new UserData("test", "standard"));
     users.put("admin", new UserData("0000", "admin"));
-    users.put("sebastian", new UserData("s=8!1", "admin"));
+    users.put("Sebastian", new UserData("s=8!1", "admin"));
   }
 
   /**
@@ -28,6 +28,7 @@ public class AuthMain {
    * <li>200: The given pair of user name and password are valid and saved in users.</li>
    * <li>403: False user name or password.
    *          User name and password does not match the saved information. </li>
+   * </p>
    * 
    * @param user is the authorized user
    * @param pw is password of this active user
@@ -51,6 +52,7 @@ public class AuthMain {
    * 
    * <li>200: If the user name is registered and the role is send.</li>
    * <li>403: Status error if the user name does not exist. </li>
+   * </p>
    * 
    * @param user name for which the role is needed.
    * @return Response with status 200 if user name is known and its role as entity,

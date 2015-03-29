@@ -29,10 +29,9 @@ public class SessionData {
    * @param role of the user using the sessionId
    * @param user name.
    */
-  public SessionData(String sessionId, String role, String user) {
+  public SessionData(String sessionId, String role) {
     this.sessionId = sessionId;
     this.role = role;
-    this.user = user;
   }
   
   public Date getExpire() {
