@@ -90,7 +90,7 @@ public class ControllerServer {
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("template", templateName);
     map.put("name", instanceName);
-    map.put("bridge", "br" + vlanId);
+    map.put("bridge", vlanId);
     map.put("size", diskSize);
     if (!ip.isEmpty()) {
       map.put("ip", ip);

@@ -1,6 +1,6 @@
 package mm.power.parser;
 
-import mm.power.implementation.AeHome;
+import mm.power.implementation.AEHome;
 import mm.power.modeling.PowerSupply;
 
 import org.w3c.dom.Document;
@@ -83,7 +83,7 @@ public class XmlParser {
       node = nodeList.item(counter);
       if (node.getNodeName().equals("id")) {
         switch (type) {
-          case "AeHome": map.put(id, new AeHome(id, type, host)); break;
+          case "AeHome": map.put(id, new AEHome(id, type, host)); break;
           //case "SteckdosePro": map.put(id, new ); break;
           default: break;
         }
@@ -100,7 +100,7 @@ public class XmlParser {
     }
     
     switch (type) {
-      case "AeHome": map.put(id, new AeHome(id, type, host)); break;
+      case "AeHome": map.put(id, new AEHome(id, type, host)); break;
       //case "SteckdosenPro": map.put(id, new ); break;
       default: break;
     }

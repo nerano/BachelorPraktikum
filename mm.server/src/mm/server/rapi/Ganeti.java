@@ -93,6 +93,18 @@ public class Ganeti implements VmServer {
   }
 
   /**
+   * Creates a bridge on the server between an instance and the vlan.
+   * 
+   * @param bridge
+   *          name for the bridge
+   * @param ethernet
+   *          name of the interface for the vlan
+   */
+  private void createBridge(String bridge, String ethernet) {
+    
+  }
+  
+  /**
    * Returns only the name of all instances on the ganeti server.
    * 
    * @return list of all instances of the server
@@ -163,34 +175,33 @@ public class Ganeti implements VmServer {
   @Path("ganeti")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(String param) {
-    target = client.target(getBaseUri());
-    Template temp = null;
     if (param.isEmpty()) {
       return Response.status(409).entity("There are no parameters").build();
     }
-    if (!param.contains("template") || !param.contains("name")
-        || !param.contains("bridge") || !param.contains("size")) {
-      return Response
-          .status(409)
-          .entity(
-              "There is either no template name or no instance name or no bridge "
-                  + "or no disks size").build();
-    }
+    target = client.target(getBaseUri());
     Type type = new TypeToken<HashMap<String, Object>>() {}.getType();
     HashMap<String, Object> create = gson.fromJson(param, type);
-    temp = ServerData.getTemplateList().get(create.get("template"));
-    String instance = gson.toJson(temp);
-    Template vm;
-    vm = gson.fromJson(instance, Template.class);
+    if (create.get("template").toString().isEmpty() || create.get("name").toString().isEmpty()
+        || create.get("bridge").toString().isEmpty() || create.get("size").toString().isEmpty()) {
+      return Response.status(409).entity(
+              "There is either no template name, no instance name, no bridge or no disks size")
+              .build();
+    }
+    Template vm = ServerData.getTemplateList().get(create.get("template"));
     vm.removeLists();
     vm.removeAttribute("id");
     vm.removeAttribute("server");
-    vm.setNicLink(create.get("bridge").toString());
+    int vlanId = Integer.parseInt(create.get("bridge").toString().replace(".0", ""));
+    String name = create.get("name").toString();
+    String ethernet = "eth0." + vlanId;
+    String bridge = "br" + name;
+    this.createBridge(bridge, ethernet);
+    vm.setNicLink(bridge);
     if (create.containsKey("ip")) {
       vm.setNicIp(create.get("ip").toString());
     }
-    vm.setAttribute("instance_name", create.get("name").toString());
-    vm.setDisksSize(Integer.parseInt(create.get("size").toString()));
+    vm.setAttribute("instance_name", name);
+    vm.setDisksSize(Integer.parseInt(create.get("size").toString().replace(".0", "")));
     vm.setLists();
     builder = target.path("instances").request()
         .header("Content-Type", "application/json");
