@@ -24,17 +24,18 @@ import mm.power.modeling.PowerSupply;
  * 
  *
  */
-public class AEHome implements PowerSupply {
+public class AeHome implements PowerSupply {
 
-  private static final int socket = 3; // Three sockets on a Anel Elektronik Home version
-  private String id;
-  private String host;
-  private String type;
-  private String states;
+  private static final int socket = 3; // Three sockets on a Anel Elektronik
+                                        // Home version
+  private String           id;
+  private String           host;
+  private String           type;
+  private String           states;
 
-  private String URL_STRG;
-  private String URL_CTRL;
-  private String USER_BASE64;
+  private String           URL_STRG;
+  private String           URL_CTRL;
+  private String           USER_BASE64;
 
   // private String TEST_USER = "adminanel";
 
@@ -49,7 +50,7 @@ public class AEHome implements PowerSupply {
    * @param host
    *          hostname or IP of the PowerSupply
    */
-  public AEHome(String id, String type, String host) {
+  public AeHome(String id, String type, String host) {
 
     this.id = id;
 
@@ -72,9 +73,10 @@ public class AEHome implements PowerSupply {
    */
   private Response getStates() {
 
-    String states, responseString;
+    String states;
+    String responseString;
     StringBuffer response = new StringBuffer();
-
+    BufferedReader in = null;
     try {
 
       URL url = new URL(URL_STRG);
@@ -87,7 +89,7 @@ public class AEHome implements PowerSupply {
 
       connection.setRequestProperty("Authorization", USER_BASE64);
 
-      BufferedReader in = new BufferedReader(new InputStreamReader(
+      in = new BufferedReader(new InputStreamReader(
           connection.getInputStream()));
 
       String inputLine;
@@ -103,7 +105,7 @@ public class AEHome implements PowerSupply {
 
       if (variables[variables.length - 2].equals("end")) {
         System.out.println(Arrays.toString(variables));
-          states = variables[20] + variables[21] + variables[22];
+        states = variables[20] + variables[21] + variables[22];
       } else {
         responseString = "TransferNotComplete in PowerSupply: "
             + this.toString() + "Response: " + response + "%n";
@@ -117,7 +119,6 @@ public class AEHome implements PowerSupply {
           + this.toString();
       e.printStackTrace();
       return Response.status(500).entity(responseString).build();
-    
 
     } catch (java.net.UnknownHostException e) {
       responseString = "UnknownHostException in PowerSupply: "
@@ -140,6 +141,14 @@ public class AEHome implements PowerSupply {
       responseString = "IOException in PowerSupply: " + this.toString();
       e.printStackTrace();
       return Response.status(500).entity(responseString).build();
+    } finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
     }
 
   }
@@ -150,13 +159,14 @@ public class AEHome implements PowerSupply {
    * 
    * @param socket
    *          A number from the Range of {1, 2 , 3}
-   * @return boolean true if the toggle was successful and false if not
+   * @return 200 if the toggle was successful and 500 if not, with an error
+   *         String in the message body
    */
   public Response toggle(int socket) {
-
+    DataOutputStream wr = null;
     try {
 
-      if (socket > AEHome.socket) {
+      if (socket > AeHome.socket) {
         String responseString = "Socketnumber exceeds existing sockets on: "
             + this.toString();
         return Response.status(500).entity(responseString).build();
@@ -176,7 +186,7 @@ public class AEHome implements PowerSupply {
       String urlParameters = "F" + (socket - 1) + "=T";
 
       connection.setDoOutput(true);
-      DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+      wr = new DataOutputStream(connection.getOutputStream());
       wr.writeBytes(urlParameters);
       wr.flush();
       wr.close();
@@ -188,10 +198,7 @@ public class AEHome implements PowerSupply {
       } else {
         return Response.status(500).build();
       }
-
-    }
-
-    catch (MalformedURLException e) {
+    } catch (MalformedURLException e) {
       String responseString = "MalformedURLException in PowerSupply: "
           + this.toString();
       e.printStackTrace();
@@ -207,6 +214,14 @@ public class AEHome implements PowerSupply {
       String responseString = "IOException in PowerSupply: " + this.toString();
       e.printStackTrace();
       return Response.status(500).entity(responseString).build();
+    } finally {
+      try {
+        if (wr != null) {
+          wr.close();
+        }
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
     }
 
   }
@@ -223,7 +238,7 @@ public class AEHome implements PowerSupply {
    */
   public Response turnOff(int socket) {
 
-    if (socket > AEHome.socket) {
+    if (socket > AeHome.socket) {
       String responseString = "Socketnumber exceeds existing sockets on: "
           + this.toString();
       return Response.status(500).entity(responseString).build();
@@ -259,16 +274,17 @@ public class AEHome implements PowerSupply {
   /**
    * If this method is called the given socket is turned on. If the socket is
    * already turned on the state does not change. If the socket could not turned
-   * on false is returned.
+   * on 500 is returned.
    * 
    * @param socket
    *          The socket to turn on, one from the following values[1/2/3]
-   * @return true if the socket is on afterwards, false if not.
+   * @return 200 if the socket is on afterwards. 500 if not and an error String
+   *         in the message body
    * 
    */
   public Response turnOn(int socket) {
 
-    if (socket > AEHome.socket) {
+    if (socket > AeHome.socket) {
       String responseString = "Socketnumber exceeds existing sockets on: "
           + this.toString();
       return Response.status(500).entity(responseString).build();
@@ -304,7 +320,11 @@ public class AEHome implements PowerSupply {
    * Returns states from all sockets of the outlet in the form
    * "[0/1][0/1][0/1]", where 0 is off and 1 is on.
    * 
-   * @return A String with all states from the sockets
+   * <p>
+   * If the status could be retrieved the status code 200(OK) is returned, if
+   * there was an error the status code 500(Internal Server Error) is returned.
+   * 
+   * @return an outbound response object with status code and message body
    */
   public Response status() {
     return getStates();
@@ -312,27 +332,32 @@ public class AEHome implements PowerSupply {
 
   /**
    * Returns the state of a given socket "[0/1]" where 0 is off and 1 is on.
+   *
+   * <p>
+   * If the status could be retrieved the status code 200(OK) is returned, if
+   * there was an error the status code 500(Internal Server Error) is returned.
    * 
    * @param socket
    *          one from the following values [1/2/3]
-   * @return A String with the state of the socket
+   * @return an outbound response object with status code and message body
    * 
    */
   public Response status(int socket) {
 
-    String responseString, sentence;
-    if (socket > AEHome.socket) {
+    String responseString;
+    String sentence;
+    if (socket > AeHome.socket) {
       responseString = "Socketnumber exceeds existing sockets on: "
           + this.toString();
       return Response.status(500).entity(responseString).build();
     }
 
-    Response r = getStates();
+    Response response = getStates();
 
-    if (r.getStatus() == 200) {
-      states = (String) r.getEntity();
+    if (response.getStatus() == 200) {
+      states = (String) response.getEntity();
     } else {
-      return r;
+      return response;
     }
 
     if (states.charAt(0) == '0' || states.charAt(0) == '1') {
@@ -374,14 +399,19 @@ public class AEHome implements PowerSupply {
     this.host = host;
   }
 
+  /**
+   * Overrides the toString() method. Returns ID, Type and Host as a String.
+   * 
+   * @return a String representation of the AeHome
+   */
   public String toString() {
 
-    StringBuffer b = new StringBuffer();
-    b.append("\n");
-    b.append("ID: " + this.id + " \n");
-    b.append("Type: " + this.type + "\n");
-    b.append("Host " + this.host + "\n");
-    return b.toString();
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("\n");
+    buffer.append("ID: " + this.id + " \n");
+    buffer.append("Type: " + this.type + "\n");
+    buffer.append("Host " + this.host + "\n");
+    return buffer.toString();
   }
 
 }

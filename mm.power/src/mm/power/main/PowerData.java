@@ -8,12 +8,12 @@ public class PowerData {
 
   private static HashMap<String, PowerSupply> POWERSUPPLY_MAP = new HashMap<String, PowerSupply>();
 
-   PowerData(HashMap<String, PowerSupply> powerList) {
-    POWERSUPPLY_MAP = powerList;
+  PowerData(HashMap<String, PowerSupply> powerMap) {
+    setPowerSupplyMap(powerMap);
   }
 
-  public HashMap<String, PowerSupply> getPowerList() {
-    return POWERSUPPLY_MAP;
+  private static void setPowerSupplyMap(HashMap<String, PowerSupply> map) {
+    POWERSUPPLY_MAP = map;
   }
 
   /**
@@ -24,11 +24,8 @@ public class PowerData {
    * @return PowerSupply with the ID, null if no PowerSupply was found
    */
   public static PowerSupply getById(String id) {
-
     PowerSupply ps;
-
     ps = POWERSUPPLY_MAP.get(id);
-
     return ps;
   }
 
@@ -47,8 +44,8 @@ public class PowerData {
    * 
    * @param ps
    *          PowerSupply to remove
-   * @return boolean true if PowerSupply was in the list and was removed, false if
-   *         PowerSupply was not in the list
+   * @return boolean true if PowerSupply was in the list and was removed, false
+   *         if PowerSupply was not in the list
    */
   public static boolean removePs(PowerSupply ps) {
 
@@ -63,7 +60,8 @@ public class PowerData {
     }
   }
 
-  /** Removes a PowerSupply from the global data.
+  /**
+   * Removes a PowerSupply from the global data.
    * 
    * @param id
    *          ID of the PowerSupply to remove
@@ -81,7 +79,8 @@ public class PowerData {
     }
   }
 
-  /** Returns if a PowerSupply with a given ID exists in the global data.
+  /**
+   * Returns if a PowerSupply with a given ID exists in the global data.
    * 
    * @param id
    *          PowerSupply ID to look for
@@ -94,7 +93,6 @@ public class PowerData {
     } else {
       return false;
     }
-
   }
 
 }

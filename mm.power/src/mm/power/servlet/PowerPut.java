@@ -26,6 +26,7 @@ public class PowerPut {
    * The string has to be in the message entity and must end with an "end". If
    * everything was successfully turned on the response holds the status 200.
    * </p>
+   *
    * <p>
    * Possible HTTP States:
    * <li>200: Everything went right, all PowerSources could be turned on.</li>
@@ -33,6 +34,7 @@ public class PowerPut {
    * specified in the returned Response body. Occurs only if there was no other
    * error
    * </p>
+   *
    * <p>
    * <li>500: Something in the process of turning on did not work as intended.
    * E.g. UnknownHost or Timeout on the HTTP connection. Cause and specific
@@ -47,16 +49,15 @@ public class PowerPut {
    */
   @PUT
   @Consumes(MediaType.TEXT_PLAIN)
-  @Produces(MediaType.TEXT_PLAIN)
+  @Produces(MediaType.APPLICATION_JSON)
   @Path("/turnOn")
   public Response turnOn(String incoming) {
     try {
-      System.out.println("POWER SERVLET TURN ON");
       String[] parts = incoming.split(";");
       int size = (parts.length - 1) / 2;
       int socket;
       int responseStatus = -1;
-      
+
       String[] ids = new String[size];
       String id;
       StringBuffer buffer = new StringBuffer();
@@ -64,9 +65,10 @@ public class PowerPut {
 
       int[] sockets = new int[size];
 
-      if (!(parts[parts.length - 1].equals("end")) || parts.length < 3 || (parts.length - 1) % 2 != 0) {
-        String responseString = "Transfer not complete or wrong format in PowerPut turnOn. Message : "
-            + incoming;
+      if (!(parts[parts.length - 1].equals("end")) || parts.length < 3
+          || (parts.length - 1) % 2 != 0) {
+        String responseString = "Transfer not complete or wrong format in PowerPut turnOn. "
+            + "Message : " + incoming;
         return Response.status(500).entity(responseString).build();
       }
 
@@ -98,7 +100,7 @@ public class PowerPut {
             responseStatus = 500;
 
           } else {
-              responseStatus = 200;
+            responseStatus = 200;
           }
         }
       }
@@ -147,7 +149,6 @@ public class PowerPut {
   @Consumes(MediaType.TEXT_PLAIN)
   @Path("/turnOff")
   public Response turnOff(String incoming) {
-    System.out.println(incoming);
     try {
       String[] parts = incoming.split(";");
       String id;
@@ -155,17 +156,17 @@ public class PowerPut {
       int size;
       int socket;
       int responseStatus = -1;
-      
+
       PowerSupply ps;
-      
+
       size = (parts.length - 1) / 2;
       String[] ids = new String[size];
       int[] sockets = new int[size];
 
       if (!(parts[parts.length - 1].equals("end")) || parts.length < 3
           || (parts.length - 1) % 2 != 0) {
-        String responseString = "Transfer not complete or wrong format in PowerPut turnOn. Message : "
-            + incoming;
+        String responseString = "Transfer not complete or wrong format in PowerPut turnOn."
+            + " Message : " + incoming;
         return Response.status(500).entity(responseString).build();
       }
 
@@ -191,11 +192,10 @@ public class PowerPut {
           Response response = ps.turnOff(socket);
 
           System.out.println("POWER PUT STATUS : " + response.getStatus());
-          
-          
+
           if (response.getStatus() != 200) {
             String string = (String) response.getEntity();
-            
+
             buffer.append(string).append("\n");
             responseStatus = 500;
 
@@ -204,14 +204,10 @@ public class PowerPut {
           }
         }
       }
-      System.out.println("DIESE LETZTE RESPONSE");
-      System.out.println("responsestatus : " + responseStatus);
-      System.out.println("buffer: " + buffer.toString());
       buffer.append("ALLES LIEF GUT \n");
       return Response.status(responseStatus).entity(buffer.toString()).build();
-  
-    } catch (Exception e) {
 
+    } catch (Exception e) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       e.printStackTrace(pw);

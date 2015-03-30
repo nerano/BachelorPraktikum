@@ -63,9 +63,22 @@ public class NetData {
     return new LinkedList<NetComponent>(ALL_NETCOMPONENT.values());
   }
 
+  /**
+   * Returns a free global VLAN.
+   * 
+   * <p>
+   * Does NOT check if the VLan is free on all NetComponents.
+   * </p>
+   * 
+   * If the list of global VLANs is empty it returns null. The returned global
+   * VLAN is removed from this list and added to the list of used global VLANs
+   * and is not returned anymore until it is freed and added back to the list.
+   * 
+   * @return  a VLan from the list of global VLans. 
+   */
   public static VLan getFreeGlobalVlan() {
 
-    VLan vlan = GLOBAL_VLAN_LIST.getLast();
+    VLan vlan = GLOBAL_VLAN_LIST.peekLast();
     GLOBAL_VLAN_LIST.remove(vlan);
     USED_GLOBAL_VLAN_LIST.add(vlan);
 
@@ -122,62 +135,58 @@ public class NetData {
     return nc;
 
   }
-  
-  
+
   public static VLan getStaticVlan(String net) {
-      
-      switch (net) {
+
+    switch (net) {
     case "power":
-        return getPowerVlan();
+      return getPowerVlan();
     case "management":
-        return getManagementVlan();
+      return getManagementVlan();
     default:
-        return null;
+      return null;
     }
-      
-      
+
   }
-  
+
   private static VLan getPowerVlan() {
-      VLan vlan = new VLan(POWER_VLAN_ID);
-      LinkedList<String> portList = new LinkedList<String>();
-      
-      for (NetComponent nc : new LinkedList<NetComponent> (ALL_NETCOMPONENT.values())) {
-        
-          for(Integer port : nc.getTrunks()) {
-              portList.add(nc.getId() + ";" + port);
-          }
+    VLan vlan = new VLan(POWER_VLAN_ID);
+    LinkedList<String> portList = new LinkedList<String>();
+
+    for (NetComponent nc : new LinkedList<NetComponent>(ALL_NETCOMPONENT.values())) {
+
+      for (Integer port : nc.getTrunks()) {
+        portList.add(nc.getId() + ";" + port);
+      }
     }
-      
-      
-      for (StaticComponent sc : STATIC_COMPONENTS) {
-        if(sc.getType().equals("power")) {
-            portList.add(sc.getPort());
-        }
+
+    for (StaticComponent sc : STATIC_COMPONENTS) {
+      if (sc.getType().equals("power")) {
+        portList.add(sc.getPort());
+      }
     }
-      vlan.addPorts(portList);
-      return vlan;
+    vlan.addPorts(portList);
+    return vlan;
   }
-  
+
   private static VLan getManagementVlan() {
-      VLan vlan = new VLan(MANAGE_VLAN_ID);
-      LinkedList<String> portList = new LinkedList<String>();
-      
-      for (NetComponent nc : new LinkedList<NetComponent> (ALL_NETCOMPONENT.values())) {
-        
-          for(Integer port : nc.getTrunks()) {
-              portList.add(nc.getId() + ";" + port);
-          }
+    VLan vlan = new VLan(MANAGE_VLAN_ID);
+    LinkedList<String> portList = new LinkedList<String>();
+
+    for (NetComponent nc : new LinkedList<NetComponent>(ALL_NETCOMPONENT.values())) {
+
+      for (Integer port : nc.getTrunks()) {
+        portList.add(nc.getId() + ";" + port);
+      }
     }
-      
-      
-      for (StaticComponent sc : STATIC_COMPONENTS) {
-        if(sc.getType().equals("management")) {
-            portList.add(sc.getPort());
-        }
+
+    for (StaticComponent sc : STATIC_COMPONENTS) {
+      if (sc.getType().equals("management")) {
+        portList.add(sc.getPort());
+      }
     }
-      vlan.addPorts(portList);
-      return vlan;
+    vlan.addPorts(portList);
+    return vlan;
   }
 
   public static int getGLOBAL_VLAN_RANGE_MAX() {

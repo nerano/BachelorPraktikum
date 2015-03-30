@@ -55,13 +55,13 @@ public class Initialize implements ServletContextListener
         ServletContext context = contextEvent.getServletContext();
         XmlParser parser = new XmlParser();
 
-        BASE_PATH = context.getRealPath("/");
-        NODE_PATH = context.getRealPath("/NODESV2.xml");
-        TOPOLOGY_PATH = context.getRealPath("/topology - 2 netgear.xml");
-        CONFIG_PATH = context.getRealPath("/config.xml");
-        WPORT_PATH = context.getRealPath("/wports.xml");
-        STARTUP_PATH = context.getRealPath("/reloadOnStartup.xml");
-        // POWER_TO_COMPONENT = new HashMap<String, Component>();
+        
+        setBasePath(context.getRealPath("/"));
+        setNodePath(context.getRealPath("/NODESV2.xml"));
+        setTopologyPath(context.getRealPath("/topology - 2 netgear.xml"));
+        setConfigPath(context.getRealPath("/config.xml"));
+        setWportPath(context.getRealPath("/wports.xml"));
+        setStartupPath(context.getRealPath("/reloadOnStartup.xml"));
 
         /* Parsing Startup Info */
         parser.parseXml(STARTUP_PATH);
@@ -110,11 +110,35 @@ public class Initialize implements ServletContextListener
     {
 
     }// end constextDestroyed method
-
+    
+    private static void setBasePath(String path) {
+      BASE_PATH = path;
+    }
+    
+    private static void setNodePath(String path) {
+      NODE_PATH = path;
+    }
+    
+    private static void setTopologyPath(String path) {
+      TOPOLOGY_PATH = path;
+    }
+    
+    private static void setConfigPath(String path) {
+      CONFIG_PATH = path;
+    }
+    
+    private static void setWportPath(String path) {
+      WPORT_PATH = path;
+    }
+    
+    private static void setStartupPath(String path) {
+      STARTUP_PATH = path;
+    }
     private static void setStartupInfo(HashMap<String, String> map) {
 
         if (map == null) {
             System.out.println("MAP IS NULL");
+            return;
         }
 
         if (map.get("reloadOnStartup").equals("0")) {
@@ -122,7 +146,7 @@ public class Initialize implements ServletContextListener
         } else {
             RELOAD_ON_STARTUP = true;
 
-            if (map.get("reloadFile") != "") {
+            if (!map.get("reloadFile").equals("")) {
                 RELOAD_FILE = map.get("reloadFile");
             } else {
                 RELOAD_FILE = "expList";
@@ -244,7 +268,7 @@ public class Initialize implements ServletContextListener
            
 
         } catch (FileNotFoundException e) {
-            pw.close();
+          if(pw != null) { pw.close(); }  
             e.printStackTrace();
             return false;
         }
