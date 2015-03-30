@@ -320,11 +320,6 @@ public class ControllerGet {
     @Produces({ "json/application", "text/plain" })
     @Path("/exp")
     public Response getAllExp(@HeaderParam("sessionId") String sessionId) {
-        /**
-         * test case if the role management works.
-         **/
-
-        System.out.println(sessionId);
 
         Response response = Authentification.checkSession(sessionId);
         if (sessionId != null) {
