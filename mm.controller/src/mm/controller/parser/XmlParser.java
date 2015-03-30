@@ -278,10 +278,6 @@ public class XmlParser {
         }
       }
 
-      if (node.getNodeName().equals("type")) {
-        nodeobject.setNodeType(node.getTextContent());
-      }
-
       if (node.getNodeName().equals("component")) {
 
         comp = new Component(((Element) node).getAttribute("type"));
@@ -371,9 +367,6 @@ public class XmlParser {
           nodeObjects = new NodeObjects(node.getTextContent());
         }
       } else {
-        if (node.getNodeName().equals("typeName")) {
-          nodeObjects.setNodeType(node.getTextContent());
-        }
         if (node.getNodeName().equals("component")) {
           nodeObjects.addComponent(comp = new Component(node.getTextContent()));
         }

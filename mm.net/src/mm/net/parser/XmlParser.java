@@ -182,15 +182,17 @@ public class XmlParser {
     String[] trunkArray;
     LinkedList<Integer> trunks = null;
     int counter = 0;
+    boolean first = true;
     while (counter < nodeList.getLength()) {
       node = nodeList.item(counter);
       if (node.getNodeName().equals("id")) {
-        map.put(id, NetComponentFac.createNetComponent(type, id, host, trunks));
-        System.out.println("Type: " + type);
-        System.out.println("Host: " + host);
-        System.out.println("ID: " + id);
-        System.out.println(trunks);
-        id = node.getTextContent();
+        if(first) {
+            id = node.getTextContent(); 
+            first = false;
+        } else {
+              map.put(id, NetComponentFac.createNetComponent(type, id, host, trunks));
+              id = node.getTextContent();
+          }
       } else {
 
         if (node.getNodeName().equals("trunk")) {

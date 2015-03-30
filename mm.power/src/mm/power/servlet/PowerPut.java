@@ -4,8 +4,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -48,11 +50,14 @@ public class PowerPut {
    *         error notifications
    */
   @PUT
-  @Consumes(MediaType.TEXT_PLAIN)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+  @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
   @Path("/turnOn")
   public Response turnOn(String incoming) {
-    try {
+    
+      System.out.println("POWER PUT INCOMING: " + incoming);
+      
+      try {
       String[] parts = incoming.split(";");
       int size = (parts.length - 1) / 2;
       int socket;
@@ -146,7 +151,8 @@ public class PowerPut {
    *         error notifications
    */
   @PUT
-  @Consumes(MediaType.TEXT_PLAIN)
+  @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+  @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
   @Path("/turnOff")
   public Response turnOff(String incoming) {
     try {
