@@ -30,20 +30,26 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-
+/**
+ * Implements the Interface NetComponent for the Type "NetGearGS108Tv2".
+ * 
+ * Implements all the methods from NetComponent, they are realized with the
+ * Simple Network Management Protocol.
+ */
 public class NetGearGS108Tv2 implements NetComponent {
 
-  private Target target;
-  private String host;
-  private String identifier;
-  private final int ports = 8;
-  private String community = "private";
-  private Snmp snmp = null;
-  private int retries = 2;
-  private int timeout = 1500;
-  private LinkedList<Integer> trunks = new LinkedList<Integer>();
+  private Target              target;
+  private String              host;
+  private String              identifier;
+  private final int           ports     = 8;
+  private String              community = "private";
+  private Snmp                snmp      = null;
+  private int                 retries   = 2;
+  private int                 timeout   = 1500;
+  private LinkedList<Integer> trunks    = new LinkedList<Integer>();
 
   /**
+   * Creates a new instance of the NetGearGS108Tv2.
    * 
    * @param identifier
    *          unique id
@@ -52,7 +58,7 @@ public class NetGearGS108Tv2 implements NetComponent {
    * @param trunks
    *          list of trunkports
    */
-  public NetGearGS108Tv2(String identifier, String add,
+  NetGearGS108Tv2(String identifier, String add,
       LinkedList<Integer> trunks) {
 
     this.identifier = identifier;
@@ -64,6 +70,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   /**
    * Has to be called before issuing SNMP commands to the NetComponent.
+   *
    * <p>
    * 200 status code if the startup went right, 500 if it went wrong. More
    * details in the message body.
@@ -86,6 +93,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   /**
    * Call this after issuing all SNMP commands to clear all associated objects.
+   *
    * <p>
    * 200 if the stopping went right, 500 if something went wrong. More details
    * in the message body.
@@ -116,7 +124,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   /**
    * Sets the PVID on the given port.
-   * 
+   *
    * <p>
    * 
    * @param port
@@ -140,6 +148,17 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   }
 
+  /**
+   * Resets the NetGearGS108Tv2.
+   * 
+   * All VLANs are destroyed and all PVIDs are set to 1.
+   * 
+   * If the reset is successful the status code 200(OK) is returned, if not the
+   * code 500(Internal Server Error) is returned, with an error description in
+   * the message body.
+   * 
+   * @return  an outbound response object with status code and error message.
+   */
   public Response reset() {
 
     String pvidString = ".1.3.6.1.4.1.4526.11.1.3.9.0";
@@ -154,11 +173,12 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   /**
    * Sets the egress (outgoing) ports on VLan with the provided VLan ID.
-   * 
+   *
    * <p>
    * Specify in the String which ports should be egress ports. The String can be
    * a HexString of length two or a binary String of length 8, where a 0 means
    * that the port is no egress port and a 1 that the port is an egress port.
+   *
    * <p>
    * Examples:
    * 
@@ -167,6 +187,7 @@ public class NetGearGS108Tv2 implements NetComponent {
    * 
    * <div style="text-indent:30px;"> <code>00001111</code> sets the last four
    * ports on egress mode, same as <code>0F</code> </div>
+   *
    * <p>
    * 
    * @param vlanId
@@ -210,12 +231,13 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   /**
    * Sets the untagged ports on VLan with the provided VLan ID.
-   * 
+   *
    * <p>
    * Specify in the String which ports should be untagged ports. The String can
    * be a HexString of length two or a binary String of length 8, where a 0
    * means that the port is no untagged port and a 1 that the port is an
    * untagged port.
+   *
    * <p>
    * Examples:
    * 
@@ -224,6 +246,7 @@ public class NetGearGS108Tv2 implements NetComponent {
    * 
    * <div style="text-indent:30px;"> <code>00001111</code> sets the last four
    * ports on untagged mode, same as <code>0F</code> </div>
+   *
    * <p>
    * 
    * @param vlanId
@@ -265,12 +288,14 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   }
 
+  @Override
   public Response setTrunkPort(int port, int vlanId, String name) {
     LinkedList<Integer> list = new LinkedList<Integer>();
     list.add(port);
     return setTrunkPort(list, vlanId, name);
   }
 
+  @Override
   public Response setTrunkPort(List<Integer> ports, int vlanId, String name) {
 
     destroyVlan(vlanId);
@@ -278,7 +303,7 @@ public class NetGearGS108Tv2 implements NetComponent {
     String egressPorts = "";
     String untaggedPorts = "";
 
-    for (int i = 1; i <= 8; i++) {
+    for (int i = 1; i <= this.ports; i++) {
       if (ports.contains(i)) {
         egressPorts = egressPorts + "1";
         untaggedPorts = untaggedPorts + "0";
@@ -371,6 +396,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   }
 
+  @Override
   public Response setPort(int port, int vlanId, String name) {
 
     LinkedList<Integer> list = new LinkedList<Integer>();
@@ -380,6 +406,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   }
 
+  @Override
   public Response setPort(List<Integer> ports, int vlanId, String name) {
 
     destroyVlan(vlanId);
@@ -387,7 +414,7 @@ public class NetGearGS108Tv2 implements NetComponent {
     String egressPorts = "";
     String untaggedPorts = "";
 
-    for (int i = 1; i <= 8; i++) {
+    for (int i = 1; i <= this.ports; i++) {
       if (ports.contains(i)) {
         egressPorts = egressPorts + "1";
         untaggedPorts = untaggedPorts + "1";
@@ -569,7 +596,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   /**
    * Sets the RowStatus of the given VLan.
-   * 
+   *
    * <p>
    * <code>
    * 1:active(1) <br>
@@ -586,10 +613,10 @@ public class NetGearGS108Tv2 implements NetComponent {
    */
   public Response setRowStatus(int vlanId, int rowStatus) {
 
-    String rowStatusOID = ".1.3.6.1.2.1.17.7.1.4.3.1.5." + vlanId;
+    String rowStatusOid = ".1.3.6.1.2.1.17.7.1.4.3.1.5." + vlanId;
     Variable rowVar = new Integer32(rowStatus);
 
-    ResponseEvent responseEvent = set(rowStatusOID, rowVar);
+    ResponseEvent responseEvent = set(rowStatusOid, rowVar);
 
     return setHandler(responseEvent, "setRowStatus");
   }
@@ -602,10 +629,10 @@ public class NetGearGS108Tv2 implements NetComponent {
    */
   public Response setStaticName(int vlanId, String name) {
 
-    String staticNameOID = ".1.3.6.1.2.1.17.7.1.4.3.1.1." + vlanId;
+    String staticNameOid = ".1.3.6.1.2.1.17.7.1.4.3.1.1." + vlanId;
     Variable nameVar = new OctetString(name);
 
-    ResponseEvent responseEvent = set(staticNameOID, nameVar);
+    ResponseEvent responseEvent = set(staticNameOid, nameVar);
 
     return setHandler(responseEvent, "setStaticName");
   }
@@ -647,7 +674,7 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   /**
    * Returns the PVID of the given port.
-   * 
+   *
    * <p>
    * 
    * @param port
@@ -697,12 +724,12 @@ public class NetGearGS108Tv2 implements NetComponent {
 
         Vector<? extends VariableBinding> vector = responseEvent.getResponse()
             .getVariableBindings();
-        int i = 0;
+        int count = 0;
         for (VariableBinding vb : vector) {
           System.out.println(vb.toString());
           System.out.println(vb.getVariable());
-          array[i] = vb.getVariable().toInt();
-          i++;
+          array[count] = vb.getVariable().toInt();
+          count++;
         }
         System.out.println(Arrays.toString(array));
         return Response.status(200).entity(array).build();
@@ -720,10 +747,10 @@ public class NetGearGS108Tv2 implements NetComponent {
   public Response getEgressAndUntaggedPorts(int vlanId) {
 
     try {
-      String egressPortsOID = ".1.3.6.1.2.1.17.7.1.4.3.1.2." + vlanId;
-      String untaggedPortsOID = ".1.3.6.1.2.1.17.7.1.4.3.1.4." + vlanId;
+      String egressPortsOid = ".1.3.6.1.2.1.17.7.1.4.3.1.2." + vlanId;
+      String untaggedPortsOid = ".1.3.6.1.2.1.17.7.1.4.3.1.4." + vlanId;
 
-      String[] getArray = { egressPortsOID, untaggedPortsOID };
+      String[] getArray = { egressPortsOid, untaggedPortsOid };
 
       ResponseEvent event = get(getArray);
 
@@ -808,9 +835,9 @@ public class NetGearGS108Tv2 implements NetComponent {
 
   public boolean isFree(int vlanId) {
 
-    String staticOID = ".1.3.6.1.2.1.17.7.1.4.3.1.1." + vlanId;
+    String staticOid = ".1.3.6.1.2.1.17.7.1.4.3.1.1." + vlanId;
 
-    ResponseEvent event = get(staticOID);
+    ResponseEvent event = get(staticOid);
 
     System.out.println(event.toString());
     System.out.println(event.getResponse());
@@ -943,13 +970,13 @@ public class NetGearGS108Tv2 implements NetComponent {
     Variable var;
     VariableBinding varBind;
     PDU pdu = new PDU();
-    int i = 0;
+    int count = 0;
     for (String s : oidStrings) {
       oid = new OID(s);
-      var = variables[i];
+      var = variables[count];
       varBind = new VariableBinding(oid, var);
       pdu.add(varBind);
-      i++;
+      count++;
     }
     pdu.setType(PDU.SET);
     ResponseEvent response = null;
@@ -997,16 +1024,16 @@ public class NetGearGS108Tv2 implements NetComponent {
 
     if (responseEvent != null && responseEvent.getResponse() != null) {
 
-      PDU responsePDU = responseEvent.getResponse();
-      int errorStatus = responsePDU.getErrorStatus();
+      PDU responsePdu = responseEvent.getResponse();
+      int errorStatus = responsePdu.getErrorStatus();
 
       if (errorStatus == PDU.noError) {
-        return Response.ok(responsePDU.getVariableBindings().toString())
+        return Response.ok(responsePdu.getVariableBindings().toString())
             .build();
       } else {
 
-        int errorIndex = responsePDU.getErrorIndex();
-        String errorStatusText = responsePDU.getErrorStatusText();
+        int errorIndex = responsePdu.getErrorIndex();
+        String errorStatusText = responsePdu.getErrorStatusText();
 
         String error = "Error: Failed Request \n" + "ErrorStatus = '"
             + errorStatus + "' \n" + "ErrorIndex = '" + errorIndex + "' \n"
@@ -1045,17 +1072,23 @@ public class NetGearGS108Tv2 implements NetComponent {
   }
 
   /**
+   * Creates an error Response for the given Exception.
+   * 
+   * Returns an outbound Response object with an error description in the
+   * message body and the status code 500.
    * 
    * @param where
-   * @param e
-   * @return
+   *          where the error occurred (e.g. method name)
+   * @param exception
+   *          the exception which was thrown
+   * @return an outbound response object
    */
-  private Response errorHandler(String where, Exception e) {
+  private Response errorHandler(String where, Exception exception) {
 
     StringBuffer sb = new StringBuffer();
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
-    e.printStackTrace(pw);
+    exception.printStackTrace(pw);
 
     sb.append("Error occured in mm.net in ").append(where).append(" on:\n");
     sb.append(this.toString());
@@ -1092,20 +1125,11 @@ public class NetGearGS108Tv2 implements NetComponent {
   public LinkedList<Integer> getTrunks() {
     return trunks;
   }
-
   /**
-   * public String toString(int vlanId) {
-   * 
-   * String name = (String) getStaticName(vlanId).getEntity(); String egress =
-   * (String) getEgressPorts(vlanId).getEntity(); String untagged = (String)
-   * getUntaggedPorts(vlanId).getEntity();
-   * 
-   * StringBuffer sb = new StringBuffer(); sb.append("VLAN " + vlanId + ":\n");
-   * sb.append("Name : '" + name + "' \n"); sb.append("Egress : '" + egress +
-   * "' \n"); sb.append("Untagged : '" + untagged + "' \n"); return
-   * sb.toString(); }
-   **/
-
+   * Returns a String with the Identifier, Host, Trunkports, TargetAddress, Community
+   * Retries and Timeout values of the NetGearGS108Tv2.
+   * @return  a String representation of the NtGearGS108Tv2
+   */
   public String toString() {
 
     StringBuffer sb = new StringBuffer();

@@ -24,87 +24,81 @@ import com.google.gson.reflect.TypeToken;
 
 public class ControllerPowerGet {
 
-	private static ClientConfig config = new ClientConfig();
-	private static Client client = ClientBuilder.newClient(config);
-	private static WebTarget powerTarget = client.target(getBaseUri());
+  private static ClientConfig config      = new ClientConfig();
+  private static Client       client      = ClientBuilder.newClient(config);
+  private static WebTarget    powerTarget = client.target(getBaseUri());
 
-	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private static Gson         gson        = new GsonBuilder().setPrettyPrinting().create();
 
-	public LinkedList<PowerSource> status(NodeObjects node)
-			throws UnsupportedEncodingException {
+  public LinkedList<PowerSource> status(NodeObjects node) {
 
-		LinkedList<NodeObjects> list = new LinkedList<NodeObjects>();
-		list.add(node);
-		return status(list);
+    LinkedList<NodeObjects> list = new LinkedList<NodeObjects>();
+    list.add(node);
+    return status(list);
 
-	}
+  }
+  
+  public LinkedList<PowerSource> status(Experiment exp) {
 
-	public LinkedList<PowerSource> status(Experiment exp)
-			throws UnsupportedEncodingException {
+    LinkedList<NodeObjects> list = exp.getList();
+    return status(list);
+  }
+  /**
+   * 
+   * @param nodes
+   * @return
+   */
+  public static LinkedList<PowerSource> status(LinkedList<NodeObjects> nodes) {
 
-		LinkedList<NodeObjects> list = exp.getList();
-		return status(list);
-	}
+    LinkedList<PowerSource> returnList = new LinkedList<PowerSource>();
 
-	public static LinkedList<PowerSource> status(LinkedList<NodeObjects> nodes)
-			 {
+    String parameter = turnNodeListToStatusString(nodes);
 
-		LinkedList<PowerSource> returnList = new LinkedList<PowerSource>();
+    String powerString = powerTarget.path("get").path(parameter).request()
+        .get(String.class);
 
-		String parameter = turnNodeListToStatusString(nodes);
+    Type type = new TypeToken<LinkedList<PowerSource>>() {}.getType();
 
-		String powerString = powerTarget.path("get").path(parameter).request()
-				.get(String.class);
+    returnList = gson.fromJson(powerString, type);
 
-		Type type = new TypeToken<LinkedList<PowerSource>>() {}.getType();
+    return returnList;
 
-		returnList = gson.fromJson(powerString, type);
+  }
 
-		return returnList;
+  private static String turnNodeListToStatusString(LinkedList<NodeObjects> list) {
 
-	}
+    StringBuffer buffer = new StringBuffer();
 
-	private static String turnNodeListToStatusString(LinkedList<NodeObjects> list) {
+    LinkedList<Component> compList;
 
-		StringBuffer buffer = new StringBuffer();
+    for (NodeObjects nodeObject : list) {
 
-		LinkedList<Component> compList;
+      compList = nodeObject.getComponents();
 
-		for (NodeObjects nodeObject : list) {
+      for (Component component : compList) {
 
-			compList = nodeObject.getComponents();
+        buffer.append(component.getPowerSource());
 
-			for (Component component : compList) {
-
-				buffer.append(component.getPowerSource());
-
-				if (buffer.length() > 0) {
-					if (buffer.charAt(buffer.length()-1) != ';') {
-						buffer.append(";");
-					}
-				}
-			}
-		}
-		buffer.append("end");
-
-		try {
-            return URLEncoder.encode(buffer.toString(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return "This will probably never happen, thanks to the JVM";
+        if (buffer.length() > 0) {
+          if (buffer.charAt(buffer.length() - 1) != ';') {
+            buffer.append(";");
+          }
         }
-	}
+      }
+    }
+    buffer.append("end");
 
-	private static URI getBaseUri() {
-		return UriBuilder.fromUri("http://localhost:8080/mm.power/rest/")
-				.build();
-	}
-	
-	
-	
-	
-	
-	
-	
+    try {
+      return URLEncoder.encode(buffer.toString(), "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+      return "This will probably never happen, thanks to the JVM";
+    }
+  }
+
+  private static URI getBaseUri() {
+    return UriBuilder.fromUri("http://localhost:8080/mm.power/rest/")
+        .build();
+  }
 
 }
