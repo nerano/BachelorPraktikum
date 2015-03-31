@@ -57,6 +57,15 @@ public class ControllerPut {
         return Response.status(500).entity("Please specify a default Config!").build();
     }
     
+    if (oldExp.getName().contains("\u00c4") // Umlaut not allowed
+            || oldExp.getId().contains("\u00d6") 
+            || oldExp.getId().contains("\u00dc")
+            || oldExp.getId().contains("\u00e4") 
+            || oldExp.getId().contains("\u00f6")
+            || oldExp.getId().contains("\u00fc")) {
+          return Response.status(500).entity("Umlaut not allowed!").build();
+        }
+    
     // Update the name / ID of the experiment
     ControllerData.getExpById(newExp.getId()).setName(newExp.getName());
     ControllerData.getExpById(newExp.getId()).setId(newExp.getUser() + newExp.getName());

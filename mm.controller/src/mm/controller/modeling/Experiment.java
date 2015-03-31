@@ -784,9 +784,27 @@ public class Experiment {
     }
 
     /**
+     * Deploys the Local VLans for the given list of Nodes.
+     * 
+     * <p>
+     * First of all for each Node the config is retrieved. If the config has a
+     * local VLan described a new local VLan from the NetService is fetched.
+     * </p>
+     * 
+     * <p>
+     * After fetching the local VLan each Trunkport of the Component, which
+     * should be member of the local VLan, is retrieved and a path between these
+     * ports is calculated.
+     * </p>
+     * 
+     * <p>
+     * The Path is added to the local VLan and at last the Switchports, which
+     * should be member of the local VLan are added to it.
+     * </p>
      * 
      * @param nodeList
-     * @return
+     *            a list of nodes which should get local VLans
+     * @return an outbound response object with status code and error message
      */
     private Response deployLocalVlans(LinkedList<NodeObjects> nodeList) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -963,9 +981,9 @@ public class Experiment {
      * <li>running: The Global and all of the Local VLans are checked.</li>
      * <li>paused: The Global and all of the Local VLans are checked</li>
      * <li>stopped: The Global VLan is checked, because there are no local VLans
-     * at this point </li>
+     * at this point</li>
      * 
-     * @return  a consitency report as a String
+     * @return a consitency report as a String
      */
     public String isConsistent() {
 
@@ -993,9 +1011,8 @@ public class Experiment {
     /**
      * Adds a WPort to the experiment.
      * 
-     * 
      * @param removePorts
-     * @return
+     * @return an outbound response with status code and message body as String.
      */
     public Response addPorts(Set<WPort> removePorts) {
         switch (status) {
@@ -1009,6 +1026,31 @@ public class Experiment {
         }
     }
 
+    /**
+     * Adds a Set of WPorts to a paused Experiment.
+     * 
+     * <p>
+     * To do this first the availability of the WPort is checked. If it is not
+     * available the process is aborted.
+     * </p>
+     * 
+     * <p>
+     * If it is available a path to the port is calculated and on every new
+     * NetComponent, which is new to this experiment, is checked if the global
+     * VLan is available. If it is, the path is set and the Switchport of the
+     * WPort is added to the global VLan.
+     * </p>
+     * 
+     * <p>
+     * If the VLan is not available on the new NetComponent the global VLan is
+     * destroyed and a new one is fetched from the NetService. This new VLan has
+     * to be free on all NetComponents.
+     * </p>
+     * 
+     * @param addPorts
+     * @return an outbound response message with status code and message body as
+     *         String
+     */
     private Response addPortsPaused(Set<WPort> addPorts) {
 
         Response response;
@@ -1379,9 +1421,11 @@ public class Experiment {
     public LinkedList<NodeObjects> getList() {
         return nodes;
     }
+
     /**
      * Returns all VLan IDs which are owned by this experiment.
-     * @return  a list of VLan IDs
+     * 
+     * @return a list of VLan IDs
      */
     public LinkedList<Integer> getAllVlanIds() {
         LinkedList<Integer> list = new LinkedList<Integer>();
