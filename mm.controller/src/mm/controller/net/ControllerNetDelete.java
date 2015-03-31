@@ -25,9 +25,9 @@ public class ControllerNetDelete {
     private static WebTarget target = client.target(getBaseUri());
 
     /**
-     * Frees a VLan for further use and deletes it from all NetComponents.
+     * Frees a global VLan for further use and deletes it from all NetComponents.
      * @param id
-     * @return
+     * @return  an outbound response object with status code and error message
      */
     public static Response freeGlobalVlan(int id) {
         
@@ -42,7 +42,11 @@ public class ControllerNetDelete {
         return Response.status(response.getStatus()).entity(responseString).build();
     }
     
-    
+    /**
+     * Frees a local VLan for further use and deletes it from all NetComponents.
+     * @param id
+     * @return an outbound response object with status code and error message
+     */
     public static Response freeLocalVlan(int id) {
         Response response = target.path("localVLan/" + id).request().delete(Response.class);
         
