@@ -43,10 +43,18 @@ public class Experiment {
     private Config        defaultConfig;
 
     /**
+     * Creates a new Experiment with a Name, a User and a default Config
+     * 
+     * <p>
+     * The ID of the experiment is set to user+name
+     * </p>
      * 
      * @param name
+     *            the name of the experiment
      * @param user
+     *            the owner of the experiment
      * @param defaultConfig
+     *            the default config of the expeirment
      */
     public Experiment(String name, String user, Config defaultConfig) {
 
@@ -55,117 +63,6 @@ public class Experiment {
         this.defaultConfig = defaultConfig;
 
         this.id = user + name;
-    }
-
-    public void addNodeConfig(String nodeId, Config config) {
-        nodeConfigs.put(nodeId, config);
-    }
-
-    public Config getDefaultConfig() {
-        return this.defaultConfig;
-    }
-
-    public LinkedList<WPort> getWports() {
-        return wports;
-    }
-
-    public void setWports(LinkedList<WPort> wports) {
-        this.wports = wports;
-    }
-
-    public PossibleState getStatus() {
-        return status;
-    }
-
-    public void setStatus(PossibleState status) {
-        this.status = status;
-    }
-
-    public String getUser() {
-        return this.user;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public LinkedList<PowerSource> status() {
-
-        return ControllerPowerGet.status(nodes);
-
-    }
-
-    public void updateNodeStatusPower(LinkedList<PowerSource> statusList) {
-
-        for (NodeObjects nodeObject : nodes) {
-            nodeObject.updateNodeStatusPower(statusList);
-        }
-    }
-
-    public Config getNodeConfig(String nodeId) {
-        return nodeConfigs.get(nodeId);
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setNodeList(LinkedList<NodeObjects> list) {
-        this.nodes = list;
-    }
-
-    public LinkedList<NodeObjects> getList() {
-        return nodes;
-    }
-
-    public LinkedList<Integer> getAllVlanIds() {
-        LinkedList<Integer> list = new LinkedList<Integer>();
-        for (VLan vlan : localVlans) {
-            list.add(vlan.getId());
-        }
-
-        list.add(globalVlan.getId());
-
-        return list;
-    }
-
-    public boolean contains(NodeObjects node) {
-
-        boolean bool = false;
-        String nodeId = node.getId();
-        for (NodeObjects nodeObjects : nodes) {
-            if (nodeObjects.getId().equals(nodeId)) {
-                bool = true;
-            }
-        }
-
-        return bool;
-    }
-
-    public boolean contains(String nodeId) {
-
-        boolean bool = false;
-
-        for (NodeObjects nodeObjects : nodes) {
-            if (nodeObjects.getId().equals(nodeId)) {
-                bool = true;
-            }
-        }
-        return bool;
-
-    }
-
-    public NodeObjects getById(String nodeId) {
-
-        NodeObjects node = null;
-
-        for (NodeObjects nodeObjects : nodes) {
-            if (nodeObjects.getId().equals(nodeId)) {
-                node = nodeObjects;
-            }
-        }
-
-        return node;
     }
 
     /**
@@ -244,12 +141,16 @@ public class Experiment {
 
         // TODO VMs l�schen
         return Response.status(responseStatus).entity(responseString).build();
-
     }
 
     /**
+     * Destroys the global VLan of this experiment.
      * 
-     * @return
+     * <p>
+     * The VLan is removed from all affiliated NetComponents and then returned
+     * to the NetService for further use.
+     * 
+     * @return an outbound response with status code and possible error message
      */
     private Response destroyGlobalVlan() {
 
@@ -305,16 +206,13 @@ public class Experiment {
     public Response deployAllTrunks() {
 
         VLan vlan = globalVlan;
-
         Set<String> targetTrunkPorts = new HashSet<String>();
-
         LinkedList<String> path;
 
         // Calculating the target Trunkports for each Component for each Node
         for (NodeObjects node : nodes) {
 
             Config config = nodeConfigs.get(node.getId());
-
             Wire wire = config.getGlobalWire();
             if (wire != null) {
                 for (String role : wire.getEndpoints()) {
@@ -349,7 +247,6 @@ public class Experiment {
         // Setting the TrunkPorts for all Nodes and wPorts
         Response response = ControllerNetPut.setTrunkPort(vlan);
         return response;
-
     }
 
     /**
@@ -403,6 +300,26 @@ public class Experiment {
         return Response.status(responseStatus).entity(responseString).build();
     }
 
+    /**
+     * Adds a Node when the experiment is paused.
+     * 
+     * <p>
+     * If the node is already member of this experiment the Config VLans are
+     * removed and the new Config is applied. At last the Node is turned off.
+     * </p>
+     * 
+     * <p>
+     * If the node is new to the experiment first the availability is checked.
+     * If the node is available the trunk ports for the config are set and then
+     * the config VLans themselves are set. At last the Node is turned off.
+     * </p>
+     * 
+     * @param node
+     *            the node to add
+     * @param config
+     *            the config of the node
+     * @return
+     */
     private Response addNodePaused(NodeObjects node, Config config) {
 
         String responseString = "";
@@ -458,6 +375,17 @@ public class Experiment {
     /**
      * Adds a Node in the experiment state "stopped".
      * 
+     * <p>
+     * Calculates the new path to the trunkports and checks if the globalVlan is
+     * already configured there. If it is the global VLan is destroyed and a new
+     * global VLan is added to the experiment. This new global VLan must be free
+     * on all NetComponents.
+     * </p>
+     * 
+     * <p>
+     * Then, or if the global VLan is free on the NetComponents, the path to the
+     * trunkports is set and the Node added to the internal representation of
+     * the experiment.
      * 
      * @param node
      *            node to add
@@ -496,6 +424,7 @@ public class Experiment {
         boolean available = ControllerNetGet.isFreeOnNc(trunkPortsToAdd, globalVlan.getId());
 
         if (available) {
+            // global VLan is available at the new NetComponents
             response = ControllerNetPut.setTrunkPort(trunkPortsToAdd, globalVlan.getId(),
                     globalVlan.getName());
 
@@ -511,11 +440,9 @@ public class Experiment {
 
             return Response.ok("Added Node " + node.getId()).build();
         } else {
+            // global VLan is not available at the new NetComponents
             nodes.add(node);
             nodeConfigs.put(node.getId(), config);
-            System.out.println("ELSE ZWEIG ");
-            System.out.println(gson.toJson(node));
-            System.out.println(config);
             destroyGlobalVlan();
             this.addGlobalVlan();
             response = deployAllTrunks();
@@ -524,12 +451,21 @@ public class Experiment {
         return response;
     }
 
+    /**
+     * Adds a Node to the experiment and sets the VLans depending on the state
+     * of the experiment and the config chosen for the node.
+     * 
+     * @param node
+     *            node to add
+     * @param config
+     *            config for the node
+     * @return outbound response with status code and message body
+     */
     public Response addNode(NodeObjects node, Config config) {
 
         if (!node.isApplicable(config)) {
             return Response.status(500).entity("Node is not applicable for this Config!").build();
         }
-
         switch (status) {
         case running:
             return Response.status(400).entity("Can not do this in status " + status.toString())
@@ -582,7 +518,7 @@ public class Experiment {
         String responseString = "";
         Response response = null;
 
-        // Check availability of nodes
+        // Check availability of all nodes
         for (NodeObjects node : nodes) {
             response = node.isAvailable();
             if (response.getStatus() != 200) {
@@ -592,6 +528,7 @@ public class Experiment {
             }
         }
 
+        // Check availability of all WPorts
         for (WPort wPort : wports) {
             response = wPort.isAvailable();
             if (response.getStatus() != 200) {
@@ -605,15 +542,18 @@ public class Experiment {
             return Response.status(status).entity(responseString).build();
         }
 
-        // Deploying the Config VLans
-        response = deployConfigVlans();
-
+        // Turning off the power
+        response = this.turnOff();
+        if (response.getStatus() != 200) {
+            return response;
+        }
         if (response.getStatus() != 200) {
             return response;
         }
 
-        // Turning off the power
-        response = this.turnOff();
+        // Deploying the Config VLans
+        response = deployConfigVlans();
+
         if (response.getStatus() != 200) {
             return response;
         }
@@ -628,7 +568,8 @@ public class Experiment {
      * Pauses the experiment.
      * 
      * <p>
-     * To do this all the nodes are turned off. If something goes wrong
+     * To do this all the nodes are turned off. If something goes wrong the
+     * Response object holds a specified error message.
      * 
      * @return an Outbound Response Object with status code and message body in
      *         error case
@@ -672,9 +613,7 @@ public class Experiment {
     public Response stop() {
 
         // TODO VMs stoppen
-        // TODO errohandling
 
-        
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Set<String> switchports = new HashSet<String>();
         Set<String> vlanports = new HashSet<String>();
@@ -685,13 +624,13 @@ public class Experiment {
 
         // Turning the power off
         for (NodeObjects node : nodes) {
-            response = node.turnOn();
+            response = node.turnOff();
         }
         if (response.getStatus() != 200) {
             return response;
         }
-        
-        //Adding all Switchports from all Nodes and WPorts
+
+        // Adding all Switchports from all Nodes and WPorts
         for (NodeObjects node : nodes) {
             switchports.addAll(node.getAllSwitchPorts());
         }
@@ -740,7 +679,7 @@ public class Experiment {
         }
 
         localVlans.removeAll(localVlansToRemove);
-       
+
         this.setStatus(PossibleState.stopped);
         return Response.status(responseStatus).entity(responseString).build();
     }
@@ -751,8 +690,13 @@ public class Experiment {
      * Used when starting an experiment to connect all Nodes and WPorts. Does
      * not deploy any Trunks, because they are deployed earlier on the creation
      * of the experiment in deployAllTrunks().
+     *
+     * <p>
+     * All Switchports from the WPorts are connected and every Switchport from a
+     * Node which Role is a member of the global VLan in the config of the node
+     * is connected.
      * 
-     * @return
+     * @return an outbound response object
      */
     private Response deployGlobalVlan(LinkedList<NodeObjects> nodeList, LinkedList<WPort> wportList) {
 
@@ -764,10 +708,14 @@ public class Experiment {
         String port;
         Response response;
 
+        // Get Switchports from the WPorts
         for (WPort wport : wportList) {
             portList.add(wport.getPort());
         }
 
+        // Add the Switchports from the Components which are member of the
+        // global
+        // Experiment VLan
         for (NodeObjects node : nodeList) {
 
             config = nodeConfigs.get(node.getId());
@@ -799,9 +747,14 @@ public class Experiment {
     }
 
     /**
-     * Deploys the Config-VLans
+     * Deploys the Config-VLans.
      * 
-     * @return
+     * Deploys all the Config VLans for this experiment. These are
+     * 
+     * <li>The Switchports which should be member of the global VLan</li> <li>
+     * The local VLans for each node, determined by the chosen configuration</li>
+     * 
+     * @return an outbound response object
      */
     private Response deployConfigVlans() {
 
@@ -809,6 +762,7 @@ public class Experiment {
         String responseString = "";
         Response response;
 
+        // Deploy the Config Ports for the Global VLan
         response = deployGlobalVlan(nodes, wports);
 
         if (response.getStatus() != 200) {
@@ -816,6 +770,7 @@ public class Experiment {
             responseString += (String) response.getEntity();
         }
 
+        // Deploy the local VLans for each node
         response = deployLocalVlans(nodes);
 
         if (response.getStatus() != 200) {
@@ -828,6 +783,11 @@ public class Experiment {
         return Response.status(responseStatus).entity(responseString).build();
     }
 
+    /**
+     * 
+     * @param nodeList
+     * @return
+     */
     private Response deployLocalVlans(LinkedList<NodeObjects> nodeList) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         VLan vlan;
@@ -980,7 +940,7 @@ public class Experiment {
         if (response.getStatus() != 200) {
             return response;
         }
-        
+
         // Deploying the Config VLans
         response = deployConfigVlans();
 
@@ -990,11 +950,23 @@ public class Experiment {
 
         // TODO vms starten
 
-        
         this.setStatus(PossibleState.running);
         return Response.status(status).entity(responseString).build();
     }
 
+    /**
+     * Checks if the VLan is consistent and returns the Consistency Report
+     * 
+     * <p>
+     * What the check includes depends on the state of the Experiment:
+     * 
+     * <li>running: The Global and all of the Local VLans are checked.</li>
+     * <li>paused: The Global and all of the Local VLans are checked</li>
+     * <li>stopped: The Global VLan is checked, because there are no local VLans
+     * at this point </li>
+     * 
+     * @return  a consitency report as a String
+     */
     public String isConsistent() {
 
         String returnString;
@@ -1018,6 +990,13 @@ public class Experiment {
         }
     }
 
+    /**
+     * Adds a WPort to the experiment.
+     * 
+     * 
+     * @param removePorts
+     * @return
+     */
     public Response addPorts(Set<WPort> removePorts) {
         switch (status) {
         case paused:
@@ -1314,6 +1293,29 @@ public class Experiment {
         }
     }
 
+    /**
+     * Returns a list of PowerSources with live data for all nodes in the
+     * experiment.
+     * 
+     * @return a list of PowerSources with live power data.
+     */
+    public LinkedList<PowerSource> status() {
+        return ControllerPowerGet.status(nodes);
+    }
+
+    /**
+     * Updates the status fields in the nodes of this experiment with the
+     * provided PowerSource data.
+     * 
+     * @param statusList
+     *            power status data
+     */
+    public void updateNodeStatusPower(LinkedList<PowerSource> statusList) {
+        for (NodeObjects nodeObject : nodes) {
+            nodeObject.updateNodeStatusPower(statusList);
+        }
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -1328,5 +1330,67 @@ public class Experiment {
 
     public void setDefaultConfig(Config config) {
         this.defaultConfig = config;
+    }
+
+    public void addNodeConfig(String nodeId, Config config) {
+        nodeConfigs.put(nodeId, config);
+    }
+
+    public Config getDefaultConfig() {
+        return this.defaultConfig;
+    }
+
+    public LinkedList<WPort> getWports() {
+        return wports;
+    }
+
+    public void setWports(LinkedList<WPort> wports) {
+        this.wports = wports;
+    }
+
+    public PossibleState getStatus() {
+        return status;
+    }
+
+    public void setStatus(PossibleState status) {
+        this.status = status;
+    }
+
+    public String getUser() {
+        return this.user;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Config getNodeConfig(String nodeId) {
+        return nodeConfigs.get(nodeId);
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setNodeList(LinkedList<NodeObjects> list) {
+        this.nodes = list;
+    }
+
+    public LinkedList<NodeObjects> getList() {
+        return nodes;
+    }
+    /**
+     * Returns all VLan IDs which are owned by this experiment.
+     * @return  a list of VLan IDs
+     */
+    public LinkedList<Integer> getAllVlanIds() {
+        LinkedList<Integer> list = new LinkedList<Integer>();
+        for (VLan vlan : localVlans) {
+            list.add(vlan.getId());
+        }
+
+        list.add(globalVlan.getId());
+
+        return list;
     }
 }
