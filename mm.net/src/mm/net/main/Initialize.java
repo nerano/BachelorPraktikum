@@ -16,16 +16,16 @@ public class Initialize implements ServletContextListener {
 
 
   /**
-   * !-- Initialize everything for the NetService here --!
+   * !-- Initialize everything for the NetService here. --!
    */
   public void contextInitialized(ServletContextEvent contextEvent) {
 
+    System.out.println("Initializing NetService finished");
     XmlParser parser = new XmlParser();
     ServletContext context = contextEvent.getServletContext();
     String netComponentPath = context.getRealPath("/NetComponents.xml");
     String vLanConfigPath = context.getRealPath("/vlan.xml");
     String staticComponentPath = context.getRealPath("/staticComponents.xml");
-    System.out.println("NetComponent Path: " + netComponentPath);
 
     /* Parsing VLan Configurations */
     parser.parseXml(vLanConfigPath);
@@ -48,9 +48,8 @@ public class Initialize implements ServletContextListener {
     /* Initializing Static VLans */
     initializeStaticVlans();
 
-    /* Creating local Vlans for all NetComponents */
+    System.out.println("Initializing NetService finished");
 
-    System.out.println(NetData.getAllNetComponents());
 
   }
 
@@ -58,7 +57,13 @@ public class Initialize implements ServletContextListener {
 
   }
 
-  private static LinkedList<VLan> createGlobalVLans(int[] vlanInfo) {
+  /**
+   * Returns a list of VLans. The ID range is from the specified minimum global range
+   * to the maximum global range.
+   * @param vlanInfo
+   * @return  list of empty global VLans.
+   */
+   static LinkedList<VLan> createGlobalVLans(int[] vlanInfo) {
     System.out.println("Reading global VLans");
 
     LinkedList<VLan> vlanList = new LinkedList<VLan>();
@@ -75,7 +80,13 @@ public class Initialize implements ServletContextListener {
     return vlanList;
   }
 
-  private static LinkedList<VLan> createLocalVlans(int[] vlanInfo) {
+   /**
+    * Returns a list of VLans. The ID range is from the specified minimum local range
+    * to the maximum local range.
+    * @param vlanInfo
+    * @return  list of empty global VLans.
+    */
+  static LinkedList<VLan> createLocalVlans(int[] vlanInfo) {
 
     System.out.println("Reading Local VLans");
     LinkedList<VLan> vlanList = new LinkedList<VLan>();

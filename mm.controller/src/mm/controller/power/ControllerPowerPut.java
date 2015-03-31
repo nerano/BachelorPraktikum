@@ -43,7 +43,7 @@ public class ControllerPowerPut {
 	 */
 	public static Response turnOn(String parameter) {
 	
-		
+		System.out.println("CONTROLLERPOWERPUT parameter: " + parameter);
 		Response response = putTarget.path("turnOn").request().accept(MediaType.TEXT_PLAIN)
 											.put(
 													Entity.entity(parameter, MediaType.TEXT_PLAIN),

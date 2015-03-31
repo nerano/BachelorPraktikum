@@ -67,6 +67,34 @@ public class VLan {
         return global;
     }
     
+    /**
+     * Performs a consistency check on the VLan.
+     * 
+     * <p>
+     * Creates the configuration which should be present on the NetComponents in the VLAN
+     * and then checks if the expected configuration is actually present.
+     * </p>
+     * 
+     * <p>
+     * To create the expected configuration all NetComponents, which are part of this
+     * VLan are fetched and for each the expected configuration is calculated.
+     * </p>
+     * 
+     * <p> 
+     * First all ports in the VLan are set as egress ports and all ports which are egress
+     * ports and at the same time specified as trunks in the NetComponents.xml are set
+     * as tagged egress ports. The remaining ports are untagged ports. For each port 
+     * the PVID is created. If a port is an egress/untagged port the PVID should be the 
+     * same as the VLan ID, if a port is an egress/tagged port the PVID should be 1.
+     * A port which is not an egress port gets the invalid (= not to check) PVID of -1.
+     * </p>
+     * 
+     * <p>
+     * After creating this configuration the actual configuration is fetched from the
+     * NetComponents and both are compared. The results are gathered and then returned.
+     * 
+     * @return  the status report of the consistency check
+     */
     public String isConsistent() {
         NetComponent nc;
         StringBuilder returnBuilder = new StringBuilder("Consistency check on ID " + id + "\n");
@@ -153,17 +181,9 @@ public class VLan {
                 }
             }
             
-            System.out.println("EGRESS: " + egress);
-            System.out.println("CONSIST EGRESS " + consistentEgress);
-            System.out.println("UNTAGGED: " + untagged);
-            System.out.println("CONSIST UNTAGGED " + consistentUntagged);
-            System.out.println("CONSIST PVID " + Arrays.toString(consistPvids));
-            System.out.println("PVID " + Arrays.toString(pvids));
             
             if (egress.equals(consistentEgress) && untagged.equals(consistentUntagged)) {
-                System.out.println("Consistent");
             } else {
-                System.out.println("Not Consistent");
                 consistency = false;
             }
         
@@ -190,12 +210,11 @@ public class VLan {
     }
     
     /**
-     * Checks if a VLAN ID is free on all NetComponents.
+     * Checks if a VLAN ID is free (= does not exist) on all NetComponents.
      * 
      * @return  true if VLAN ID is free on all NetComponents, false otherwise
      */
     public boolean isFree() {
-        System.out.println("IS FREE ACALLED");
         LinkedList<NetComponent> ncList = NetData.getAllNetComponents();
         
         System.out.println(Arrays.asList(ncList).toString());
@@ -215,15 +234,12 @@ public class VLan {
     }
     
     /**
-     * Checks if a VLAN ID is free on the list of NetComponents which are in the
+     * Checks if a VLAN ID is free (= does not exist) on the list of NetComponents which are in the
      * portList of this VLAN.
      * 
      * @return true if VLAN ID is free on all NetComponents, false otherwise
      */
     public boolean isFreeOnNC() {
-       
-        System.out.println("IS FREEONNC ACALLED");
-        
         HashMap<String, LinkedList<Integer>> map = portListToHashMap(portList);
         NetComponent nc;
         

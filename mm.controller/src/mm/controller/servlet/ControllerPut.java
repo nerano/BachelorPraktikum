@@ -44,16 +44,26 @@ public class ControllerPut {
 
     Initialize.saveToDisk();
     Experiment newExp = gson.fromJson(data, Experiment.class);
-    // Experiment oldExp = (ControllerData.getExpById(newExp.getId()));
-    Experiment oldExp = (ControllerData.getExpById(newExp.getUser() + newExp.getName()));
+    Experiment oldExp = (ControllerData.getExpById(newExp.getId()));
 
+    // Does the old Experiment exists
     if (oldExp == null) {
       return Response.status(404).entity("Could not find Experiment with name "
           + newExp.getName()).build();
     }
+    
+    // Is there a default Config
+    if(newExp.getDefaultConfig().getName().equals("")) {
+        return Response.status(500).entity("Please specify a default Config!").build();
+    }
+    
+    // Update the name / ID of the experiment
+    ControllerData.getExpById(newExp.getId()).setName(newExp.getName());
+    ControllerData.getExpById(newExp.getId()).setId(newExp.getUser() + newExp.getName());
 
     PossibleState expState = oldExp.getStatus();
 
+    // Can only edit in paused and stopped
     switch (expState) {
     case running:
       return Response.status(403).
@@ -63,7 +73,7 @@ public class ControllerPut {
       return editExpStopped(oldExp, newExp);
     case paused:
       Initialize.saveToDisk();
-      return editExpPaused(oldExp, newExp);
+      return editExpStopped(oldExp, newExp);
     default:
       return Response.status(500).entity("Could not determine status").build();
     }
@@ -84,12 +94,17 @@ public class ControllerPut {
     boolean defaultConfigChanged = false;
 
     if (oldDefaultConfig == null && newDefaultConfig == null) {
-      oldExp.changeDefaultConfig(newDefaultConfig);
+      oldExp.setDefaultConfig(newDefaultConfig);
     } else {
-      if (!oldDefaultConfig.equals(newDefaultConfig)) {
-        defaultConfigChanged = true;
-        oldExp.changeDefaultConfig(newDefaultConfig);
-      }
+        if(oldDefaultConfig == null) {
+            oldExp.setDefaultConfig(newDefaultConfig);
+            defaultConfigChanged = true;
+        } else {
+            if (!oldDefaultConfig.equals(newDefaultConfig)) {
+                defaultConfigChanged = true;
+                oldExp.setDefaultConfig(newDefaultConfig);
+              }
+        }
     }
 
     if (defaultConfigChanged) {
@@ -151,13 +166,7 @@ public class ControllerPut {
 
     // Adding and removing Nodes //
     LinkedList<NodeObjects> oldNodes = oldExp.getNodes();
-    LinkedList<NodeObjects> newNodes = newExp.getNodes(); // new
-                                                          // LinkedList<NodeObjects>();
-
-    /**
-     * for (NodeObjects node : newExp.getNodes()) {
-     * newNodes.add(ControllerData.getNodeById(node.getId())); }
-     **/
+    LinkedList<NodeObjects> newNodes = newExp.getNodes(); 
 
     Set<NodeObjects> addedNodes = new HashSet<NodeObjects>();
     Set<NodeObjects> removedNodes = new HashSet<NodeObjects>();
@@ -197,21 +206,18 @@ public class ControllerPut {
     }
 
     oldExp.removeNodes(removedNodes);
-
+    Response response = null;
     for (NodeObjects node : addedNodes) {
-      oldExp.addNode(ControllerData.getNodeById(node.getId()),
+       response = oldExp.addNode(ControllerData.getNodeById(node.getId()),
           ControllerData.getConfig(node.getConfig().getName()));
     }
 
     System.out.println("REMOVED NODES " + gson.toJson(removedNodes));
     System.out.println("ADDED NODES " + gson.toJson(addedNodes));
 
-    return null;
-  }
-
-  private Response editExpPaused(Experiment oldExp, Experiment newExp) {
-    // TODO Auto-generated method stub
-    return null;
+    oldExp.setId(newExp.getUser() + newExp.getName());
+    
+    return response;
   }
 
   /**
@@ -262,6 +268,10 @@ public class ControllerPut {
       return Response.status(500).entity("Umlaut not allowed!").build();
     }
 
+    if(oldExp.getDefaultConfig().getName().equals("")) {
+        return Response.status(500).entity("Please specify a default Config!").build();
+    }
+    
     System.out.println(data);
 
     if (data != null && ControllerData.existsExp(user + name)) {
@@ -293,11 +303,11 @@ public class ControllerPut {
       }
       experiment.setNodeList(nodeList);
 
+   
       // Check if the nodes are applicable for the chosen configuration
       for (NodeObjects node : experiment.getList()) {
         config = experiment.getNodeConfig(node.getId());
         if (!node.isApplicable(config)) {
-          System.out.println("NODE IS NOT APPLICABLE");
           successString += "Node '" + node.getId() + "' is not applicable for "
               + "config: '" + config.getName() + "' \n";
           success = false;
@@ -308,18 +318,21 @@ public class ControllerPut {
         return Response.status(500).entity(successString).build();
       }
 
+      
       // Transfer all wPorts from the old experiment to the new experiment
       for (WPort wport : oldExp.getWports()) {
         wportList.add(ControllerData.getWportById(wport.getId()));
       }
       experiment.setWports(wportList);
 
+     
       // Add a Global VLan to the Experiment
       response = experiment.addGlobalVlan();
       if (response.getStatus() != 200) {
         return response;
       }
 
+     
       // Deploys all Trunk Ports for the Experiment
       response = experiment.deployAllTrunks();
       if (response.getStatus() != 200) {
@@ -329,8 +342,8 @@ public class ControllerPut {
       experiment.setStatus(PossibleState.stopped);
       ControllerData.addExp(experiment);
       Initialize.saveToDisk();
+
       responseString = "New Experiment posted/created with ID : " + name;
-      System.out.println(responseString);
       return Response.status(201).entity(responseString).build();
     }
 
@@ -339,8 +352,16 @@ public class ControllerPut {
   /**
    * Stops the experiment.
    * 
-   * @param expId
-   * @return
+   * <p>
+   * To stop the experiment the following steps are taken:
+   * 
+   * <li>The Config VLans are removed.</li>
+   * <li>The PowerSources are turned off.</li>
+   * <li>The Virtual Machines are stopped.</li>
+   * 
+   * If one of the steps above results in an error the process is aborted. 
+   * @param expId  The ID of the experiment to stop
+   * @return  a Response Object with information if the stopping process was successful
    */
   @PUT
   @Path("/stop")
@@ -361,8 +382,16 @@ public class ControllerPut {
   /**
    * Starts the experiment.
    * 
-   * @param expId
-   * @return
+   * <p>
+   * To stop the experiment the following steps are taken:
+   * 
+   * <li>The Config VLans are activated.</li>
+   * <li>The PowerSources are turned on.</li>
+   * <li>The Virtual Machines are started.</li>
+   * 
+   * But only if all Nodes and WPorts are currently available and not active in any other way.
+   * @param expId  The ID of the experiment to start
+   * @return   a Response Object with information if the starting process was successful
    */
   @PUT
   @Path("/start")
@@ -382,6 +411,21 @@ public class ControllerPut {
 
   }
 
+  /**
+   * Starts the experiment.
+   * 
+   * <p>
+   * Unpausing the Experiment is transferring the experiment from the paused to the running state.
+   * </p>
+   * 
+   * <p>
+   * To stop the experiment the following steps are taken:
+   * 
+   * <li>The PowerSources are turned on.</li>
+   * 
+   * @param expId  The ID of the experiment to start
+   * @return  a Response Object with information if the unpausing process was successful
+   */
   @PUT
   @Path("/unpause")
   @Produces(MediaType.TEXT_PLAIN)
@@ -408,8 +452,15 @@ public class ControllerPut {
   /**
    * Pauses the Experiment.
    * 
-   * Turns all Nodes of this experiment off.
+   * Turns all Nodes of this experiment off, if the previous state was running.
    * 
+   * If the previous state was stopped the following steps are taken:
+   *
+   * <li>The PowerSources are turned off</li>
+   * <li>The Virtual Machines are started</li>
+   * <li>The Config VLans are activated</li>
+   * 
+   * But only if all Nodes and Ports are currently available. 
    * @param expId
    *          experiment ID from the experiment to pause
    * @return a Response Object with status code and message body, which reports
@@ -447,9 +498,10 @@ public class ControllerPut {
   /**
    * Reloads the config.xml file.
    * 
+   * <p>
    * After calling this function new added configurations are available for use.
    * 
-   * @return
+   * @return a Response if the reloading was successful
    */
   @GET
   @Path("/reloadConfigs")
@@ -463,6 +515,13 @@ public class ControllerPut {
     }
   }
 
+  /**
+   * Reloads the topology.xml.
+   * 
+   * <p>
+   * After calling this the internal representation of the network is updated.
+   * @return a Response if the reloading was successful
+   */
   @GET
   @Path("/reloadTopology")
   @Produces(MediaType.TEXT_PLAIN)
@@ -475,6 +534,14 @@ public class ControllerPut {
     }
   }
 
+
+  /**
+   * Reloads the nodes.xml.
+   * 
+   * <p>
+   * After calling this new added Nodes are available to use.
+   * @return a Response if the reloading was successful
+   */
   @GET
   @Path("/reloadNodes")
   @Produces(MediaType.TEXT_PLAIN)
@@ -487,6 +554,13 @@ public class ControllerPut {
     }
   }
 
+  /**
+   * Reloads the nodes.xml.
+   * 
+   * <p>
+   * After calling this new added WPorts are available to use.
+   * @return a Response if the reloading was successful
+   */
   @GET
   @Path("/reloadwPorts")
   @Produces(MediaType.TEXT_PLAIN)
@@ -611,9 +685,15 @@ public class ControllerPut {
   }
 
   /**
+   * Turns on all Nodes in the Experiment.
    * 
-   * @param expId
-   * @return
+   * <p>
+   * All Nodes in the Experiment are turned on. This is only possible if the Experiment 
+   * is in the state "running". 
+   * </p>
+   * 
+   * @param expId  the ID of the experiment which Nodes should be turned on
+   * @return  a Response if the turning process was successful
    */
   @PUT
   @Path("/turnOn/exp")
@@ -647,9 +727,15 @@ public class ControllerPut {
   }
 
   /**
+   * Turns off all Nodes in the Experiment.
    * 
-   * @param expId
-   * @return
+   * <p>
+   * All Nodes in the Experiment are turned off. This is only possible if the Experiment 
+   * is in the state "running". 
+   * </p>
+   * 
+   * @param expId  the ID of the experiment which Nodes should be turned on
+   * @return  a Response if the turning process was successful
    */
   @PUT
   @Path("/turnOff/exp")

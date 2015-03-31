@@ -18,7 +18,7 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 public class AEHomeTest {
 
     
-    AEHome aehome = new AEHome("aehome", "AeHome", "192.168.178.21");
+    AeHome aehome = new AeHome("aehome", "AeHome", "192.168.178.21");
 	
 	/** 
 	 * Tests if on the case of a thrown UnknownHostException, the Exception is handled correctly.
@@ -28,9 +28,9 @@ public class AEHomeTest {
 		
 		
 		
-		AEHome malformedURLpowerSupply = new AEHome("AeHome1", "AeHome", "unknownHost");
+		AeHome malformedURLpowerSupply = new AeHome("AeHome1", "AeHome", "unknownHost");
 		
-		Class<? extends AEHome> c = malformedURLpowerSupply.getClass();
+		Class<? extends AeHome> c = malformedURLpowerSupply.getClass();
 		Method method = c.getDeclaredMethod("getStates", (Class<?>[]) null);
 		method.setAccessible(true);
 		Response r = (Response) method.invoke(malformedURLpowerSupply, (Object[]) null);
@@ -49,7 +49,7 @@ public class AEHomeTest {
 	public void testSocketNumberExceedsExistingSockets() {
 		
 	    
-	    AEHome ps = new AEHome("AeHome1", "AeHome", "unknownHost");
+	    AeHome ps = new AeHome("AeHome1", "AeHome", "unknownHost");
 		Response r = ps.status(5);
 		
 		String s =  (String) r.getEntity();
@@ -217,7 +217,7 @@ public class AEHomeTest {
         }
 
 	    // Getting the private method
-	    Class<? extends AEHome> c = aehome.getClass();
+	    Class<? extends AeHome> c = aehome.getClass();
         Method method = c.getDeclaredMethod("getStates", (Class<?>[]) null);
         method.setAccessible(true);
         

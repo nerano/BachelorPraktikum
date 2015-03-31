@@ -15,7 +15,6 @@ import mm.controller.net.ControllerNetGet;
 public class NodeObjects {
 
     private String id;
-    private String typeName;
     private LinkedList<Component> components = new LinkedList<Component>();
     private LinkedList<Config> applicableConfigs = new LinkedList<Config>();
     private String building;
@@ -23,7 +22,6 @@ public class NodeObjects {
     private String latitude;
     private String longitude;
     private boolean status;
-    //private String trunk;
     private Config config;
     
     
@@ -330,6 +328,23 @@ public class NodeObjects {
 	    
 	   return Response.status(responseStatus).entity(responseString).build();
 	}
+	
+	/**
+	 * Returns a Set of VLan IDs which are currently active on this node. 
+	 * @return a set of int, which holds all current VLan ids of this node.
+	 */
+	public Set<Integer> getVlanIds() {
+	    
+	    Set<Integer> vlanIds = new HashSet<Integer>();
+	    
+        LinkedList<Interface> infList = ControllerNetGet.getVlanInfo(this);
+        
+        for (Interface inf : infList) {
+            vlanIds.add(inf.getVlanId());
+        }
+        
+        return vlanIds;
+	}
 
 	public String getId() {
 		return this.id;
@@ -339,13 +354,7 @@ public class NodeObjects {
 		this.id = id;
 	}
 
-	public String getNodeType() {
-		return typeName;
-	}
-
-	public void setNodeType(String nodeType) {
-		this.typeName = nodeType;
-	}
+	
 
 	public void addComponent(Component comp) {
 		this.components.add(comp);
@@ -392,7 +401,6 @@ public String toString() {
         StringBuffer sb = new StringBuffer();
         
         sb.append("ID: '").append(id).append("'\n");
-        sb.append("TypeName: '").append(typeName).append("' \n");
         sb.append("Components: \n");
     
         for (Component component : components) {

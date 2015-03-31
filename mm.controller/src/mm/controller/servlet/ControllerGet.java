@@ -72,7 +72,6 @@ public class ControllerGet {
 
         String responseString = gson.toJson(list);
 
-        System.out.println(responseString);
         return Response.status(200).entity(responseString).build();
     }
 
@@ -104,14 +103,14 @@ public class ControllerGet {
     @Path("/configs")
     public Response getConfigs() {
 
-        Gson gson = new GsonBuilder().setExclusionStrategies(new OnlyConfigName())
-                .setPrettyPrinting().create();
+        Gson gson = new GsonBuilder()
+        .setExclusionStrategies(new OnlyConfigName())
+            .setPrettyPrinting().create();
 
-        String responseString = gson.toJson(ControllerData.getAllConfigs());
+    String responseString = gson.toJson(ControllerData.getAllConfigs());
 
-        System.out.println(responseString);
-        return Response.ok(responseString).build();
-
+    return Response.ok(responseString).build();
+    
     }
 
     /**
@@ -144,7 +143,6 @@ public class ControllerGet {
 
         String responseString = gson.toJson(ControllerData.getAllWPorts());
 
-        System.out.println(responseString);
         return Response.ok(responseString).build();
 
     }
@@ -176,6 +174,9 @@ public class ControllerGet {
     public Response getNodePowerStatus(@PathParam("exp") String exp) {
 
         Experiment experiment = ControllerData.getExpById(exp);
+        
+        Gson gson = new GsonBuilder()
+        .setExclusionStrategies(new OnlyConfigName()).setPrettyPrinting().create();
         
         if(experiment == null) {
             return Response.status(404).entity("404, Experiment not found!").build();
@@ -247,7 +248,6 @@ public class ControllerGet {
                 responseString = gson.toJson(ControllerData.getExpById(id));
                 /* } */
 
-                System.out.println(responseString);
                 response = Response.status(200).entity(responseString).build();
 
                 return response;
@@ -326,7 +326,6 @@ public class ControllerGet {
             if (response.getStatus() == 200) {
                 String user = Authentification.getUser(sessionId).readEntity(String.class);
                 if (Authentification.getUserRole(sessionId).readEntity(String.class).equals("admin")) {
-                    System.out.println(gson.toJson(ControllerData.getAllExp()));
                     return Response.ok(gson.toJson(ControllerData.getAllExp())).build();
                 } else {
                     String responseString = gson.toJson(ControllerData.getExpByUser(user));

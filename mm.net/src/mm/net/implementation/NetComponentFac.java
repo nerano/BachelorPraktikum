@@ -36,7 +36,9 @@ public class NetComponentFac {
 
     switch (type) {
       case "NetGearGS108Tv2":
-        return new NetGearGS108Tv2(id, host, trunks);
+       NetComponent nc = new NetGearGS108Tv2(id, host, trunks);
+       System.out.println(nc.toString());
+          return new NetGearGS108Tv2(id, host, trunks);
       case "Cisco 2960S":
         return null;
       default:

@@ -57,8 +57,8 @@ public class Initialize implements ServletContextListener
 
         
         setBasePath(context.getRealPath("/"));
-        setNodePath(context.getRealPath("/NODESV2.xml"));
-        setTopologyPath(context.getRealPath("/topology - 2 netgear.xml"));
+        setNodePath(context.getRealPath("/nodes.xml"));
+        setTopologyPath(context.getRealPath("/topology.xml"));
         setConfigPath(context.getRealPath("/config.xml"));
         setWportPath(context.getRealPath("/wports.xml"));
         setStartupPath(context.getRealPath("/reloadOnStartup.xml"));

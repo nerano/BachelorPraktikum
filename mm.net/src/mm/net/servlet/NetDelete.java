@@ -12,16 +12,16 @@ import mm.net.main.NetData;
 
 @Path("/delete")
 public class NetDelete {
-
-
-    //private Gson gson = new GsonBuilder().setPrettyPrinting().create();
     
     /**
-     * Deletes the VLan with the given ID on all NetComponents and frees it for further use.
+     * Frees the global VLan with the given ID.
      * 
+     * <p>
+     * After freeing the VLan it can be retrieved again for further use by other experiments.
+     * </p>
      * 
-     * @param id
-     * @return
+     * @param id ID of the VLan to free
+     * @return  200(OK) or 500(Internal Server Error) if the VLan could not be freed.
      */
     @DELETE
     @Path("globalVLan/{id}")
@@ -38,7 +38,16 @@ public class NetDelete {
     }
 
 
-
+    /**
+     * Frees the local VLan with the given ID.
+     * 
+     * <p>
+     * After freeing the VLan it can be retrieved again for further use by other experiments.
+     * </p>
+     * 
+     * @param id ID of the VLan to free
+     * @return  200(OK) or 500(Internal Server Error) if the VLan could not be freed.
+     */
     @DELETE
     @Path("/localVLan/{id}")
     public Response destroyLocalVlan(@PathParam("id") int id) {

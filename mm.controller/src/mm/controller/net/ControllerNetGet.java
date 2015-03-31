@@ -37,9 +37,14 @@ public class ControllerNetGet {
     /* -- PUBLIC METHODS -- */
 
     /**
+     * Retrieves live data for the VLan status of the given Node.
      * 
-     * @param node
-     * @return
+     * <p>
+     * A List of Interfaces is returned. Each Interface has a Port and a VLan ID. 
+     * If an error occurred during the retrieval a error is specified in the failure
+     * field of the Interface
+     * @param node  node to get vlan data for
+     * @return  List of Interfaces
      */
     public static LinkedList<Interface> getVlanInfo(NodeObjects node) {
 

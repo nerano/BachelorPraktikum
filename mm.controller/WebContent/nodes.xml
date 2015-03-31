@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="test.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<Nodes>
+	<id>Node A</id>
+	
+	<component type = "WARP">
+		<trunk>NetGear2;1</trunk>
+		<powerSource>AeHome1;1</powerSource>
+		
+		<name>eth0</name>
+		<port>NetGear2;2</port>
+		<role>WARP A</role>
+	
+		<name>eth1</name>
+		<port>NetGear2;3</port>
+		<role>WARP B</role>
+	</component>
+	
+	<component type = "APU">
+		<trunk>NetGear2;1</trunk>
+		<powerSource>AeHome1;2</powerSource>
+		
+		<name>eth2</name>
+		<port>NetGear2;4</port>
+		<role>APU 1</role>
+		
+		<name>eth3</name>
+		<port>NetGear2;5</port>
+		<role>APU 2</role>
+		
+		<name>eth4</name>
+		<port>NetGear2;6</port>
+		<role>APU 3</role>
+	</component>
+		
+		<building>Building 1</building>
+		<room>Room right</room>
+	
+	<id>Node C</id>
+	
+		
+	<component type = "APU">
+		<trunk>NetGear1;1</trunk>
+		<powerSource>AeHome1;3</powerSource>
+		<name>eth0</name>
+		<port>NetGear1;2</port>
+		<role>APU 1</role>
+	</component>
+	
+		<building>Building 2</building>
+		<room>Room left</room>
+
+	
+</Nodes>

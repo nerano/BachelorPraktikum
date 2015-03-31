@@ -184,12 +184,9 @@ public class NetGearGS108Tv2Test {
     public void testEgressInvalidFormat(int vlanId, String egress) {
         
         Response response = nc.setEgressPorts(vlanId, egress);
-        String retEgress = (String) response.getEntity();
         
         assertEquals("response Status code from setEgress should be 500",
                 500, response.getStatus());
-        
-        System.out.println(retEgress);
     }
     
     /**

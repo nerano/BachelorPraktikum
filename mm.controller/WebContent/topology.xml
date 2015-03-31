@@ -4,16 +4,13 @@
 	<topology>
 	
 	<vertex>NetGear1;1</vertex>
+	<vertex>NetGear1;7</vertex>
+	
 	<vertex>NetGear2;1</vertex>
-	<vertex>NetGear2;2</vertex>
-	<vertex>NetGear3;1</vertex>
-	<vertex>NetGear3;2</vertex>
-	<vertex>NetGear4;2</vertex>
 	
 	
-	<edge>NetGear1;1~NetGear2;2</edge>
-	<edge>NetGear2;1~NetGear3;2</edge>
-	<edge>NetGear3;1~NetGear4;2</edge>
+	<edge>NetGear1;7~NetGear2;1</edge>
+	
 	
 	<startVertex>NetGear1;1</startVertex>
 	
